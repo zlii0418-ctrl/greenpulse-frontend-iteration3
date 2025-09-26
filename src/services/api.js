@@ -16,7 +16,7 @@ const getApiBaseUrl = () => {
     return ''
   } else {
     // For production, use the production API URL
-    return 'https://gp-backend-iter2.vercel.app'
+    return 'https://gp-backend-iter3.vercel.app'
   }
 }
 

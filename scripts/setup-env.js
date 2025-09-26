@@ -31,7 +31,7 @@ const environments = {
     description: 'Custom API URL (will prompt for URL)'
   },
   production: {
-    VITE_API_URL: 'https://gp-backend-iter2.vercel.app',
+    VITE_API_URL: 'https://gp-backend-iter3.vercel.app',
     description: 'Production API URL'
   }
 };

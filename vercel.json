@@ -1,10 +1,10 @@
 {
   "env": {
-    "VITE_API_URL": "https://gp-backend-iter2.vercel.app"
+    "VITE_API_URL": "https://gp-backend-iter3.vercel.app"
   },
   "build": {
     "env": {
-      "VITE_API_URL": "https://gp-backend-iter2.vercel.app"
+      "VITE_API_URL": "https://gp-backend-iter3.vercel.app"
     }
   },
   "installCommand": "pnpm install --no-frozen-lockfile",
