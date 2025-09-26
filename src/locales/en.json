@@ -1,0 +1,146 @@
+{
+  "common": {
+    "next": "Next",
+    "previous": "Previous",
+    "calculate": "Calculate",
+    "result": "Result",
+    "back": "Back",
+    "close": "Close",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "save": "Save",
+    "loading": "Loading..."
+  },
+  "navigation": {
+    "home": "Home",
+    "travelCalculator": "Travel Calculator",
+    "householdCalculator": "Household Calculator",
+    "disclaimer": "Disclaimer",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "travelCalculator": "Travel Calculator",
+    "householdCalculator": "Household Calculator",
+    "disclaimer": "Disclaimer",
+    "switchLanguage": "Switch Language",
+    "aboutGreenPulse": "About GreenPulse",
+    "aboutDescription": "In order to help everyone understand how to protect the environment."
+  },
+  "home": {
+    "welcome": "Welcome to GreenPulse",
+    "subtitle": "Your journey to sustainable living starts here",
+    "description": "GreenPulse is a platform dedicated to promoting carbon reduction knowledge and sustainable living practices. We believe that by understanding our environmental impact and making conscious choices, we can create a more sustainable future for generations to come.",
+    "exploreTools": "Explore our interactive tools and calculators to learn about carbon footprints, climate change impacts, and discover personalized recommendations to reduce your environmental impact."
+  },
+  "tools": {
+    "welcome": "Welcome to GreenPulse",
+    "subtitle": "Your journey to sustainable living starts here",
+    "description": "GreenPulse is a platform dedicated to promoting carbon reduction knowledge and sustainable living practices. We believe that by understanding our environmental impact and making conscious choices, we can create a more sustainable future for generations to come.",
+    "seeMore": "See More",
+    "goToCalculate": "Go to Calculate"
+  },
+  "travel": {
+    "title": "Travel Carbon Calculator",
+    "subtitle": "Calculate your travel carbon footprint",
+    "description": "Understand your environmental impact from transportation choices and discover ways to reduce your carbon footprint.",
+    "publicTransport": "Public Transport",
+    "distance": "Distance",
+    "frequency": "Frequency",
+    "vehicle": "Vehicle Type",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "daily": "Daily",
+    "car": "Car",
+    "motorcycle": "Motorcycle",
+    "bus": "Bus",
+    "train": "Train",
+    "taxi": "Taxi",
+    "flight": "Flight"
+  },
+  "household": {
+    "title": "Household Carbon Calculator",
+    "subtitle": "Calculate your household carbon footprint",
+    "description": "Understand your environmental impact from household activities and discover ways to reduce your carbon footprint.",
+    "people": "People",
+    "water": "Water",
+    "electricity": "Electricity",
+    "waste": "Waste",
+    "monthlyUsage": "Monthly Usage",
+    "weeklyWaste": "Weekly Waste"
+  },
+  "result": {
+    "title": "Carbon Footprint Result",
+    "travelResult": "Travel Result",
+    "householdResult": "Household Result",
+    "shoppingResult": "Shopping Result",
+    "foodResult": "Food Carbon Footprint",
+    "weeklyFootprint": "Your total weekly carbon footprint for this category is",
+    "monthlyFootprint": "Your total monthly carbon footprint for household activities is",
+    "shoppingFootprint": "Your monthly carbon footprint from shopping is",
+    "foodFootprint": "Your weekly carbon footprint from food consumption is",
+    "allTravel": "Your total weekly carbon footprint for all travel is",
+    "breakdown": "Breakdown",
+    "publicTransportBreakdown": "Public Transport Details",
+    "energyUtilities": "Energy & Utilities Breakdown",
+    "lifestyleConsumption": "Lifestyle & Consumption Details",
+    "cars": "Cars",
+    "motorcycles": "Motorcycles",
+    "bus": "Bus",
+    "train": "Train",
+    "electricity": "Electricity",
+    "water": "Water",
+    "people": "People",
+    "trash": "Trash",
+    "kgCO2": "kg CO2",
+    "perWeek": "(per week)",
+    "perMonth": "(per month)",
+    "treePlanting": "You would need to plant approximately",
+    "trees": "tree saplings",
+    "tenYears": "for 10 years",
+    "annually": "annually",
+    "toAbsorb": "to absorb",
+    "monthlyCO2": "monthly CO2 amount",
+    "weeklyCO2": "amount of CO2"
+  },
+  "errors": {
+    "noValuesSet": "Please set any value to get a result",
+    "networkError": "Network error occurred",
+    "calculationError": "Error occurred during calculation",
+    "invalidInput": "Invalid input provided"
+  },
+  "units": {
+    "km": "km",
+    "m3": "m³",
+    "kwh": "kWh",
+    "kg": "kg",
+    "people": "people"
+  },
+  "worldData": {
+    "worldCarbonData": "World Carbon Data",
+    "worldPerCapita": "World per capita carbon footprint: 4760kg/year",
+    "globalDescription": "The global per capita carbon footprint is typically measured as the amount of carbon dioxide emitted per person per year. According to data from the World Bank and the Global Carbon Project, the global average per capita carbon emissions in recent years has been around 4.5-5 tons of carbon dioxide equivalent per year, but this varies significantly between countries."
+  },
+  "malaysiaData": {
+    "malaysiaCarbonData": "Malaysia Carbon Data",
+    "malaysiaPerCapita": "Malaysia per capita carbon footprint: 11.2 tons/year",
+    "malaysiaDescription": "In Malaysia, each person produces an average of approximately 11.2 tons of carbon dioxide emissions annually. This figure is significantly higher than the global average of 4.7 tons. Malaysia's per capita emissions are also relatively high compared to neighboring countries.",
+    "factors": "Key factors include reliance on fossil fuel-based power generation, high car usage, and emissions from industrial activities."
+  },
+  "climateChange": {
+    "climateChange": "Climate Change",
+    "targets": "Climate change targets",
+    "parisAgreement": "To combat climate change, the Paris Agreement sets a goal of limiting global temperature rise to 1.5-2°C. To achieve this goal, the global per capita carbon footprint must fall below approximately 2 tons per year by around 2050, more than halving the current global average of 4.7 tons per year. For some high-emitting countries, this means reducing per capita carbon emissions by 70-90%."
+  },
+  "whatCanIDo": {
+    "title": "What can I do?",
+    "subtitle": "Take action to reduce your carbon footprint",
+    "description": "Ready to make a difference? Our calculators and tools will help you understand your personal carbon footprint and provide actionable recommendations to reduce your environmental impact.",
+    "startCalculating": "Start by calculating your household emissions, transportation choices, and lifestyle habits. Small changes can add up to significant reductions in your carbon footprint."
+  }
+}

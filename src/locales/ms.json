@@ -1,0 +1,146 @@
+{
+  "common": {
+    "next": "Seterusnya",
+    "previous": "Kembali",
+    "calculate": "Kira",
+    "result": "Keputusan",
+    "back": "Kembali",
+    "close": "Tutup",
+    "ok": "OK",
+    "cancel": "Batal",
+    "reset": "Tetap Semula",
+    "yes": "Ya",
+    "no": "Tidak",
+    "continue": "Teruskan",
+    "save": "Simpan",
+    "loading": "Memuatkan..."
+  },
+  "navigation": {
+    "home": "Laman Utama",
+    "travelCalculator": "Kalkulator Perjalanan",
+    "householdCalculator": "Kalkulator Rumah Tangga",
+    "disclaimer": "Penafian",
+    "about": "Tentang",
+    "contact": "Hubungi"
+  },
+  "footer": {
+    "quickLinks": "Pautan Cepat",
+    "travelCalculator": "Kalkulator Perjalanan",
+    "householdCalculator": "Kalkulator Rumah Tangga",
+    "disclaimer": "Penafian",
+    "switchLanguage": "Tukar Bahasa",
+    "aboutGreenPulse": "Tentang GreenPulse",
+    "aboutDescription": "Untuk membantu semua orang memahami cara melindungi alam sekitar."
+  },
+  "home": {
+    "welcome": "Selamat Datang ke GreenPulse",
+    "subtitle": "Perjalanan anda ke gaya hidup mampan bermula di sini",
+    "description": "GreenPulse adalah platform yang berdedikasi untuk mempromosikan pengetahuan pengurangan karbon dan amalan gaya hidup mampan. Kami percaya bahawa dengan memahami impak persekitaran kami dan membuat pilihan sedar, kami boleh mencipta masa depan yang lebih mampan untuk generasi akan datang.",
+    "exploreTools": "Terokai alat dan kalkulator interaktif kami untuk belajar tentang jejak karbon, impak perubahan iklim, dan dapatkan cadangan peribadi untuk mengurangkan impak persekitaran anda."
+  },
+  "tools": {
+    "welcome": "Selamat Datang ke GreenPulse",
+    "subtitle": "Perjalanan anda ke gaya hidup mampan bermula di sini",
+    "description": "GreenPulse adalah platform yang berdedikasi untuk mempromosikan pengetahuan pengurangan karbon dan amalan gaya hidup mampan. Kami percaya bahawa dengan memahami impak persekitaran kami dan membuat pilihan sedar, kami boleh mencipta masa depan yang lebih mampan untuk generasi akan datang.",
+    "seeMore": "Lihat Lagi",
+    "goToCalculate": "Pergi ke Kira"
+  },
+  "travel": {
+    "title": "Kalkulator Karbon Perjalanan",
+    "subtitle": "Kira jejak karbon perjalanan anda",
+    "description": "Fahami impak persekitaran anda daripada pilihan pengangkutan dan temui cara untuk mengurangkan jejak karbon anda.",
+    "publicTransport": "Pengangkutan Awam",
+    "distance": "Jarak",
+    "frequency": "Kekerapan",
+    "vehicle": "Jenis Kenderaan",
+    "weekly": "Mingguan",
+    "monthly": "Bulanan",
+    "daily": "Harian",
+    "car": "Kereta",
+    "motorcycle": "Motosikal",
+    "bus": "Bas",
+    "train": "Kereta Api",
+    "taxi": "Teksi",
+    "flight": "Penerbangan"
+  },
+  "household": {
+    "title": "Kalkulator Karbon Rumah Tangga",
+    "subtitle": "Kira jejak karbon rumah tangga anda",
+    "description": "Fahami impak persekitaran anda daripada aktiviti rumah tangga dan temui cara untuk mengurangkan jejak karbon anda.",
+    "people": "Orang",
+    "water": "Air",
+    "electricity": "Elektrik",
+    "waste": "Sisa",
+    "monthlyUsage": "Penggunaan Bulanan",
+    "weeklyWaste": "Sisa Mingguan"
+  },
+  "result": {
+    "title": "Keputusan Jejak Karbon",
+    "travelResult": "Keputusan Perjalanan",
+    "householdResult": "Keputusan Rumah Tangga",
+    "shoppingResult": "Keputusan Membeli-belah",
+    "foodResult": "Jejak Karbon Makanan",
+    "weeklyFootprint": "Jumlah jejak karbon mingguan anda untuk kategori ini adalah",
+    "monthlyFootprint": "Jumlah jejak karbon bulanan anda untuk aktiviti rumah tangga adalah",
+    "shoppingFootprint": "Jumlah jejak karbon bulanan anda dari membeli-belah adalah",
+    "foodFootprint": "Jumlah jejak karbon mingguan anda dari pengambilan makanan adalah",
+    "allTravel": "Jumlah jejak karbon mingguan anda untuk semua perjalanan adalah",
+    "breakdown": "Pecahan",
+    "publicTransportBreakdown": "Butiran Pengangkutan Awam",
+    "energyUtilities": "Pecahan Tenaga & Utiliti",
+    "lifestyleConsumption": "Butiran Gaya Hidup & Penggunaan",
+    "cars": "Kereta",
+    "motorcycles": "Motosikal",
+    "bus": "Bas",
+    "train": "Kereta Api",
+    "electricity": "Elektrik",
+    "water": "Air",
+    "people": "Orang",
+    "trash": "Sisa",
+    "kgCO2": "kg CO2",
+    "perWeek": "(seminggu)",
+    "perMonth": "(sebulan)",
+    "treePlanting": "Anda perlu menanam kira-kira",
+    "trees": "pokok anak benih",
+    "tenYears": "untuk 10 tahun",
+    "annually": "setiap tahun",
+    "toAbsorb": "untuk menyerap",
+    "monthlyCO2": "jumlah CO2 bulanan",
+    "weeklyCO2": "jumlah CO2"
+  },
+  "errors": {
+    "noValuesSet": "Sila tetapkan sebarang nilai untuk mendapatkan keputusan",
+    "networkError": "Ralat rangkaian berlaku",
+    "calculationError": "Ralat berlaku semasa pengiraan",
+    "invalidInput": "Input yang tidak sah disediakan"
+  },
+  "units": {
+    "km": "km",
+    "m3": "m³",
+    "kwh": "kWh",
+    "kg": "kg",
+    "people": "orang"
+  },
+  "worldData": {
+    "worldCarbonData": "Data Karbon Dunia",
+    "worldPerCapita": "Jejak karbon per kapita dunia: 4760kg/tahun",
+    "globalDescription": "Jejak karbon per kapita global biasanya diukur sebagai jumlah karbon dioksida yang dikeluarkan setiap orang setiap tahun. Menurut data daripada Bank Dunia dan Projek Karbon Global, purata per kapita global pengeluaran karbon dioksida dalam tahun-tahun kebelakangan ini adalah sekitar 4.5-5 tan setara karbon dioksida setiap tahun, tetapi ini berbeza-beza dengan ketara antara negara."
+  },
+  "malaysiaData": {
+    "malaysiaCarbonData": "Data Karbon Malaysia",
+    "malaysiaPerCapita": "Jejak karbon per kapita Malaysia: 11.2 tan/tahun",
+    "malaysiaDescription": "Di Malaysia, setiap orang menghasilkan purata kira-kira 11.2 tan pengeluaran karbon dioksida setiap tahun. Angka ini jauh lebih tinggi daripada purata global sebanyak 4.7 tan. Pengeluaran per kapita Malaysia juga agak tinggi berbanding negara jiran.",
+    "factors": "Faktor utama termasuk pergantungan kepada penjanaan kuasa berasaskan bahan api fosil, penggunaan kereta tinggi, dan pengeluaran daripada aktiviti industri."
+  },
+  "climateChange": {
+    "climateChange": "Perubahan Iklim",
+    "targets": "Sasaran perubahan iklim",
+    "parisAgreement": "Untuk memerangi perubahan iklim, Perjanjian Paris menetapkan matlamat untuk mengehadkan kenaikan suhu global kepada 1.5-2°C. Untuk mencapai matlamat ini, jejak karbon per kapita global mesti turun di bawah kira-kira 2 tan setiap tahun menjelang sekitar 2050, lebih daripada separuh daripada purata global semasa sebanyak 4.7 tan setiap tahun. Bagi beberapa negara pemancar tinggi, ini bermakna mengurangkan pengeluaran karbon per kapita sebanyak 70-90%."
+  },
+  "whatCanIDo": {
+    "title": "Apa yang boleh saya lakukan?",
+    "subtitle": "Ambil tindakan untuk mengurangkan jejak karbon anda",
+    "description": "Bersedia membuat perbezaan? Kalkulator dan alat kami akan membantu anda memahami jejak karbon peribadi anda dan menyediakan cadangan yang boleh dilaksanakan untuk mengurangkan impak persekitaran anda.",
+    "startCalculating": "Mulakan dengan mengira pengeluaran rumah tangga anda, pilihan pengangkutan, dan tabiat gaya hidup. Perubahan kecil boleh menambah sehingga pengurangan yang ketara dalam jejak karbon anda."
+  }
+}
