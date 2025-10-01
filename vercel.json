@@ -7,6 +7,12 @@
       "VITE_API_URL": "https://gp-backend-iter2.vercel.app"
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://gp-backend-iter2.vercel.app/api/$1"
+    }
+  ],
   "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm run build-only"
 }

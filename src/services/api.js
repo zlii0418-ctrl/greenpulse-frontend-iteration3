@@ -2,22 +2,15 @@ import axios from 'axios'
 
 // Environment-based API configuration
 const getApiBaseUrl = () => {
-  // Check if we're in development mode
   const isDevelopment = import.meta.env.DEV
   
-  // If VITE_API_URL is explicitly set, use it
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL
+  // 开发环境：走 Vite 本地代理
+  if (isDevelopment) {
+    return ''
   }
   
-  // Default URLs based on environment
-  if (isDevelopment) {
-    // For local development, use the proxy (no baseURL needed)
-    return ''
-  } else {
-    // For production, use the production API URL
-    return 'https://gp-backend-iter2.vercel.app'
-  }
+  // 生产环境：走同源 `/api`，由 Vercel rewrites 转发到后端，避免 CORS
+  return ''
 }
 
 const api = axios.create({
