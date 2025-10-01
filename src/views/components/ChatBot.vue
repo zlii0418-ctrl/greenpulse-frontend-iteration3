@@ -133,9 +133,9 @@ export default {
     },
     
     async sendToAPI(message) {
-      const baseURL = 'http://3.25.234.38:8123'
+      // 使用同源 /api，通过 Vercel rewrites 代理到后端，避免浏览器 Mixed Content/CORS
       const chatId = this.generateChatId()
-      const url = `${baseURL}/api/ai/carbon_assistant/chat/sse?message=${encodeURIComponent(message)}&chatId=${encodeURIComponent(chatId)}`
+      const url = `/api/ai/carbon_assistant/chat/sse?message=${encodeURIComponent(message)}&chatId=${encodeURIComponent(chatId)}`
       
       return new Promise((resolve, reject) => {
         this.eventSource = new EventSource(url)
