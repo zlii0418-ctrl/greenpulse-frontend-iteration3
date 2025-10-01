@@ -12,21 +12,6 @@
       </button>
     </div>
 
-    <!-- 右侧计算器按钮 -->
-    <div class="right-buttons-container">
-      <button class="calculator-button travel-button" @click="goToCalculator('travel')">
-        <span>Travel Calculator</span>
-      </button>
-      <button class="calculator-button household-button" @click="goToCalculator('household')">
-        <span>Household Calculator</span>
-      </button>
-      <button class="calculator-button shopping-button" @click="goToCalculator('shopping')">
-        <span>Shopping Calculator</span>
-      </button>
-      <button class="calculator-button food-button" @click="goToCalculator('food')">
-        <span>Food Calculator</span>
-      </button>
-    </div>
 
     <div class="recommendations-content">
       <!-- Loading State -->
@@ -76,6 +61,8 @@
       </div>
     </div>
 
+    <!-- 聊天机器人组件 -->
+    <ChatBot />
   </div>
 </template>
 
@@ -83,6 +70,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import ChatBot from './components/ChatBot.vue'
 import Header from '@/views/components/header.vue'
 import { generateRecommendations } from '@/services/api.js'
 import { marked } from 'marked'
@@ -177,10 +165,6 @@ function goBack() {
   router.back()
 }
 
-// Function to navigate to specific calculator
-function goToCalculator(type: string) {
-  router.push(`/calculator/${type}`)
-}
 
 // Function to generate recommendations
 async function generateRecommendationsData() {
@@ -253,7 +237,7 @@ onMounted(async () => {
 .recommendations-page {
   width: 100%;
   min-height: 100vh;
-  background-image: url('@/assets/img/result.png');
+  background-image: url('@/assets/img/result_bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -291,46 +275,6 @@ onMounted(async () => {
   z-index: 1000;
 }
 
-/* Right Calculator Buttons Container */
-.right-buttons-container {
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  z-index: 1000;
-}
-
-.calculator-button {
-  background: rgba(61, 124, 74, 0.9);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 25px;
-  padding: 12px 20px;
-  font-size: 14px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  min-width: 160px;
-  text-align: center;
-}
-
-.calculator-button:hover {
-  background: rgba(61, 124, 74, 1);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateX(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.calculator-button:active {
-  transform: translateX(-2px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
 
 .nav-button.back-button {
   background: rgba(255, 255, 255, 0.2);
@@ -355,7 +299,7 @@ onMounted(async () => {
 /* Title */
 .recommendations-title {
   font-size: 36px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 800;
   color: rgba(255, 255, 255, 1);
   margin-bottom: 30px;
@@ -370,7 +314,7 @@ onMounted(async () => {
 
 .summary-text {
   font-size: 20px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
@@ -401,11 +345,12 @@ onMounted(async () => {
 }
 
 .recommendation-card {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
   border-radius: 15px;
   padding: 25px;
-  border: 2px solid rgba(61, 124, 74, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
@@ -418,7 +363,7 @@ onMounted(async () => {
 
 .recommendation-content {
   font-size: 18px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   color: rgba(255, 255, 255, 1);
   line-height: 1.6;
@@ -473,17 +418,23 @@ onMounted(async () => {
 
 /* Why Section */
 .why-section {
-  background-color: rgba(61, 124, 74, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
   padding: 15px;
   border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border-left: 3px solid rgba(61, 124, 74, 0.5);
 }
 
 /* How Section */
 .how-section {
-  background-color: rgba(61, 124, 74, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
   padding: 15px;
   border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border-left: 3px solid rgba(61, 124, 74, 0.5);
 }
 
@@ -517,10 +468,12 @@ onMounted(async () => {
 
 /* Local Tip Section */
 .local-tip-section {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.08);
   padding: 15px;
   border-radius: 10px;
-  border: 1px solid rgba(61, 124, 74, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .local-tip-section .section-title {
@@ -669,7 +622,7 @@ strong {
 
 .no-recommendations-text {
   font-size: 18px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
   text-align: center;
@@ -692,6 +645,11 @@ strong {
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .loading-spinner {
@@ -711,7 +669,7 @@ strong {
 
 .loading-text {
   font-size: 20px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   color: rgba(255, 255, 255, 1);
   margin: 0;
@@ -731,7 +689,7 @@ strong {
 
 .error-title {
   font-size: 28px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   color: rgba(255, 255, 255, 1);
   margin: 0 0 15px 0;
@@ -739,7 +697,7 @@ strong {
 
 .error-message {
   font-size: 18px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
   margin: 0 0 25px 0;
@@ -753,7 +711,7 @@ strong {
   padding: 14px 35px;
   border-radius: 25px;
   font-size: 16px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;

@@ -86,6 +86,8 @@
       @save="saveDetailData"
       @next="nextQuestion"
     />
+    
+    <!-- 聊天机器人组件 -->
   </div>
 </template>
 
@@ -279,7 +281,7 @@ onMounted(() => {
   width: 100%;
   color: #000;
   font-size: 32px;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   text-align: center;
   line-height: 1.2;
@@ -299,6 +301,8 @@ onMounted(() => {
   flex: 1;
   justify-content: center;
   padding-top: 30px;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .title-container {
@@ -317,6 +321,9 @@ onMounted(() => {
   padding: 0 20px;
   margin-left: 60px;
   margin-right: 60px;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 .slider-group {
@@ -345,7 +352,7 @@ onMounted(() => {
   font-size: 18px;
   font-weight: 600;
   white-space: nowrap;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   color: black;
 }
 
@@ -433,15 +440,15 @@ onMounted(() => {
   font-weight: 500;
   position: relative;
   top: 20px;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .min-label {
-  color: #999;
+  color: white;
 }
 
 .max-label {
-  color: #999;
+  color: white;
 }
 
 .current-value {
@@ -459,7 +466,7 @@ onMounted(() => {
   z-index: 10;
   pointer-events: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .current-value::before {
@@ -625,7 +632,7 @@ onMounted(() => {
   color: rgba(61, 124, 74, 0.8);
   font-weight: 600;
   text-align: center;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .navigation-container {
@@ -676,7 +683,7 @@ onMounted(() => {
 
 .unit-box {
   font-size: 24px;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   color: black;
 }
 
@@ -708,7 +715,7 @@ onMounted(() => {
   justify-content: center;
   line-height: 1;
   box-shadow: none;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   min-width: 500px;
   width: auto;
 }
@@ -901,7 +908,7 @@ onMounted(() => {
   color: rgba(61, 124, 74, 0.8);
   font-weight: 600;
   text-align: center;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 /* Mobile responsive for progress bar */

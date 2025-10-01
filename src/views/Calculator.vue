@@ -10,37 +10,37 @@
 
 
     <div class="main-box">
-      <div class="main-title">Carbon Calculator</div>
-      <div class="btn-content-box">
-        <div class="btn-box">
-          <div class="calculator-nav">
-            <div class="calc-nav-main flex-column">
-              <div class="nav-box" :class="{ active: currentCalculator === 'travel' }">
-                <RouterLink to="/calculator/travel" class="calc-link">
-                  <span class="calc-text">Travel</span>
-                </RouterLink>
-              </div>
+      <div class="btn-box">
+        <div class="calculator-nav">
+          <div class="calc-nav-main flex-column">
+            <div class="nav-box" :class="{ active: currentCalculator === 'travel' }">
+              <RouterLink to="/calculator/travel" class="calc-link">
+                <span class="calc-text">Travel</span>
+              </RouterLink>
+            </div>
 
-              <div class="nav-box" :class="{ active: currentCalculator === 'household' }">
-                <RouterLink to="/calculator/household" class="calc-link">
-                  <span class="calc-text">House</span>
-                </RouterLink>
-              </div>
+            <div class="nav-box" :class="{ active: currentCalculator === 'household' }">
+              <RouterLink to="/calculator/household" class="calc-link">
+                <span class="calc-text">House</span>
+              </RouterLink>
+            </div>
 
-              <div class="nav-box" :class="{ active: currentCalculator === 'food' }">
-                <RouterLink to="/calculator/food" class="calc-link">
-                  <span class="calc-text">Food</span>
-                </RouterLink>
-              </div>
+            <div class="nav-box" :class="{ active: currentCalculator === 'food' }">
+              <RouterLink to="/calculator/food" class="calc-link">
+                <span class="calc-text">Food</span>
+              </RouterLink>
+            </div>
 
-              <div class="nav-box" :class="{ active: currentCalculator === 'shopping' }">
-                <RouterLink to="/calculator/shopping" class="calc-link">
-                  <span class="calc-text">Shopping</span>
-                </RouterLink>
-              </div>
+            <div class="nav-box" :class="{ active: currentCalculator === 'shopping' }">
+              <RouterLink to="/calculator/shopping" class="calc-link">
+                <span class="calc-text">Shopping</span>
+              </RouterLink>
             </div>
           </div>
         </div>
+      </div>
+      <div class="content-box">
+        <div class="main-title">Carbon Calculator</div>
         <div class="main-content-box">
           <!-- Calculator Content -->
           <div class="calculator-content">
@@ -70,7 +70,8 @@
 
     <Footer />
 
-
+    <!-- 聊天机器人组件 -->
+    <ChatBot />
   </div>
 </template>
 
@@ -83,6 +84,7 @@ import HouseholdCalculator from './HouseholdCalculator.vue'
 import FoodCalculator from './food/FoodCalculator.vue'
 import ShoppingCalculator from './shopping/ShoppingCalculator.vue'
 import Footer from './components/footer.vue'
+import ChatBot from './components/ChatBot.vue'
 
 const route = useRoute()
 
@@ -291,6 +293,7 @@ onMounted(() => {
   color: #3d7c4a;
   text-transform: uppercase;
   transition: all 0.3s ease;
+  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
 }
 
 
@@ -382,19 +385,21 @@ onMounted(() => {
   width: 90%;
   flex: 1;
   min-height: calc(100vh - 200px);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   margin: 140px auto 200px auto;
   padding: 20px 40px;
   position: relative;
   z-index: 2;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   text-align: center;
   transition: all 0.3s ease;
+  gap: 40px;
 }
 
 .main-box:hover {
@@ -408,16 +413,17 @@ onMounted(() => {
   font-weight: 700;
   color: #000;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-/* Layout */
-.btn-content-box {
+/* Content box - 第二个容器 */
+.content-box {
+  flex: 1;
   display: flex;
-  width: 100%;
-  gap: 40px;
-  margin-top: 20px;
-  align-items: stretch;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .btn-box {
@@ -425,10 +431,9 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   transition: all 0.3s ease;
-  min-height: 100%;
-  padding-top: 30px;
+  height: 100%;
 }
 
 .main-content-box {
@@ -438,12 +443,13 @@ onMounted(() => {
   width: 100%;
   opacity: 1;
   border-radius: 20px;
-  overflow: visible;
+  overflow: hidden;
   min-height: 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 </style>

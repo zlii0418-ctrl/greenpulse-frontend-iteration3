@@ -73,12 +73,16 @@
     </button>
 
       <Footer />
+      
+      <!-- 聊天机器人组件 -->
+      <ChatBot />
   </div>
 </template>
 
 <script setup lang="ts">
   import Header from './components/header.vue'
   import Footer from './components/footer.vue'
+  import ChatBot from './components/ChatBot.vue'
   import { toolsCards } from '@/data/toolsCards'
   import { useRouter } from 'vue-router'
 
@@ -446,14 +450,15 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #00b894, #00cec9);
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 25px;
+  backdrop-filter: blur(10px);
   color: white;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   opacity: 0.9;
 }
@@ -467,14 +472,15 @@
 /* Go to Calculate按钮样式 */
 .go-calculate-btn {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #0984e3, #74b9ff);
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 25px;
+  backdrop-filter: blur(10px);
   color: white;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(9, 132, 227, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   opacity: 0.9;
 }
@@ -488,9 +494,10 @@
 /* 最后一个卡片的单个Go to Calculate按钮样式 */
 .single-calculate-btn {
   padding: 0.75rem 2rem;
-  background: linear-gradient(135deg, #0984e3, #74b9ff);
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 25px;
+  backdrop-filter: blur(10px);
   color: white;
   font-size: 1.1rem;
   font-weight: 500;
@@ -513,9 +520,10 @@
   right: 2rem;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #00b894, #00cec9);
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
+  backdrop-filter: blur(10px);
   color: white;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);

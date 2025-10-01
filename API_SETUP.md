@@ -14,7 +14,7 @@ The application uses a flexible API configuration that automatically adapts to d
 
 ### Local Development
 
-For local development, the application automatically uses a proxy configuration that forwards all `/api/*` requests to the production backend (`https://gp-backend-iter3.vercel.app`).
+For local development, the application automatically uses a proxy configuration that forwards all `/api/*` requests to the production backend (`https://gp-backend-iter2.vercel.app`).
 
 **No additional setup required** - just run:
 ```bash
@@ -51,7 +51,7 @@ The production deployment automatically uses the configured API URL from `vercel
 The API configuration automatically detects the environment:
 
 1. **Development Mode**: Uses empty baseURL (relies on Vite proxy)
-2. **Production Mode**: Uses `https://gp-backend-iter3.vercel.app`
+2. **Production Mode**: Uses `https://gp-backend-iter2.vercel.app`
 3. **Custom Environment**: Uses `VITE_API_URL` if set
 
 ### Vite Proxy (`vite.config.ts`)
@@ -143,7 +143,7 @@ The application uses the following API endpoints:
 
 | Variable | Description | Default (Development) | Default (Production) |
 |----------|-------------|----------------------|---------------------|
-| `VITE_API_URL` | API base URL | Empty (uses proxy) | `https://gp-backend-iter3.vercel.app` |
+| `VITE_API_URL` | API base URL | Empty (uses proxy) | `https://gp-backend-iter2.vercel.app` |
 
 ## Best Practices
 

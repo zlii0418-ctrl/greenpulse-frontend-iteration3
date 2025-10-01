@@ -339,6 +339,7 @@
         </div>
       </div>
 
+    <!-- 聊天机器人组件 -->
   </div>
 </template>
 
@@ -1067,6 +1068,8 @@ foodQuestions.forEach(question => {
   flex: 1;
   justify-content: center;
   padding-top: 30px;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .title-container {
@@ -1080,7 +1083,7 @@ foodQuestions.forEach(question => {
   width: 100%;
   color: #000;
   font-size: 32px;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   text-align: center;
   line-height: 1.2;
@@ -1100,7 +1103,7 @@ foodQuestions.forEach(question => {
   width: 100%;
   color: #666;
   font-size: 16px;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 400;
   text-align: center;
   line-height: 1.4;
@@ -1194,7 +1197,7 @@ foodQuestions.forEach(question => {
   font-weight: 500;
   color: #333;
   flex: 1;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 /* 滑块样式 */
@@ -1207,6 +1210,9 @@ foodQuestions.forEach(question => {
   padding: 0 20px;
   margin-left: 60px;
   margin-right: 60px;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 .slider-group {
@@ -1223,7 +1229,7 @@ foodQuestions.forEach(question => {
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   flex: 1;
   min-width: 0;
 }
@@ -1235,7 +1241,7 @@ foodQuestions.forEach(question => {
   font-size: 18px;
   font-weight: 600;
   white-space: nowrap;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   color: black;
 }
 
@@ -1287,15 +1293,15 @@ foodQuestions.forEach(question => {
   font-weight: 500;
   position: relative;
   top: 20px;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .min-label {
-  color: #999;
+  color: white;
 }
 
 .max-label {
-  color: #999;
+  color: white;
 }
 
 .current-value {
@@ -1313,7 +1319,7 @@ foodQuestions.forEach(question => {
   z-index: 10;
   pointer-events: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .current-value::before {
@@ -1335,7 +1341,7 @@ foodQuestions.forEach(question => {
   font-size: 14px;
   color: #666;
   font-weight: 500;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .gradient-slider {
@@ -1410,7 +1416,7 @@ foodQuestions.forEach(question => {
   color: #333;
   min-width: 200px;
   text-align: left;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .input-wrapper {
@@ -1428,7 +1434,7 @@ foodQuestions.forEach(question => {
   font-size: 1rem;
   outline: none;
   transition: border-color 0.3s ease;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .text-input:focus {
@@ -1440,7 +1446,7 @@ foodQuestions.forEach(question => {
   color: #666;
   font-size: 1.1rem;
   white-space: nowrap;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .progress-container {
@@ -1473,7 +1479,7 @@ foodQuestions.forEach(question => {
   color: rgba(61, 124, 74, 0.8);
   font-weight: 600;
   text-align: center;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .navigation-container {
@@ -1527,7 +1533,7 @@ foodQuestions.forEach(question => {
 }
 .unit-box {
   font-size: 24px;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   color: black;
 }
 
@@ -1594,7 +1600,7 @@ foodQuestions.forEach(question => {
   background: linear-gradient(135deg, #3d7c4a, #2d5a37);
   box-shadow: 0 4px 15px rgba(61, 124, 74, 0.3);
   cursor: pointer;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   min-width: 400px;
   width: 100%;
   max-width: 500px;
@@ -1625,20 +1631,21 @@ foodQuestions.forEach(question => {
   z-index: 10000;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 0px;
+  padding: 20px;
+  padding-top: 5px;
 }
 
 .modal-content {
   background: white;
-  padding: 40px;
+  padding: 10px;
   border-radius: 20px;
   max-width: 700px;
   width: 90%;
   height: auto;
-  max-height: 55vh;
-  min-height: 400px;
+  max-height: calc(100vh - 150px);
+  min-height: 250px;
   overflow: hidden;
-  font-family: "DengXian", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   box-shadow: 0 12px 48px rgba(0,0,0,0.2);
   border: 1px solid rgba(255,255,255,0.2);
   display: flex;
@@ -1647,20 +1654,20 @@ foodQuestions.forEach(question => {
 
 .modal-content h3 {
   color: rgba(61, 124, 74, 1);
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 18px;
+  margin-bottom: 10px;
   text-align: center;
   border-bottom: 2px solid rgba(61, 124, 74, 0.2);
-  padding-bottom: 10px;
+  padding-bottom: 6px;
 }
 
 .modal-section {
-  margin-bottom: 35px;
+  margin-bottom: 12px;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
-  max-height: 400px;
+  max-height: 200px;
 }
 
 /* Allow dropdown to overflow in detail sections */
@@ -1700,13 +1707,13 @@ foodQuestions.forEach(question => {
 .detail-header {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 
-    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .header-icon-container {
@@ -1733,7 +1740,7 @@ foodQuestions.forEach(question => {
   font-weight: 600;
   color: #333;
   font-size: 14px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .add-button {
@@ -1783,12 +1790,12 @@ foodQuestions.forEach(question => {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 
-    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .row-number {
@@ -1803,7 +1810,7 @@ foodQuestions.forEach(question => {
   font-weight: 600;
   margin-right: 20px;
   font-size: 14px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .name-select {
@@ -1819,7 +1826,7 @@ foodQuestions.forEach(question => {
   font-size: 13px;
   min-width: 200px;
   width: 100%;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   color: black;
 }
 
@@ -1835,7 +1842,7 @@ foodQuestions.forEach(question => {
   background: rgba(255, 255, 255, 0.8);
   font-size: 13px;
   width: 100%;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .custom-input:focus,
@@ -1852,7 +1859,7 @@ foodQuestions.forEach(question => {
   padding: 5px 10px;
   border-radius: 6px;
   transition: all 0.3s ease;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .delete-button:hover {
@@ -1879,7 +1886,7 @@ foodQuestions.forEach(question => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   min-width: 100px;
 }
 
@@ -1919,13 +1926,13 @@ foodQuestions.forEach(question => {
   color: #e53e3e;
   font-size: 12px;
   margin-top: 4px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .loading-text {
   color: #666;
   font-size: 12px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 /* 动物产品详情样式 */
@@ -1936,13 +1943,13 @@ foodQuestions.forEach(question => {
 .animal-product-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.3);
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 
-    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .product-name {
@@ -1955,7 +1962,7 @@ foodQuestions.forEach(question => {
   font-weight: 600;
   color: #333;
   font-size: 14px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .product-slider {
@@ -2028,13 +2035,13 @@ foodQuestions.forEach(question => {
 .fruit-veg-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.3);
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 
-    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .item-name {
@@ -2047,7 +2054,7 @@ foodQuestions.forEach(question => {
   font-weight: 600;
   color: #333;
   font-size: 14px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .item-slider {
@@ -2120,13 +2127,13 @@ foodQuestions.forEach(question => {
 .grain-staple-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.3);
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  box-shadow: 
-    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .grain-staple-row .item-name {
@@ -2139,7 +2146,7 @@ foodQuestions.forEach(question => {
   font-weight: 600;
   color: #333;
   font-size: 14px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .grain-staple-row .item-slider {

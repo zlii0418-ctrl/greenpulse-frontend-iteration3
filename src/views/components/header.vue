@@ -10,12 +10,38 @@
       <nav class="header__nav">
         <RouterLink to="/" class="header__nav-link">HOME</RouterLink>
         <RouterLink to="/guide" class="header__nav-link">Guide</RouterLink>
-        <RouterLink to="/calculator/travel" class="header__nav-link">Calculator</RouterLink>
+        <div class="header__dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
+          <button class="header__dropdown-trigger" @click="toggleDropdown">Calculator</button>
+          <div class="header__dropdown-menu" :class="{ 'show': isDropdownOpen }">
+            <RouterLink to="/calculator/travel" class="header__dropdown-item" @click="hideDropdown">Travel</RouterLink>
+            <RouterLink to="/calculator/household" class="header__dropdown-item" @click="hideDropdown">Household</RouterLink>
+            <RouterLink to="/calculator/food" class="header__dropdown-item" @click="hideDropdown">Food</RouterLink>
+            <RouterLink to="/calculator/shopping" class="header__dropdown-item" @click="hideDropdown">Shopping</RouterLink>
+          </div>
+        </div>
         <a href="#" class="header__nav-link">Language</a>
       </nav>
     </div>
   </header>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+
+const isDropdownOpen = ref(false)
+
+const showDropdown = () => {
+  isDropdownOpen.value = true
+}
+
+const hideDropdown = () => {
+  isDropdownOpen.value = false
+}
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value
+}
+</script>
 
 <style scoped>
 
@@ -107,6 +133,81 @@
 .header__nav-link.router-link-active {
   color: rgba(255, 255, 255, 1);
   font-weight: 600;
+}
+
+/* Dropdown Styles */
+.header__dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.header__dropdown-trigger {
+  color: rgba(255, 255, 255, 1);
+  font-size: 1rem;
+  font-family: 'EB Garamond', serif;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.header__dropdown-trigger:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.header__dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 150px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1000;
+}
+
+.header__dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.header__dropdown-item {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header__dropdown-item:hover {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.header__dropdown-item.router-link-active {
+  color: rgba(255, 255, 255, 1);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 /* Animations */

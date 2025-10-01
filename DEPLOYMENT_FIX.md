@@ -13,7 +13,7 @@ Added a `vercel.json` file to set the environment variable in production:
 ```json
 {
   "env": {
-    "VITE_API_URL": "https://gp-backend-iter3.vercel.app"
+    "VITE_API_URL": "https://gp-backend-iter2.vercel.app"
   }
 }
 ```
@@ -43,7 +43,7 @@ Updated all API functions to use the configured `api` instance instead of the de
    If you prefer to set the environment variable manually in Vercel Dashboard:
    - Go to your project in Vercel Dashboard
    - Navigate to Settings → Environment Variables
-   - Add: `VITE_API_URL` = `https://gp-backend-iter3.vercel.app`
+   - Add: `VITE_API_URL` = `https://gp-backend-iter2.vercel.app`
    - Redeploy the project
 
 ## Verification

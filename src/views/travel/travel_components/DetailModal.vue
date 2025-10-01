@@ -444,18 +444,19 @@ const showToastMessage = (message: string) => {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 0px 20px 20px 20px;
+  padding: 20px;
+  padding-top: 5px;
   z-index: 10000;
   overflow-y: auto;
 }
 
 .modal-container {
-  background: rgba(255, 255, 255, 0.95);
+  background: white;
   border-radius: 20px;
   width: 95%;
   max-width: 900px;
-  max-height: calc(100vh - 80px);
-  min-height: 400px;
+  max-height: calc(100vh - 120px);
+  min-height: 250px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -473,18 +474,18 @@ const showToastMessage = (message: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 30px;
+  padding: 10px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.8));
   border-radius: 20px 20px 0 0;
 }
 
 .modal-title {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
   color: #2d3748;
   margin: 0;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .close-button {
@@ -518,12 +519,12 @@ const showToastMessage = (message: string) => {
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 10px;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
-  max-height: calc(100vh - 180px); /* Account for header, footer, and padding */
+  max-height: calc(100vh - 200px); /* Account for header, footer, and padding */
 }
 
 /* Show scrollbar for modal body */
@@ -567,8 +568,8 @@ const showToastMessage = (message: string) => {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 20px;
-  padding: 15px;
+  margin-bottom: 12px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 12px;
   box-shadow: 
@@ -622,7 +623,7 @@ const showToastMessage = (message: string) => {
   font-size: 14px;
   font-weight: 600;
   color: #2d3748;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .label-text:nth-child(2) {
@@ -649,7 +650,7 @@ const showToastMessage = (message: string) => {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
-  padding: 15px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   box-shadow: 
@@ -687,7 +688,7 @@ const showToastMessage = (message: string) => {
   font-size: 13px;
   color: #666;
   font-style: italic;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .custom-select {
@@ -698,7 +699,7 @@ const showToastMessage = (message: string) => {
   font-size: 13px;
   min-width: 120px;
   color: black;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .distance-slider {
@@ -853,7 +854,7 @@ const showToastMessage = (message: string) => {
   font-size: 12px;
   color: white;
   font-weight: bold;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 /* Info popup styles */
@@ -876,7 +877,7 @@ const showToastMessage = (message: string) => {
   border-radius: 20px;
   max-width: 500px;
   width: 90%;
-  max-height: 80vh;
+  max-height: calc(100vh - 150px);
   overflow-y: auto;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -885,11 +886,11 @@ const showToastMessage = (message: string) => {
 .info-popup h3 {
   color: rgba(61, 124, 74, 1);
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   text-align: center;
   border-bottom: 2px solid rgba(61, 124, 74, 0.2);
   padding-bottom: 10px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .popup-section {
@@ -901,7 +902,7 @@ const showToastMessage = (message: string) => {
   font-size: 18px;
   margin-bottom: 10px;
   font-weight: 600;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .popup-section p {
@@ -909,7 +910,7 @@ const showToastMessage = (message: string) => {
   font-size: 14px;
   line-height: 1.5;
   color: #333;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .popup-close-btn {
@@ -923,7 +924,7 @@ const showToastMessage = (message: string) => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .popup-close-btn:hover {
@@ -937,7 +938,7 @@ const showToastMessage = (message: string) => {
   justify-content: space-between;
   font-size: 12px;
   color: #666;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .distance-value {
@@ -946,7 +947,7 @@ const showToastMessage = (message: string) => {
 }
 
 .distance-unit {
-  color: #999;
+  color: white;
 }
 
 .delete-button {
@@ -956,7 +957,7 @@ const showToastMessage = (message: string) => {
   padding: 5px 10px;
   border-radius: 6px;
   transition: all 0.3s ease;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .delete-button:hover {
@@ -973,7 +974,7 @@ const showToastMessage = (message: string) => {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
-  padding: 15px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   box-shadow: 
@@ -987,7 +988,7 @@ const showToastMessage = (message: string) => {
   font-weight: 600;
   color: #2d3748;
   margin-right: 20px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .transport-slider {
@@ -998,7 +999,7 @@ const showToastMessage = (message: string) => {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-  padding: 25px 30px;
+  padding: 10px 15px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8));
   border-radius: 0 0 20px 20px;
@@ -1013,7 +1014,7 @@ const showToastMessage = (message: string) => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   min-width: 100px;
 }
 

@@ -69,12 +69,16 @@
         <Footer/>
       </div>
     </div>
+    
+    <!-- 聊天机器人组件 -->
+    <ChatBot />
   </div>
 </template>
 
 <script>
 import Header from './components/header.vue'
 import Footer from './components/footer.vue'
+import ChatBot from './components/ChatBot.vue'
 import { RouterLink } from 'vue-router'
 
 import homeSlide1 from '@/assets/img/home_slide_1.png'
@@ -86,6 +90,7 @@ export default {
   components: {
     Header,
     Footer,
+    ChatBot,
   },
   name: 'Home',
   data() {
@@ -103,16 +108,16 @@ export default {
         },
         {
           id: 2,
-          title: 'Green Challenge',
-          description: 'Make environmental protection a fun challenge! Team up with friends, colleagues, or your community to complete tasks like energy conservation and plastic reduction, green travel, and more to earn points and unlock achievements. Every small change is a big step towards a more sustainable future.',
+          title: 'Green AI Chatbot',
+          description: "Embark on a green future with AI! Whether it's energy conservation and emissions reduction or eco-friendly transportation, chatbots provide real-time personalized recommendations to help you effortlessly take every step toward green action. Reduce your carbon footprint and safeguard a sustainable future",
           image: homeSlide2,
           buttonText: 'Discover More',
           buttonLink: '/coming-soon'
         },
         {
           id: 3,
-          title: 'Map',
-          description: 'Coming soon ...',
+          title: 'Green Map',
+          description: 'Discover eco-friendly spots near you! 🌍 From recycling centers and green restaurants to sustainable events, Green Map helps you easily explore and save eco-friendly locations across Malaysia. Bookmark your favorite spots for future visits and join the journey toward a more sustainable lifestyle.',
           image: homeSlide3,
           buttonText: 'Discover More',
           buttonLink: '/coming-soon'
@@ -357,7 +362,7 @@ export default {
 .box-left,
 .box-right {
   flex: 1;
-  height: 350px;
+  height: 450px;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -488,6 +493,11 @@ export default {
   justify-content: flex-start;
   scrollbar-width: thin;
   scrollbar-color: rgba(34, 139, 34, 0.3) transparent;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  min-height: 440px;
 }
 
 .images-container::-webkit-scrollbar {
@@ -510,14 +520,17 @@ export default {
 .slide-image {
   position: relative;
   width: 320px;
-  height: 100%;
-  background-size: cover;
+  height: 400px;
+  background-size: cover !important;
   background-position: center;
   background-repeat: no-repeat;
   flex-shrink: 0;
   border-radius: 15px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .slide-image.active {
@@ -600,7 +613,7 @@ export default {
 
   .images-container {
     height: auto;
-    min-height: 320px;
+    min-height: 280px;
     padding: 10px;
     gap: 8px;
     align-items: flex-start;
@@ -608,7 +621,7 @@ export default {
 
   .slider-container {
     gap: 10px;
-    height: 320px;
+    height: 280px;
   }
 }
 
@@ -635,14 +648,14 @@ export default {
   }
 
   .images-container {
-    min-height: 420px;
+    min-height: 390px;
     padding: 18px;
     align-items: flex-start;
   }
 
   .slider-container {
     gap: 15px;
-    height: 420px;
+    height: 390px;
   }
 }
 
@@ -700,7 +713,7 @@ export default {
   }
 
   .images-container {
-    min-height: 270px;
+    min-height: 230px;
     padding: 8px;
     gap: 6px;
     align-items: flex-start;
@@ -708,32 +721,27 @@ export default {
 
   .slider-container {
     gap: 8px;
-    height: 270px;
+    height: 230px;
   }
 }
 
 
 .cta-button {
-  background: rgba(255, 255, 255, 0.3); /* 白色背景，30%透明度 */
+  background: rgba(255, 255, 255, 0.08);
   height: 60px;
   width: 200px;
   margin: 40px auto;
   position: relative;
   z-index: 1;
   border-radius: 40px; /* 高度的一半，使两侧成为半圆 */
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    0 10px 20px rgba(0, 0, 0, 0.2),
-    0 5px 10px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
 }
 

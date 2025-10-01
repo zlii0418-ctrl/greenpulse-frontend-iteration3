@@ -65,7 +65,7 @@
                 <span class="text_6">unit: km</span>
               </div>
             </div>
-            <div class="group2-delete" row="1" style="color: darkgray;font-size: 12px;cursor: pointer;">Delete</div>
+            <div class="group2-delete" row="1" style="color: white;font-size: 12px;cursor: pointer;">Delete</div>
           </div>
           <div class="group_2 flex-row">
             <div class="text-wrapper_3 flex-col">
@@ -108,7 +108,7 @@
                 <span class="text_9">unit: km</span>
               </div>
             </div>
-            <div class="group2-delete" row="2" style="color: darkgray;font-size: 12px;cursor: pointer;">Delete</div>
+            <div class="group2-delete" row="2" style="color: white;font-size: 12px;cursor: pointer;">Delete</div>
           </div>
           <div class="group_2 flex-row">
             <div class="text-wrapper_5 flex-col">
@@ -152,7 +152,7 @@
                 <span class="text_12">unit: km</span>
               </div>
             </div>
-            <div class="group2-delete" row="3" style="color: darkgray;font-size: 12px;cursor: pointer;">Delete</div>
+            <div class="group2-delete" row="3" style="color: white;font-size: 12px;cursor: pointer;">Delete</div>
           </div>
           
         </div>
@@ -211,7 +211,7 @@
                 <span class="text_17">unit: km</span>
               </div>
             </div>
-            <div class="section4-delete" row="1" style="color: darkgray;font-size: 12px;cursor: pointer;">Delete</div>
+            <div class="section4-delete" row="1" style="color: white;font-size: 12px;cursor: pointer;">Delete</div>
           </div>
           <div class="section_4 flex-row">
             <div class="text-wrapper_8 flex-col">
@@ -243,7 +243,7 @@
                 <span class="text_20">unit: km</span>
               </div>
             </div>
-            <div class="section4-delete" row="1" style="color: darkgray;font-size: 12px;cursor: pointer;">Delete</div>
+            <div class="section4-delete" row="1" style="color: white;font-size: 12px;cursor: pointer;">Delete</div>
           </div>
 
         </div>
@@ -323,6 +323,8 @@
             </div>
         </div>
       </div>
+      
+      <!-- 聊天机器人组件 -->
     </div>
 </template>
 
@@ -536,7 +538,7 @@ function g2AddRow(): void {
               <span class="text_9">unit: km</span>
             </div>
           </div>
-          <div class="group2-delete" row="${row}" style="color: darkgray;font-size: 12px;cursor: pointer;">Delete</div>`;
+          <div class="group2-delete" row="${row}" style="color: white;font-size: 12px;cursor: pointer;">Delete</div>`;
   group2.innerHTML = html;
   // Ensure scoped styles apply to dynamically created nodes by copying the component's data-v-* attribute
   applyScopedAttribute(group2);
@@ -666,7 +668,7 @@ function section4AddRow(): void {
               <span class="text_20">unit: km</span>
             </div>
           </div>
-          <div class="section4-delete" row="${row}" style="color: darkgray;font-size: 12px;cursor: pointer;">Delete</div>`;
+          <div class="section4-delete" row="${row}" style="color: white;font-size: 12px;cursor: pointer;">Delete</div>`;
   section4.innerHTML = html;
   // Ensure scoped styles apply to dynamically created nodes by copying the component's data-v-* attribute
   applyScopedAttribute(section4);
@@ -1786,6 +1788,7 @@ onMounted(() => {
   max-width: 700px;
   width: 90%;
   height: auto;
+  max-height: calc(100vh - 150px);
   overflow-y: auto;
   font-family: Inter-Regular, sans-serif;
   box-shadow: 0 12px 48px rgba(0,0,0,0.2);

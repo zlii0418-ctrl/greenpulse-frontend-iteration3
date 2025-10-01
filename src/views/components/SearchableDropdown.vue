@@ -239,15 +239,14 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid rgba(61, 124, 74, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 12px 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 
-    0 2px 8px rgba(61, 124, 74, 0.1),
-    inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .dropdown-trigger:hover {
@@ -272,7 +271,7 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: 500;
   color: #2d3748;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .search-input::placeholder {
@@ -335,17 +334,15 @@ onUnmounted(() => {
   top: 100%;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.98);
-  border: 2px solid rgba(61, 124, 74, 0.3);
+  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   margin-top: 4px;
   max-height: 200px;
   overflow-y: auto;
   z-index: 99999;
-  box-shadow: 
-    0 8px 24px rgba(61, 124, 74, 0.15),
-    0 2px 8px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
 }
 
 
@@ -358,7 +355,7 @@ onUnmounted(() => {
   color: #2d3748;
   transition: all 0.2s ease;
   border-bottom: 1px solid rgba(61, 124, 74, 0.1);
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .dropdown-option:last-child {
@@ -383,7 +380,7 @@ onUnmounted(() => {
   color: #a0aec0;
   font-size: 14px;
   font-style: italic;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .is-disabled .dropdown-trigger {

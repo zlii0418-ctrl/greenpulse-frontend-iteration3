@@ -7,11 +7,15 @@
     <div class="coming-soon-icon">
       <img :src="getIcon()" :alt="type + ' icon'" class="feature-icon" />
     </div>
+    
+    <!-- 聊天机器人组件 -->
+    <ChatBot />
   </main>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import ChatBot from './components/ChatBot.vue'
 
 interface Props {
   type?: string

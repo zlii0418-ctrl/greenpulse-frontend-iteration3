@@ -21,11 +21,15 @@
     </main>
 
     <Footer />
+    
+    <!-- 聊天机器人组件 -->
+    <ChatBot />
 </template>
 
 <script setup lang="ts">
 import Header from './components/header.vue'
 import Footer from './components/footer.vue'
+import ChatBot from './components/ChatBot.vue'
 
 </script>
 

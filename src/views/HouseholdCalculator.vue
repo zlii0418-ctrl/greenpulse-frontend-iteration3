@@ -83,6 +83,8 @@
     <div v-if="calculationError" class="error-message">
       {{ calculationError }}
     </div>
+    
+    <!-- 聊天机器人组件 -->
   </div>
 </template>
 
@@ -190,6 +192,8 @@ const getSliderProgress = (slider: any) => {
   flex: 1;
   justify-content: center;
   padding-top: 30px;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .title-container {
@@ -203,7 +207,7 @@ const getSliderProgress = (slider: any) => {
   width: 100%;
   color: #000;
   font-size: 32px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   text-align: center;
   line-height: 1.2;
@@ -220,6 +224,9 @@ const getSliderProgress = (slider: any) => {
   padding: 0 20px;
   margin-left: 60px;
   margin-right: 60px;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 .slider-group {
@@ -303,11 +310,11 @@ const getSliderProgress = (slider: any) => {
 }
 
 .min-label {
-  color: #999;
+  color: white;
 }
 
 .max-label {
-  color: #999;
+  color: white;
 }
 
 .current-value {
@@ -469,12 +476,12 @@ const getSliderProgress = (slider: any) => {
   font-size: 14px;
   margin-top: 10px;
   text-align: center;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 .loading-text {
   color: #666;
   font-size: 12px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 </style>

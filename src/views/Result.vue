@@ -189,6 +189,28 @@
         </div> <!-- End of results content -->
       </div>
 
+    <!-- 聊天机器人组件 -->
+    <ChatBot />
+
+    <!-- 计算器按钮组 -->
+    <div class="calculator-buttons">
+      <button class="calc-button" @click="navigateToCalculator('travel')">
+        <div class="button-icon">🚗</div>
+        <div class="button-text">Travel</div>
+      </button>
+      <button class="calc-button" @click="navigateToCalculator('household')">
+        <div class="button-icon">🏠</div>
+        <div class="button-text">Household</div>
+      </button>
+      <button class="calc-button" @click="navigateToCalculator('shopping')">
+        <div class="button-icon">🛒</div>
+        <div class="button-text">Shopping</div>
+      </button>
+      <button class="calc-button" @click="navigateToCalculator('food')">
+        <div class="button-icon">🍽️</div>
+        <div class="button-text">Food</div>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -196,6 +218,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import ChatBot from './components/ChatBot.vue'
 import Header from '@/views/components/header.vue'
 // Disabled: Non-API calculations are not allowed
 // import '@/scripts/calculator.js'
@@ -376,6 +399,11 @@ function navigateToRecommendations() {
       calculationData: calculationData ? JSON.stringify(calculationData) : undefined
     }
   })
+}
+
+// Function to navigate to calculator pages
+function navigateToCalculator(type: string) {
+  router.push(`/calculator/${type}`)
 }
 
 // API calculation functions
@@ -1420,7 +1448,7 @@ if (typeof window !== 'undefined') {
 .result-page {
   width: 100%;
   min-height: 100vh;
-  background-image: url('@/assets/img/result.png');
+  background-image: url('@/assets/img/result_bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1480,7 +1508,7 @@ if (typeof window !== 'undefined') {
 /* Title */
 .result-title {
   font-size: 36px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 800;
   color: rgba(255, 255, 255, 1);
   margin-bottom: 8px;
@@ -1490,7 +1518,7 @@ if (typeof window !== 'undefined') {
 /* Description */
 .result-description {
   font-size: 24px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   color: rgba(255, 255, 255, 1);
   margin-bottom: 12px;
@@ -1509,7 +1537,7 @@ if (typeof window !== 'undefined') {
 
 .footprint-value {
   font-size: 32px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   color: rgba(255, 255, 255, 1);
   text-align: center;
@@ -1547,7 +1575,7 @@ if (typeof window !== 'undefined') {
 
 .section-title {
   font-size: 20px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   color: rgba(255, 255, 255, 1);
   margin-bottom: 20px;
@@ -1574,7 +1602,7 @@ if (typeof window !== 'undefined') {
 
 .breakdown-label {
   font-size: 16px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
   text-align: left;
@@ -1582,7 +1610,7 @@ if (typeof window !== 'undefined') {
 
 .breakdown-value {
   font-size: 16px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   color: rgba(255, 255, 255, 1);
   text-align: right;
@@ -1598,7 +1626,7 @@ if (typeof window !== 'undefined') {
 
 .trees-message p {
   font-size: 22px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   color: rgba(255, 255, 255, 1);
   margin: 10px 0;
@@ -1608,7 +1636,7 @@ if (typeof window !== 'undefined') {
 
 .trees-value {
   font-size: 28px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   color: rgba(255, 255, 255, 1);
   background-color: rgba(61, 124, 74, 0.9);
@@ -1693,7 +1721,7 @@ if (typeof window !== 'undefined') {
 
 .trees-overflow-text {
   font-size: 16px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   color: rgba(255, 255, 255, 1);
   text-align: center;
@@ -1716,7 +1744,7 @@ if (typeof window !== 'undefined') {
   padding: 18px 40px;
   border-radius: 35px;
   font-size: 20px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2052,7 +2080,7 @@ if (typeof window !== 'undefined') {
   color: rgba(255, 255, 255, 0.8);
   margin-top: 0.5rem;
   font-weight: 400;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
 }
 
 /* 返回按钮容器样式 */
@@ -2201,7 +2229,7 @@ if (typeof window !== 'undefined') {
 
 .loading-text {
   font-size: 20px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   color: rgba(255, 255, 255, 1);
   margin: 0;
@@ -2221,7 +2249,7 @@ if (typeof window !== 'undefined') {
 
 .error-title {
   font-size: 28px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   color: rgba(255, 255, 255, 1);
   margin: 0 0 15px 0;
@@ -2229,7 +2257,7 @@ if (typeof window !== 'undefined') {
 
 .error-message {
   font-size: 18px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
   margin: 0 0 25px 0;
@@ -2243,7 +2271,7 @@ if (typeof window !== 'undefined') {
   padding: 14px 35px;
   border-radius: 25px;
   font-size: 16px;
-  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -2259,5 +2287,158 @@ if (typeof window !== 'undefined') {
 .retry-button:active {
   transform: translateY(0);
   box-shadow: 0 4px 15px rgba(61, 124, 74, 0.3);
+}
+
+/* Calculator Buttons */
+.calculator-buttons {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.calc-button {
+  background: linear-gradient(135deg, 
+    rgba(61, 124, 74, 0.95) 0%, 
+    rgba(51, 104, 64, 0.95) 50%, 
+    rgba(42, 94, 54, 0.95) 100%);
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.calc-button:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 12px 30px rgba(61, 124, 74, 0.3),
+    0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.calc-button:active:not(:disabled) {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calc-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: linear-gradient(135deg,
+    rgba(150, 150, 150, 0.6) 0%,
+    rgba(180, 180, 180, 0.6) 50%,
+    rgba(200, 200, 200, 0.6) 100%);
+  transform: none;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.calc-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.calc-button:active::before {
+  width: 100px;
+  height: 100px;
+}
+
+.button-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.button-text {
+  font-size: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  line-height: 1.1;
+}
+
+/* Responsive design for calculator buttons */
+@media (max-width: 768px) {
+  .calculator-buttons {
+    right: 15px;
+    gap: 12px;
+  }
+
+  .calc-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+
+  .button-icon {
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+
+  .button-text {
+    font-size: 8px;
+  }
+
+  .calc-button:active::before {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-buttons {
+    right: 10px;
+    gap: 10px;
+  }
+
+  .calc-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+  .button-icon {
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+
+  .button-text {
+    font-size: 7px;
+  }
+
+  .calc-button:active::before {
+    width: 70px;
+    height: 70px;
+  }
 }
 </style>

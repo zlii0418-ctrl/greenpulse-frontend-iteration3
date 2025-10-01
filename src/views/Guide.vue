@@ -75,12 +75,16 @@
     </button>
 
       <Footer />
+      
+      <!-- 聊天机器人组件 -->
+      <ChatBot />
   </div>
 </template>
 
 <script setup lang="ts">
   import Header from './components/header.vue'
   import Footer from './components/footer.vue'
+  import ChatBot from './components/ChatBot.vue'
   import { toolsCards } from '@/data/toolsCards'
   import { useRouter } from 'vue-router'
 
@@ -291,12 +295,13 @@
 
 /* 碳足迹数据卡片样式 */
 .carbon-data-card {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 40px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 2.5rem 2.5rem 1.5rem 2.5rem;
   margin: 0.5rem 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
   width: 70vw;
   position: relative;
@@ -701,9 +706,10 @@
   right: 2rem;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #00b894, #00cec9);
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
+  backdrop-filter: blur(10px);
   color: white;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);

@@ -133,6 +133,8 @@
           </div>
         </div>
       </div>
+      
+      <!-- 聊天机器人组件 -->
     </div>
 </template>
 
@@ -1056,7 +1058,7 @@ body {
   left: 50%;                    /* Move to horizontal center */
   transform: translate(-50%, -50%); /* Center exactly */
   padding: 30px;                /* Optional spacing */
-  max-height: 90vh;             /* Prevent overflow */
+  max-height: calc(100vh - 150px);             /* Prevent overflow */
   overflow-y: auto;             /* Scroll inside if too tall */  
   text-align: center;
 }
