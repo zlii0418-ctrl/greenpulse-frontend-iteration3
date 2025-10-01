@@ -9,6 +9,10 @@
   },
   "rewrites": [
     {
+      "source": "/api/ai/(.*)",
+      "destination": "http://3.25.234.38:8123/api/ai/$1"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "https://gp-backend-iter2.vercel.app/api/$1"
     }
