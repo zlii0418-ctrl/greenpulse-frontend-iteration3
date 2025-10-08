@@ -6,107 +6,18 @@ import App from './App.vue'
 import router from './router'
 import { initializeAllDropdownData } from './services/dropdownData.js'
 
-// Import i18n messages
-const messages = {
-  en: {
-    common: {
-      next: "Next",
-      previous: "Previous",
-      calculate: "Calculate",
-      result: "Result",
-      back: "Back",
-      close: "Close",
-      ok: "OK",
-      cancel: "Cancel",
-      reset: "Reset",
-      loading: "Loading..."
-    },
-    navigation: {
-      home: "Home",
-      travelCalculator: "Travel Calculator",
-      householdCalculator: "Household Calculator",
-      disclaimer: "Disclaimer"
-    },
-    footer: {
-      quickLinks: "Quick Links",
-      travelCalculator: "Travel Calculator",
-      householdCalculator: "Household Calculator",
-      disclaimer: "Disclaimer",
-      switchLanguage: "Switch Language"
-    },
-    result: {
-      travelResult: "Travel Result",
-      householdResult: "Household Result",
-      shoppingResult: "Shopping Result",
-      foodResult: "Food Carbon Footprint",
-      weeklyFootprint: "Your total weekly carbon footprint for this category is",
-      monthlyFootprint: "Your total monthly carbon footprint for household activities is",
-      shoppingFootprint: "Your monthly carbon footprint from shopping is",
-      foodFootprint: "Your weekly carbon footprint from food consumption is",
-      perWeek: "(per week)",
-      perMonth: "(per month)",
-      treePlanting: "You would need to plant approximately",
-      trees: "tree saplings",
-      annually: "annually",
-      tenYears: "for 10 years",
-      toAbsorb: "to absorb",
-      monthlyCO2: "monthly CO2 amount",
-      weeklyCO2: "amount of CO2"
-    }
-  },
-  ms: {
-    common: {
-      next: "Seterusnya",
-      previous: "Kembali",
-      calculate: "Kira",
-      result: "Keputusan",
-      back: "Kembali",
-      close: "Tutup",
-      ok: "OK",
-      cancel: "Batal",
-      reset: "Tetap Semula",
-      loading: "Memuatkan..."
-    },
-    navigation: {
-      home: "Laman Utama",
-      travelCalculator: "Kalkulator Perjalanan",
-      householdCalculator: "Kalkulator Rumah Tangga",
-      disclaimer: "Penafian"
-    },
-    footer: {
-      quickLinks: "Pautan Cepat",
-      travelCalculator: "Kalkulator Perjalanan",
-      householdCalculator: "Kalkulator Rumah Tangga",
-      disclaimer: "Penafian",
-      switchLanguage: "Tukar Bahasa"
-    },
-    result: {
-      travelResult: "Keputusan Perjalanan",
-      householdResult: "Keputusan Rumah Tangga",
-      shoppingResult: "Keputusan Membeli-belah",
-      foodResult: "Jejak Karbon Makanan",
-      weeklyFootprint: "Jumlah jejak karbon mingguan anda untuk kategori ini adalah",
-      monthlyFootprint: "Jumlah jejak karbon bulanan anda untuk aktiviti rumah tangga adalah",
-      shoppingFootprint: "Jumlah jejak karbon bulanan anda dari membeli-belah adalah",
-      foodFootprint: "Jumlah jejak karbon mingguan anda dari pengambilan makanan adalah",
-      perWeek: "(seminggu)",
-      perMonth: "(sebulan)",
-      treePlanting: "Anda perlu menanam kira-kira",
-      trees: "pokok anak benih",
-      annually: "setiap tahun",
-      tenYears: "untuk 10 tahun",
-      toAbsorb: "untuk menyerap",
-      monthlyCO2: "jumlah CO2 bulanan",
-      weeklyCO2: "jumlah CO2"
-    }
-  }
-}
+// Import i18n messages from locales files
+import en from './locales/en.json'
+import ms from './locales/ms.json'
 
 const i18n = createI18n({
   legacy: false, // Use Composition API
   locale: 'en', // Default language
   fallbackLocale: 'en',
-  messages
+  messages: {
+    en,
+    ms
+  }
 })
 
 // Function to clear all localStorage data (only on client side, except dropdown data)

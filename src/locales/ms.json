@@ -25,12 +25,19 @@
   },
   "footer": {
     "quickLinks": "Pautan Cepat",
+    "home": "Laman Utama",
+    "calculator": "Kalkulator",
+    "chatbot": "Chatbot",
+    "map": "Peta",
     "travelCalculator": "Kalkulator Perjalanan",
     "householdCalculator": "Kalkulator Rumah Tangga",
+    "foodCalculator": "Kalkulator Makanan",
+    "shoppingCalculator": "Kalkulator Membeli-belah",
     "disclaimer": "Penafian",
     "switchLanguage": "Tukar Bahasa",
     "aboutGreenPulse": "Tentang GreenPulse",
-    "aboutDescription": "Untuk membantu semua orang memahami cara melindungi alam sekitar."
+    "aboutDescription": "Untuk membantu semua orang memahami cara melindungi alam sekitar.",
+    "tagline": "Membantu rakyat Malaysia menukar kesedaran kepada tindakan! Ukur jejak karbon anda, terokai penyelesaian, dan hidup secara mampan."
   },
   "home": {
     "welcome": "Selamat Datang ke GreenPulse",

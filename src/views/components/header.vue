@@ -3,7 +3,7 @@
     <div class="header__container">
       <!-- Brand -->
       <div class="header__brand">
-        <RouterLink to="/" class="header__title">GreenPulse</RouterLink>
+        <RouterLink to="/" class="header__title">GreenPluseMY</RouterLink>
       </div>
 
       <!-- Navigation Menu -->
@@ -19,6 +19,7 @@
             <RouterLink to="/calculator/shopping" class="header__dropdown-item" @click="hideDropdown">Shopping</RouterLink>
           </div>
         </div>
+        <RouterLink to="/green-places" class="header__nav-link">Green Places</RouterLink>
         <a href="#" class="header__nav-link">Language</a>
       </nav>
     </div>

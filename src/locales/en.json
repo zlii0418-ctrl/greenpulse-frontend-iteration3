@@ -25,12 +25,19 @@
   },
   "footer": {
     "quickLinks": "Quick Links",
+    "home": "Home",
+    "calculator": "Calculator",
+    "chatbot": "Chatbot",
+    "map": "Map",
     "travelCalculator": "Travel Calculator",
     "householdCalculator": "Household Calculator",
+    "foodCalculator": "Food Calculator",
+    "shoppingCalculator": "Shopping Calculator",
     "disclaimer": "Disclaimer",
     "switchLanguage": "Switch Language",
     "aboutGreenPulse": "About GreenPulse",
-    "aboutDescription": "In order to help everyone understand how to protect the environment."
+    "aboutDescription": "In order to help everyone understand how to protect the environment.",
+    "tagline": "Helping Malaysians turn awareness into action! Measure your footprint, explore solutions, and live sustainably."
   },
   "home": {
     "welcome": "Welcome to GreenPulse",

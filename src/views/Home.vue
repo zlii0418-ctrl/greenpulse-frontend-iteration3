@@ -104,7 +104,7 @@ export default {
           description: 'Want to know how much impact your daily habits have on the planet? Enter your travel, eating, and spending habits to generate your carbon footprint report with one click. It also recommends tailored emissions reduction tips, making it easier to start living green today.',
           image: homeSlide1,
           buttonText: 'Discover More',
-          buttonLink: '/guide'
+          buttonLink: '/calculator/travel'
         },
         {
           id: 2,
@@ -112,7 +112,7 @@ export default {
           description: "Embark on a green future with AI! Whether it's energy conservation and emissions reduction or eco-friendly transportation, chatbots provide real-time personalized recommendations to help you effortlessly take every step toward green action. Reduce your carbon footprint and safeguard a sustainable future",
           image: homeSlide2,
           buttonText: 'Discover More',
-          buttonLink: '/coming-soon'
+          buttonLink: '/chatbot'
         },
         {
           id: 3,
@@ -120,7 +120,7 @@ export default {
           description: 'Discover eco-friendly spots near you! 🌍 From recycling centers and green restaurants to sustainable events, Green Map helps you easily explore and save eco-friendly locations across Malaysia. Bookmark your favorite spots for future visits and join the journey toward a more sustainable lifestyle.',
           image: homeSlide3,
           buttonText: 'Discover More',
-          buttonLink: '/coming-soon'
+          buttonLink: '/green-places'
         }
       ]
     }

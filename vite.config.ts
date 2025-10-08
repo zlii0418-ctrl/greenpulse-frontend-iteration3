@@ -34,7 +34,7 @@ export default defineConfig({
             console.log('Proxying request:', req.method, req.url);
           });
         }
-      }
+      },
     }
   }
 })

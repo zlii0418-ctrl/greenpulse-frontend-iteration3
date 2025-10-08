@@ -7,6 +7,8 @@ import PublicDetailed from '@/views/travel/PublicDetailed.vue'
 import Result from '@/views/Result.vue'
 import Recommendations from '@/views/Recommendations.vue'
 import Disclaimer from '@/views/Disclaimer.vue'
+import GreenPlaces from '@/views/greenplaces/GreenPlaces.vue'
+import ChatBotFullScreen from '@/views/ChatBotFullScreen.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +26,8 @@ const router = createRouter({
       component: Calculator,
       props: true
     },
+    // 绿色地点页面
+    { path: '/green-places', name: 'green-places', component: GreenPlaces },
     // 向后兼容的路由重定向
     { path: '/travel-private', redirect: '/calculator/travel' },
     { path: '/household-calculator', redirect: '/calculator/household' },
@@ -36,7 +40,8 @@ const router = createRouter({
     { path: '/travel-result', name: 'trav-result', component: Result },
     { path: '/result', name: 'result', component: Result },
     { path: '/recommendations', name: 'recommendations', component: Recommendations },
-    { path: '/disclaimer', name: 'disclaimer', component: Disclaimer}
+    { path: '/disclaimer', name: 'disclaimer', component: Disclaimer},
+    { path: '/chatbot', name: 'chatbot', component: ChatBotFullScreen }
   ],
 })
 

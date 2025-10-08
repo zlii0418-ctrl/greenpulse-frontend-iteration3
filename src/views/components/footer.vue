@@ -2,19 +2,22 @@
   <!-- footer.html -->
   <div class="footer_block flex-col">
     <div class="footer_box">
-      <!--
-      <div class="footer-text-group_1 flex-col justify-between">
-        <span class="footer-text_1">About GreenPulse</span>
-        <span class="footer-text_2">
-          In order to help everyone understand<br />how to protect the environment.
-        </span>
+      <!-- Left Box - Logo and Brand -->
+      <div class="footer-left-box">
+        <div class="footer-brand">
+          <img src="@/assets/img/greenpulse_logo.png" alt="GreenPulse Logo" class="footer-logo" />
+          <span class="footer-brand-text">GreenPluseMY</span>
+        </div>
+        <p class="footer-tagline">{{ t('footer.tagline') }}</p>
       </div>
-      -->
-      <div class="footer-text-group_2 flex-col justify-between">
+
+      <!-- Right Box - Quick Links -->
+      <div class="footer-right-box">
         <span class="footer-text_3">{{ t('footer.quickLinks') }}</span>
-        <RouterLink to="/travel-private" class="footer-text_4">{{ t('footer.travelCalculator') }}</RouterLink>
-        <RouterLink to="/household-calculator" class="footer-text_5">{{ t('footer.householdCalculator') }}</RouterLink>
-        <RouterLink to="/disclaimer" class="footer-text_5">{{ t('footer.disclaimer') }}</RouterLink>
+        <RouterLink to="/" class="footer-text_4">{{ t('footer.home') }}</RouterLink>
+        <RouterLink to="/calculator" class="footer-text_4">{{ t('footer.calculator') }}</RouterLink>
+        <RouterLink to="/chatbot" class="footer-text_4">{{ t('footer.chatbot') }}</RouterLink>
+        <RouterLink to="/green-places" class="footer-text_4">{{ t('footer.map') }}</RouterLink>
       </div>
 
       <!-- Language Switch Button -->
@@ -74,11 +77,62 @@ onMounted(() => {
 }
 
 .footer_box {
-  width: 619px;
-  height: 114px;
-  margin: 83px auto;
+  width: 90%;
+  max-width: 1200px;
+  min-height: 114px;
+  margin: 30px auto;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Left Box Styles */
+.footer-left-box {
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.footer-brand-text {
+  color: rgba(255, 255, 255, 1);
+  font-size: 1.5rem;
+  font-family: 'EB Garamond', serif;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.footer-tagline {
+  color: rgba(255, 255, 255, 1);
+  font-size: 1rem;
+  font-family: 'EB Garamond', serif;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 400px;
+}
+
+/* Right Box Styles */
+.footer-right-box {
+  flex: 0 0 auto;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
 }
 
 .footer-text-group_1 {
@@ -130,7 +184,7 @@ onMounted(() => {
   font-family: var(--font-display);
   font-weight: var(--font-weight-extrabold);
   font-weight: normal;
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
   line-height: 24px;
   width: 100%;
@@ -143,7 +197,7 @@ onMounted(() => {
   font-size: 20px;
   font-family: 'EB Garamond', serif;
   font-weight: normal;
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
   line-height: 20px;
   margin: 0;
@@ -156,7 +210,7 @@ onMounted(() => {
   font-size: 20px;
   font-family: 'EB Garamond', serif;
   font-weight: normal;
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
   line-height: 20px;
   margin: 0;
@@ -183,37 +237,25 @@ onMounted(() => {
     height: auto;
     padding: 2rem 0;
   }
-  
+
   .footer_box {
     width: 90%;
-    max-width: 600px;
+    max-width: 900px;
     margin: 2rem auto;
     height: auto;
-    flex-direction: column;
-    gap: 2rem;
-    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+    align-items: flex-start;
   }
-  
-  .footer-text-group_2 {
-    width: 100%;
-    height: auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+
+  .footer-left-box {
+    flex: 1;
+    max-width: 400px;
   }
-  
-  .footer-text_3 {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .footer-text_4,
-  .footer-text_5 {
-    width: 100%;
-    text-align: center;
-    margin: 0.5rem 0;
+
+  .footer-right-box {
+    min-width: 180px;
   }
 }
 
@@ -221,42 +263,44 @@ onMounted(() => {
   .footer_block {
     padding: 1.5rem 0;
   }
-  
+
   .footer_box {
     width: 95%;
     margin: 1.5rem auto;
     gap: 1.5rem;
-  }
-
-  .footer-text-group_2 {
-    text-align: center;
-    display: flex;
     flex-direction: column;
     align-items: center;
   }
-  
-  .footer-text_1 {
-    font-size: 1.5rem;
-    width: 100%;
+
+  .footer-left-box {
+    max-width: 100%;
     text-align: center;
   }
-  
-  .footer-text_2 {
-    font-size: 1rem;
-    width: 100%;
-    text-align: center;
-    margin-top: 0.5rem;
+
+  .footer-brand {
+    justify-content: center;
   }
-  
+
+  .footer-tagline {
+    font-size: 0.9rem;
+    max-width: 100%;
+  }
+
+  .footer-right-box {
+    min-width: unset;
+    width: 100%;
+    text-align: left;
+  }
+
   .footer-text_3 {
     font-size: 1.5rem;
   }
-  
+
   .footer-text_4,
   .footer-text_5 {
     font-size: 1rem;
     width: 100%;
-    text-align: center;
+    text-align: left;
   }
 }
 
@@ -264,7 +308,7 @@ onMounted(() => {
   .footer_block {
     padding: 1rem 0;
   }
-  
+
   .footer_box {
     width: 98%;
     margin: 1rem auto;
@@ -272,25 +316,32 @@ onMounted(() => {
     padding: 0 1rem;
   }
 
-  .footer-text-group_2 {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .footer-left-box {
+    gap: 0.75rem;
   }
-  
-  .footer-text_1 {
+
+  .footer-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .footer-brand-text {
     font-size: 1.2rem;
   }
-  
-  .footer-text_2 {
-    font-size: 0.9rem;
+
+  .footer-tagline {
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
-  
+
+  .footer-right-box {
+    gap: 0.5rem;
+  }
+
   .footer-text_3 {
     font-size: 1.2rem;
   }
-  
+
   .footer-text_4,
   .footer-text_5 {
     font-size: 0.9rem;
