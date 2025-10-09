@@ -56,7 +56,7 @@ export const greenPlaceApiService = {
       params.category = category
     }
     
-    return api.get('/api/green-places', { params })
+    return api.get('/green-places', { params })
   },
 
   /**
@@ -65,7 +65,7 @@ export const greenPlaceApiService = {
    * @returns {Promise} Place details
    */
   getPlaceById(id) {
-    return api.get(`/api/green-places/${id}`)
+    return api.get(`/green-places/${id}`)
   },
 
   /**
@@ -73,7 +73,7 @@ export const greenPlaceApiService = {
    * @returns {Promise} Array of category strings
    */
   getCategories() {
-    return api.get('/api/green-places/categories')
+    return api.get('/green-places/categories')
   }
 }
 
