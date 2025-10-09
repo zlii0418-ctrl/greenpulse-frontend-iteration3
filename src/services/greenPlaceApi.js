@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASE || 'http://3.218.247.158:8080',
   timeout: 30000, // Increased to 30 seconds, giving more time for large data requests
   headers: {
     'Content-Type': 'application/json'
@@ -38,18 +38,24 @@ export const greenPlaceApiService = {
    * Search green places
    * @param {Object} params - Search parameters
    * @param {string} params.keyword - Search keyword
+   * @param {string} params.category - Category filter
    * @param {number} params.page - Page number (starting from 0)
    * @param {number} params.size - Page size
    * @returns {Promise} Paginated results
    */
-  searchPlaces({ keyword = '', page = 0, size = 10 } = {}) {
-    return api.get('/api/green-places', {
-      params: {
-        keyword,
-        page,
-        size
-      }
-    })
+  searchPlaces({ keyword = '', category = '', page = 0, size = 10 } = {}) {
+    const params = {
+      keyword,
+      page,
+      size
+    }
+    
+    // Only add category parameter if it's not empty
+    if (category && category.trim() !== '') {
+      params.category = category
+    }
+    
+    return api.get('/api/green-places', { params })
   },
 
   /**
@@ -59,6 +65,14 @@ export const greenPlaceApiService = {
    */
   getPlaceById(id) {
     return api.get(`/api/green-places/${id}`)
+  },
+
+  /**
+   * Get all available categories
+   * @returns {Promise} Array of category strings
+   */
+  getCategories() {
+    return api.get('/api/green-places/categories')
   }
 }
 

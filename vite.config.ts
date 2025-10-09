@@ -21,6 +21,20 @@ export default defineConfig({
     host: '0.0.0.0', // Allow external connections
     port: 5173,
     proxy: {
+      '/api/ai': {
+        target: 'http://3.218.247.158:8123',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('AI API Proxy error:', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxying AI API request:', req.method, req.url);
+          });
+        }
+      },
       '/api': {
         target: 'https://gp-backend-iter2.vercel.app',
         changeOrigin: true,
@@ -28,10 +42,10 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, '/api'),
         configure: (proxy, options) => {
           proxy.on('error', (err, req, res) => {
-            console.log('Proxy error:', err);
+            console.log('General API Proxy error:', err);
           });
           proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying request:', req.method, req.url);
+            console.log('Proxying general API request:', req.method, req.url);
           });
         }
       },

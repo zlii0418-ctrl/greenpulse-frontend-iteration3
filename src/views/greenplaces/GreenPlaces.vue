@@ -3,8 +3,11 @@
     <!-- Search Bar -->
     <SearchBar
       v-model="searchKeyword"
+      :selected-category="selectedCategory"
+      :categories="categories"
       :is-searching="isSearching"
       @search="handleSearch"
+      @update:selectedCategory="selectedCategory = $event"
     />
     
     <!-- Main content area -->
@@ -68,6 +71,13 @@
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <h3 class="font-medium text-gray-900 mb-1">{{ place.name }}</h3>
+                  
+                  <!-- Category -->
+                  <div v-if="place.category" class="mb-2">
+                    <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                      {{ place.category }}
+                    </span>
+                  </div>
                   
                   <!-- Rating -->
                   <div class="flex items-center mb-2">
@@ -168,6 +178,7 @@ const greenPlaceStore = useGreenPlaceStore()
 
 // Reactive data
 const searchKeyword = ref('')
+const selectedCategory = ref('')
 const selectedPlaceId = ref(null)
 const isDetailDrawerOpen = ref(false)
 const mapCenter = ref({ lat: 39.9042, lng: 116.4074 }) // Default Beijing
@@ -187,15 +198,29 @@ const error = computed(() => greenPlaceStore.error)
 const selectedPlace = computed(() => greenPlaceStore.selectedPlace)
 const isDetailLoading = computed(() => greenPlaceStore.isDetailLoading)
 const detailError = computed(() => greenPlaceStore.error)
+const categories = computed(() => greenPlaceStore.categories)
 
 // Methods
-const handleSearch = (keyword) => {
-  searchKeyword.value = keyword
-  greenPlaceStore.searchPlaces({
-    keyword,
-    page: 0,
-    size: 10
-  })
+const handleSearch = (searchParams) => {
+  // Handle both old string format and new object format for backward compatibility
+  if (typeof searchParams === 'string') {
+    searchKeyword.value = searchParams
+    greenPlaceStore.searchPlaces({
+      keyword: searchParams,
+      category: selectedCategory.value,
+      page: 0,
+      size: 10
+    })
+  } else {
+    searchKeyword.value = searchParams.keyword
+    selectedCategory.value = searchParams.category
+    greenPlaceStore.searchPlaces({
+      keyword: searchParams.keyword,
+      category: searchParams.category,
+      page: 0,
+      size: 10
+    })
+  }
 }
 
 const selectPlace = async (place) => {
@@ -228,13 +253,17 @@ const retryLoadDetail = () => {
 }
 
 const retrySearch = () => {
-  handleSearch(searchKeyword.value)
+  handleSearch({
+    keyword: searchKeyword.value,
+    category: selectedCategory.value
+  })
 }
 
 const goToPage = (page) => {
   if (page >= 0 && page < totalPages.value) {
     greenPlaceStore.searchPlaces({
       keyword: searchKeyword.value,
+      category: selectedCategory.value,
       page,
       size: 10
     })
@@ -281,6 +310,9 @@ onMounted(async () => {
   
   // Execute all initialization operations in parallel
   const initPromises = [
+    // Load categories
+    greenPlaceStore.loadCategories(),
+    
     // Search operation
     Promise.resolve(handleSearch('')),
     
@@ -295,7 +327,7 @@ onMounted(async () => {
   ]
   
   // Wait for all initialization operations to complete
-  const [, mapData] = await Promise.all(initPromises)
+  const [, , mapData] = await Promise.all(initPromises)
   mapPlaces.value = mapData
 })
 </script>

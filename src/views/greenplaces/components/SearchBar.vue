@@ -12,6 +12,20 @@
         />
       </div>
       
+      <!-- Category filter dropdown -->
+      <div class="w-48">
+        <select
+          v-model="selectedCategory"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none bg-white"
+          @change="handleSearch"
+        >
+          <option value="">All Categories</option>
+          <option v-for="category in categories" :key="category" :value="category">
+            {{ category }}
+          </option>
+        </select>
+      </div>
+      
       <!-- Search button -->
       <button
         @click="handleSearch"
@@ -40,6 +54,14 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  selectedCategory: {
+    type: String,
+    default: ''
+  },
+  categories: {
+    type: Array,
+    default: () => []
+  },
   isSearching: {
     type: Boolean,
     default: false
@@ -47,14 +69,19 @@ const props = defineProps({
 })
 
 // Emits
-const emit = defineEmits(['update:modelValue', 'search'])
+const emit = defineEmits(['update:modelValue', 'update:selectedCategory', 'search'])
 
 // Reactive data
 const keyword = ref(props.modelValue)
+const selectedCategory = ref(props.selectedCategory)
 
 // Watch props changes
 watch(() => props.modelValue, (newValue) => {
   keyword.value = newValue
+})
+
+watch(() => props.selectedCategory, (newValue) => {
+  selectedCategory.value = newValue
 })
 
 // Watch keyword changes, sync to parent component
@@ -62,9 +89,17 @@ watch(keyword, (newValue) => {
   emit('update:modelValue', newValue)
 })
 
+// Watch category changes, sync to parent component
+watch(selectedCategory, (newValue) => {
+  emit('update:selectedCategory', newValue)
+})
+
 // Handle search
 const handleSearch = () => {
-  emit('search', keyword.value.trim())
+  emit('search', {
+    keyword: keyword.value.trim(),
+    category: selectedCategory.value
+  })
 }
 </script>
 

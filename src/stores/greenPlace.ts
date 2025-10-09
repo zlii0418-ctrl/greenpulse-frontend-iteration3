@@ -5,6 +5,7 @@ import { greenPlaceApiService } from '../services/greenPlaceApi'
 export interface GreenPlace {
   id: number
   name: string
+  category?: string
   fullAddress: string
   latitude: string
   longitude: string
@@ -48,6 +49,11 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
     totalElements: 0,
     isLoading: false,
     searchKeyword: '',
+    selectedCategory: '',
+    
+    // Categories related state
+    categories: [] as string[],
+    isCategoriesLoading: false,
     
     // Detail related state
     selectedPlace: null as GreenPlace | null,
@@ -131,11 +137,31 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
     },
 
     /**
+     * Load all available categories
+     */
+    async loadCategories() {
+      try {
+        this.isCategoriesLoading = true
+        this.error = null
+        
+        const response = await greenPlaceApiService.getCategories()
+        this.categories = response || []
+        
+      } catch (error) {
+        console.error('Failed to load categories:', error)
+        this.error = 'Failed to load categories'
+        this.categories = []
+      } finally {
+        this.isCategoriesLoading = false
+      }
+    },
+
+    /**
      * Search green places (with debounce)
      */
-    searchPlaces({ keyword = '', page = 0, size = 10, immediate = false } = {}) {
+    searchPlaces({ keyword = '', category = '', page = 0, size = 10, immediate = false } = {}) {
       if (immediate) {
-        return this._performSearch({ keyword, page, size })
+        return this._performSearch({ keyword, category, page, size })
       }
       
       // Clear previous debounce timer
@@ -145,20 +171,21 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
       
       // Set new debounce timer
       this.searchDebounceTimer = setTimeout(() => {
-        this._performSearch({ keyword, page, size })
+        this._performSearch({ keyword, category, page, size })
       }, 300) // 300ms debounce delay
     },
     
     /**
      * Internal method to perform actual search
      */
-    async _performSearch({ keyword = '', page = 0, size = 10 } = {}) {
+    async _performSearch({ keyword = '', category = '', page = 0, size = 10 } = {}) {
       try {
         this.isLoading = true
         this.error = null
         
         const response = await greenPlaceApiService.searchPlaces({
           keyword,
+          category,
           page,
           size
         })
@@ -168,6 +195,7 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
         this.currentPage = response.currentPage || 0
         this.totalElements = response.totalElements || 0
         this.searchKeyword = keyword
+        this.selectedCategory = category
         
       } catch (error) {
         console.error('Search failed:', error)

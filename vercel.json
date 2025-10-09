@@ -10,7 +10,7 @@
   "rewrites": [
     {
       "source": "/api/ai/(.*)",
-      "destination": "http://3.25.234.38:8123/api/ai/$1"
+      "destination": "http://3.218.247.158:8123/api/ai/$1"
     },
     {
       "source": "/api/(.*)",
