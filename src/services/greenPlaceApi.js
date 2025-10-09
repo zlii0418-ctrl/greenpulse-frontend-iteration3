@@ -2,8 +2,8 @@ import axios from 'axios'
 
 // Create axios instance
 const api = axios.create({
-  // Prefer environment variable (Vercel sets VITE_API_URL). Fallback to relative '/api' so it works via proxy/rewrites.
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  // 统一走相对路径，线上由 Vercel rewrites 反代到 HTTPS 后端，本地由 Vite proxy 处理
+  baseURL: '/api',
   timeout: 30000, // Increased to 30 seconds, giving more time for large data requests
   headers: {
     'Content-Type': 'application/json'
