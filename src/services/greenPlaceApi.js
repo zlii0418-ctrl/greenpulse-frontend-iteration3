@@ -2,8 +2,7 @@ import axios from 'axios'
 
 // Create axios instance
 const api = axios.create({
-  // 统一走相对路径，线上由 Vercel rewrites 反代到 HTTPS 后端，本地由 Vite proxy 处理
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_BASE || 'http://3.218.247.158:8080',
   timeout: 30000, // Increased to 30 seconds, giving more time for large data requests
   headers: {
     'Content-Type': 'application/json'
@@ -56,7 +55,7 @@ export const greenPlaceApiService = {
       params.category = category
     }
     
-    return api.get('/green-places', { params })
+    return api.get('/api/green-places', { params })
   },
 
   /**
@@ -65,7 +64,7 @@ export const greenPlaceApiService = {
    * @returns {Promise} Place details
    */
   getPlaceById(id) {
-    return api.get(`/green-places/${id}`)
+    return api.get(`/api/green-places/${id}`)
   },
 
   /**
@@ -73,7 +72,7 @@ export const greenPlaceApiService = {
    * @returns {Promise} Array of category strings
    */
   getCategories() {
-    return api.get('/green-places/categories')
+    return api.get('/api/green-places/categories')
   }
 }
 
