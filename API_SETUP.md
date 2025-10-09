@@ -57,8 +57,8 @@ The API configuration automatically detects the environment:
 ### Vite Proxy (`vite.config.ts`)
 
 The Vite development server includes a proxy that:
-- Intercepts all requests to `/api/*`
-- Forwards them to the production backend
+- Intercepts requests to `/api/ai/*` and forwards them to the AI backend (`http://3.218.247.158:8123`)
+- Intercepts other requests to `/api/*` and forwards them to the general backend (`https://gp-backend-iter2.vercel.app`)
 - Handles CORS and authentication
 - Provides debugging information
 
