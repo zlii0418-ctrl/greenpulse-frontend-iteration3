@@ -2,7 +2,8 @@ import axios from 'axios'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || 'http://3.218.247.158:8080',
+  // Prefer environment variable (Vercel sets VITE_API_URL). Fallback to relative '/api' so it works via proxy/rewrites.
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 30000, // Increased to 30 seconds, giving more time for large data requests
   headers: {
     'Content-Type': 'application/json'
