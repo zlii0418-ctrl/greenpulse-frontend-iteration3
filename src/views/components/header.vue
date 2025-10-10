@@ -19,7 +19,7 @@
             <RouterLink to="/calculator/shopping" class="header__dropdown-item" @click="hideDropdown">Shopping</RouterLink>
           </div>
         </div>
-        <RouterLink to="/green-places" class="header__nav-link">Green Places</RouterLink>
+        <RouterLink to="/green-places" class="header__nav-link">Map</RouterLink>
         <a href="#" class="header__nav-link">Language</a>
       </nav>
     </div>
