@@ -1,6 +1,8 @@
 <template>
     <div class="page flex-col">
       <div class="main-container">
+        <div class="content-area">
+          <div class="calculator-section">
           <div class="text-wrapper_1 flex-row">
             <span class="text_1">Type</span> 
             <span class="text_2">Distance</span>
@@ -130,6 +132,8 @@
             <RouterLink to="/travel-result" @click="handleSubmit">
                 Submit
             </RouterLink>
+          </div>
+        </div>
           </div>
         </div>
       </div>
@@ -307,7 +311,7 @@ onMounted(() => {
   );
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .image-wrapper_1 {
@@ -1011,6 +1015,8 @@ body {
   justify-content: center; /* center horizontally */
   gap: 20px;               /* space between buttons */
   margin-top: 20px;        /* some space above */
+  margin-bottom: 20px;     /* ensure space at bottom */
+  flex-shrink: 0;          /* prevent buttons from shrinking */
 }
 
 /* Shared button styles */
@@ -1054,12 +1060,36 @@ body {
 .main-container {
   width: 95%;
   position: fixed;              /* Fix to viewport */
-  top: 50%;                     /* Move to vertical center */
-  left: 50%;                    /* Move to horizontal center */
-  transform: translate(-50%, -50%); /* Center exactly */
-  padding: 30px;                /* Optional spacing */
-  max-height: calc(100vh - 150px);             /* Prevent overflow */
+  top: 0;                       /* Start from very top */
+  left: 0;                      /* Start from very left */
+  right: 0;                     /* Extend to right edge */
+  bottom: 0;                    /* Extend to bottom edge */
+  margin: auto;                 /* Center the container */
+  padding: 20px;                /* Minimal padding */
   overflow-y: auto;             /* Scroll inside if too tall */  
   text-align: center;
+  display: flex;                /* Use flexbox */
+  flex-direction: column;       /* Stack content vertically */
+}
+
+.content-area {
+  flex: 1;                      /* Take up available space */
+  min-height: 0;                /* Allow flex item to shrink */
+}
+
+.calculator-section {
+  animation: fadeIn 0.5s ease-in-out;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

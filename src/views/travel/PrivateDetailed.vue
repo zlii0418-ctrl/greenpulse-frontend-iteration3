@@ -1755,13 +1755,12 @@ onMounted(() => {
 
 .main-container {
   width: 95%;
-  height: 100%;
+  max-height: calc(100vh - 40px);
   position: fixed;              /* Fix to viewport */
   top: 50%;                     /* Move to vertical center */
   left: 50%;                    /* Move to horizontal center */
   transform: translate(-50%, -50%); /* Center exactly */
   padding: 30px;                /* Optional spacing */
-  padding-top: 30vh;
   overflow-y: auto;             /* Scroll inside if too tall */
 }
 
@@ -1788,7 +1787,7 @@ onMounted(() => {
   max-width: 700px;
   width: 90%;
   height: auto;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 40px);
   overflow-y: auto;
   font-family: Inter-Regular, sans-serif;
   box-shadow: 0 12px 48px rgba(0,0,0,0.2);

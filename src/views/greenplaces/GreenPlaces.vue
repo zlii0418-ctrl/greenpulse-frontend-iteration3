@@ -1,5 +1,21 @@
 <template>
   <div class="home-view h-screen flex flex-col">
+    <!-- Header -->
+    <Header />
+
+    <!-- Back Button -->
+    <div class="bg-white border-b border-gray-200 px-4 py-2">
+      <button
+        @click="goBack"
+        class="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back
+      </button>
+    </div>
+
     <!-- Search Bar -->
     <SearchBar
       v-model="searchKeyword"
@@ -167,7 +183,9 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useGreenPlaceStore } from '../../stores/greenPlace'
+import Header from '../components/header.vue'
 import SearchBar from './components/SearchBar.vue'
 import GoogleMap from './components/GoogleMap.vue'
 import PlaceDetailDrawer from './components/PlaceDetailDrawer.vue'
@@ -175,6 +193,7 @@ import LocationPermissionModal from './components/LocationPermissionModal.vue'
 
 // Use Pinia store
 const greenPlaceStore = useGreenPlaceStore()
+const router = useRouter()
 
 // Reactive data
 const searchKeyword = ref('')
@@ -275,6 +294,10 @@ const getRatingStars = (rating) => {
   return Math.round(rating)
 }
 
+const goBack = () => {
+  router.go(-1)
+}
+
 // Location permission related methods
 const handleLocationModalClose = () => {
   showLocationModal.value = false
@@ -333,10 +356,21 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.home-view {
+  padding-top: 80px; /* 为固定定位的header留出空间 */
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .home-view {
+    padding-top: 70px; /* 移动端header高度 */
+  }
 }
 </style>

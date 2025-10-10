@@ -443,8 +443,8 @@ onMounted(() => {
   width: 100%;
   opacity: 1;
   border-radius: 20px;
-  overflow: hidden;
-  min-height: 0;
+  overflow: visible;
+  min-height: 500px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);

@@ -439,14 +439,13 @@ const showToastMessage = (message: string) => {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
-  background: transparent;
+  height: 100dvh;
+  background: none;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 20px;
-  padding-top: 5px;
-  z-index: 10000;
+  padding: 20px; /* unified padding to avoid reducing available height */
+  z-index: 999999;
   overflow-y: auto;
 }
 
@@ -455,7 +454,7 @@ const showToastMessage = (message: string) => {
   border-radius: 20px;
   width: 95%;
   max-width: 900px;
-  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 40px); /* account for overlay padding */
   min-height: 250px;
   overflow: hidden;
   display: flex;
@@ -467,7 +466,7 @@ const showToastMessage = (message: string) => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   margin: 0 auto;
-  z-index: 10000;
+  z-index: 1000000;
 }
 
 .modal-header {
@@ -524,7 +523,7 @@ const showToastMessage = (message: string) => {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
-  max-height: calc(100vh - 200px); /* Account for header, footer, and padding */
+  /* Let flexbox compute the height; avoid fixed viewport math that can clip */
 }
 
 /* Show scrollbar for modal body */
@@ -877,7 +876,7 @@ const showToastMessage = (message: string) => {
   border-radius: 20px;
   max-width: 500px;
   width: 90%;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 10vh);
   overflow-y: auto;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);

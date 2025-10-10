@@ -32,6 +32,22 @@
           </div>
         </div>
         
+        <!-- 预设问题 -->
+        <div v-if="showPresetQuestions" class="preset-questions">
+          <div class="preset-questions-title">Quick Questions:</div>
+          <div class="preset-questions-list">
+            <button 
+              v-for="question in presetQuestions" 
+              :key="question"
+              @click="selectPresetQuestion(question)"
+              class="preset-question-btn"
+              :disabled="isLoading"
+            >
+              {{ question }}
+            </button>
+          </div>
+        </div>
+        
         <!-- 加载指示器 -->
         <div v-if="isLoading" class="message bot-message">
           <div class="message-bubble">
@@ -78,7 +94,14 @@ export default {
       isLoading: false,
       eventSource: null,
       chatId: null,
-      chatbotIcon
+      chatbotIcon,
+      presetQuestions: [
+        'What is a carbon footprint?',
+        'How can I reduce my daily carbon footprint?',
+        'Which activities produce the most carbon emissions?',
+        'Why is reducing carbon emissions important for the environment?'
+      ],
+      showPresetQuestions: true
     }
   },
   mounted() {
@@ -106,11 +129,30 @@ export default {
       const userMessage = this.inputMessage.trim()
       this.addMessage(userMessage, true)
       this.inputMessage = ''
+      this.showPresetQuestions = false
       
       this.isLoading = true
       
       try {
         await this.sendToAPI(userMessage)
+      } catch (error) {
+        console.error('Failed to send message:', error)
+        this.addMessage('Sorry, I am unable to respond to your message right now. Please try again later.', false)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    async selectPresetQuestion(question) {
+      if (this.isLoading) return
+      
+      this.addMessage(question, true)
+      this.showPresetQuestions = false
+      
+      this.isLoading = true
+      
+      try {
+        await this.sendToAPI(question)
       } catch (error) {
         console.error('Failed to send message:', error)
         this.addMessage('Sorry, I am unable to respond to your message right now. Please try again later.', false)
@@ -440,6 +482,57 @@ export default {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
+}
+
+.preset-questions {
+  margin: 15px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.preset-questions-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.preset-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preset-question-btn {
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+.preset-question-btn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #4CAF50;
+  color: #4CAF50;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+}
+
+.preset-question-btn:disabled {
+  background: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* 响应式设计 */

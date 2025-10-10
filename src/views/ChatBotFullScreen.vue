@@ -27,6 +27,22 @@
             </div>
           </div>
 
+          <!-- 预设问题 -->
+          <div v-if="showPresetQuestions" class="preset-questions">
+            <div class="preset-questions-title">Quick Questions:</div>
+            <div class="preset-questions-list">
+              <button 
+                v-for="question in presetQuestions" 
+                :key="question"
+                @click="selectPresetQuestion(question)"
+                class="preset-question-btn"
+                :disabled="isLoading"
+              >
+                {{ question }}
+              </button>
+            </div>
+          </div>
+
           <div v-if="isLoading" class="message bot-message">
             <div class="message-bubble">
               <div class="typing-indicator">
@@ -74,6 +90,13 @@ export default {
       isLoading: false,
       eventSource: null,
       chatId: null,
+      presetQuestions: [
+        'What is a carbon footprint?',
+        'How can I reduce my daily carbon footprint?',
+        'Which activities produce the most carbon emissions?',
+        'Why is reducing carbon emissions important for the environment?'
+      ],
+      showPresetQuestions: true
     }
   },
   mounted() {
@@ -93,9 +116,28 @@ export default {
       const userMessage = this.inputMessage.trim()
       this.addMessage(userMessage, true)
       this.inputMessage = ''
+      this.showPresetQuestions = false
       this.isLoading = true
       try {
         await this.sendToAPI(userMessage)
+      } catch (error) {
+        console.error('Failed to send message:', error)
+        this.addMessage('Sorry, I am unable to respond to your message right now. Please try again later.', false)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    async selectPresetQuestion(question) {
+      if (this.isLoading) return
+      
+      this.addMessage(question, true)
+      this.showPresetQuestions = false
+      
+      this.isLoading = true
+      
+      try {
+        await this.sendToAPI(question)
       } catch (error) {
         console.error('Failed to send message:', error)
         this.addMessage('Sorry, I am unable to respond to your message right now. Please try again later.', false)
@@ -213,6 +255,12 @@ export default {
   position: relative;
 }
 
+.chatbot-header p {
+  font-size: 18px;
+  opacity: 0.9;
+  margin: 0;
+}
+
 .back-button {
   position: absolute;
   left: 24px;
@@ -243,6 +291,9 @@ export default {
 
 .chatbot-header h2 {
   margin: 0 0 6px 0;
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
 }
 
 .chatbot-messages {
@@ -260,13 +311,15 @@ export default {
 
 .message-bubble {
   max-width: 80%;
-  padding: 12px 16px;
+  padding: 18px 22px;
   border-radius: 18px;
+  font-size: 18px;
+  line-height: 1.6;
 }
 .user-message .message-bubble { background: linear-gradient(135deg, #4CAF50, #45a049); color: #fff; border-bottom-right-radius: 4px; }
 .bot-message .message-bubble { background: #f5f5f5; color: #333; border-bottom-left-radius: 4px; }
 
-.message-time { font-size: 11px; opacity: 0.7; margin-top: 4px; }
+.message-time { font-size: 14px; opacity: 0.7; margin-top: 8px; }
 
 .typing-indicator { display: flex; gap: 4px; align-items: center; }
 .typing-indicator span { width: 6px; height: 6px; border-radius: 50%; background: #999; animation: typing 1.4s infinite ease-in-out; }
@@ -285,12 +338,63 @@ export default {
   gap: 10px;
   align-items: center;
 }
-.chatbot-input input { flex: 1; padding: 12px 16px; border: 1px solid #ddd; border-radius: 25px; outline: none; font-size: 14px; transition: border-color 0.3s ease; }
+.chatbot-input input { flex: 1; padding: 16px 20px; border: 1px solid #ddd; border-radius: 25px; outline: none; font-size: 18px; transition: border-color 0.3s ease; }
 .chatbot-input input:focus { border-color: #4CAF50; }
 .chatbot-input input:disabled { background: #f5f5f5; cursor: not-allowed; }
 .send-btn { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4CAF50, #45a049); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
 .send-btn:hover:not(:disabled) { transform: scale(1.1); }
 .send-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+.preset-questions {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.preset-questions-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.preset-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preset-question-btn {
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 18px;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.preset-question-btn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #4CAF50;
+  color: #4CAF50;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+}
+
+.preset-question-btn:disabled {
+  background: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
 @media (max-width: 768px) {
   .chat-wrapper { width: 100%; height: calc(100vh - 100px); border-radius: 0; }
