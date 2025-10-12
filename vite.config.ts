@@ -35,20 +35,21 @@ export default defineConfig({
           });
         }
       },
-      '/api': {
-        target: 'https://gp-backend-iter3.vercel.app',
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
-        configure: (proxy, options) => {
-          proxy.on('error', (err, req, res) => {
-            console.log('General API Proxy error:', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying general API request:', req.method, req.url);
-          });
-        }
-      },
+      // Commenting out proxy - hitting Vercel directly to avoid proxy timeout issues
+      // '/api': {
+      //   target: 'https://gp-backend-iter3.vercel.app',
+      //   changeOrigin: true,
+      //   secure: true,
+      //   rewrite: (path) => path.replace(/^\/api/, '/api'),
+      //   configure: (proxy, options) => {
+      //     proxy.on('error', (err, req, res) => {
+      //       console.log('General API Proxy error:', err);
+      //     });
+      //     proxy.on('proxyReq', (proxyReq, req, res) => {
+      //       console.log('Proxying general API request:', req.method, req.url);
+      //     });
+      //   }
+      // },
     }
   }
 })

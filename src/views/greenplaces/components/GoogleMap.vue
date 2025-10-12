@@ -59,7 +59,7 @@ const props = defineProps({
 })
 
 // Emits
-const emit = defineEmits(['place-click', 'map-click'])
+const emit = defineEmits(['place-click', 'map-click', 'vehicle-data-freshness'])
 
 // Reactive data
 const mapContainer = ref(null)
@@ -72,6 +72,8 @@ const isMapLoaded = ref(false)
 const originMarker = ref(null)
 const destinationMarker = ref(null)
 const routePolylines = ref([])
+const vehicleMarkers = ref([])
+let vehicleRefreshInterval = null
 
 // Performance optimization: render throttling
 let updateMarkersTimer = null
@@ -368,6 +370,274 @@ const clearUserLocationMarker = () => {
   }
 }
 
+// Real-time vehicle tracking state
+const trackingRoutes = ref(null)
+const trackingActive = ref(false)
+
+// Real-time vehicle functions with improved visuals and caching
+const updateVehicleMarkers = (vehicleData) => {
+  if (!map.value || !vehicleData || !vehicleData.vehicles) {
+    clearVehicleMarkers()
+    return
+  }
+
+  console.log(`🚌 Updating ${vehicleData.vehicles.length} vehicle markers`)
+  
+  // Calculate data freshness
+  let oldestDataAgeSeconds = 0
+  let dataFreshnessMessage = 'Live'
+  
+  if (vehicleData.vehicles.length > 0) {
+    const now = Date.now()
+    const ages = vehicleData.vehicles.map(v => {
+      const timestamp = new Date(v.created_at || now).getTime()
+      return (now - timestamp) / 1000
+    })
+    oldestDataAgeSeconds = Math.max(...ages)
+    
+    if (oldestDataAgeSeconds < 60) {
+      dataFreshnessMessage = `Live (${Math.floor(oldestDataAgeSeconds)}s old)`
+    } else if (oldestDataAgeSeconds < 300) {
+      dataFreshnessMessage = `${Math.floor(oldestDataAgeSeconds / 60)} min old`
+    } else {
+      dataFreshnessMessage = `⚠️ ${Math.floor(oldestDataAgeSeconds / 60)} min old (stale)`
+    }
+    
+    console.log(`📊 Vehicle data freshness: ${dataFreshnessMessage}`)
+    
+    // Emit freshness data to parent component
+    emit('vehicle-data-freshness', {
+      ageSeconds: oldestDataAgeSeconds,
+      message: dataFreshnessMessage,
+      isStale: oldestDataAgeSeconds > 300,
+      vehicleCount: vehicleData.vehicles.length
+    })
+  }
+  
+  // Clear existing vehicle markers
+  clearVehicleMarkers()
+
+  // Create markers for each vehicle with enhanced visuals
+  vehicleData.vehicles.forEach(vehicle => {
+    const lat = parseFloat(vehicle.latitude)
+    const lng = parseFloat(vehicle.longitude)
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      console.warn('Invalid vehicle coordinates:', vehicle)
+      return
+    }
+
+    // Determine vehicle color based on route type
+    let vehicleColor = '#4285f4' // Default blue
+    let vehicleIcon = '🚌'
+    
+    if (vehicle.route_id || vehicle.routeId) {
+      const routeId = vehicle.route_id || vehicle.routeId
+      if (routeId.startsWith('U') || routeId.includes('BUS')) {
+        vehicleColor = '#ff6b35' // Orange for buses
+        vehicleIcon = '🚌'
+      } else if (routeId.includes('KJ') || routeId.includes('PY') || 
+                 routeId.includes('AG') || routeId.includes('SP')) {
+        vehicleColor = '#e11d48' // Red for MRT/LRT
+        vehicleIcon = '🚇'
+      } else {
+        vehicleColor = '#7c3aed' // Purple for trains
+        vehicleIcon = '🚆'
+      }
+    }
+
+    // Create larger icon with bearing if available
+    let icon
+    if (vehicle.bearing !== null && vehicle.bearing !== undefined) {
+      // Larger arrow icon pointing in direction of travel
+      icon = {
+        path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        scale: 8, // Increased from 6 to 8
+        fillColor: vehicleColor,
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 3, // Increased from 2 to 3
+        rotation: vehicle.bearing
+      }
+    } else {
+      // Larger circle icon if no bearing
+      icon = {
+        path: window.google.maps.SymbolPath.CIRCLE,
+        scale: 12, // Increased from 8 to 12
+        fillColor: vehicleColor,
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 3 // Increased from 2 to 3
+      }
+    }
+
+    // Create marker
+    const marker = markRaw(new window.google.maps.Marker({
+      position: { lat, lng },
+      map: map.value,
+      title: `${vehicleIcon} Vehicle ${vehicle.vehicle_label || vehicle.vehicleId || vehicle.vehicle_id}`,
+      icon: icon,
+      zIndex: 1000, // High z-index to appear above routes
+      animation: window.google.maps.Animation.DROP
+    }))
+
+    // Calculate individual vehicle data age
+    const vehicleTimestamp = new Date(vehicle.created_at || Date.now()).getTime()
+    const vehicleAgeSeconds = Math.floor((Date.now() - vehicleTimestamp) / 1000)
+    let vehicleAgeDisplay = ''
+    let vehicleAgeColor = '#22c55e' // Green for fresh
+    
+    if (vehicleAgeSeconds < 60) {
+      vehicleAgeDisplay = `${vehicleAgeSeconds}s ago`
+      vehicleAgeColor = '#22c55e' // Green
+    } else if (vehicleAgeSeconds < 180) {
+      vehicleAgeDisplay = `${Math.floor(vehicleAgeSeconds / 60)} min ago`
+      vehicleAgeColor = '#eab308' // Yellow
+    } else {
+      vehicleAgeDisplay = `${Math.floor(vehicleAgeSeconds / 60)} min ago`
+      vehicleAgeColor = '#ef4444' // Red
+    }
+    
+    // Add info window with vehicle details
+    const infoContent = `
+      <div style="padding: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <h4 style="margin: 0 0 8px 0; color: ${vehicleColor};">
+          ${vehicleIcon} ${vehicle.vehicle_label || vehicle.vehicleId || vehicle.vehicle_id || 'Unknown'}
+        </h4>
+        <p style="margin: 4px 0; font-size: 12px; color: #666;">
+          <strong>Route:</strong> ${vehicle.route_id || vehicle.routeId || 'Unknown'}<br>
+          ${vehicle.speed ? `<strong>Speed:</strong> ${vehicle.speed.toFixed(1)} km/h<br>` : ''}
+          ${vehicle.current_status ? `<strong>Status:</strong> ${vehicle.current_status}<br>` : ''}
+          ${vehicle.direction_id !== null && vehicle.direction_id !== undefined ? `<strong>Direction:</strong> ${vehicle.direction_id}<br>` : ''}
+          <strong>Updated:</strong> ${new Date(vehicle.created_at || Date.now()).toLocaleTimeString()}
+        </p>
+        <div style="margin-top: 8px; padding: 4px 8px; background: ${vehicleAgeColor}22; border-left: 3px solid ${vehicleAgeColor}; border-radius: 4px;">
+          <span style="font-size: 11px; color: ${vehicleAgeColor}; font-weight: 600;">
+            📊 Data: ${vehicleAgeDisplay}
+          </span>
+        </div>
+      </div>
+    `
+    
+    const infoWindow = markRaw(new window.google.maps.InfoWindow({
+      content: infoContent
+    }))
+    
+    marker.addListener('click', () => {
+      // Close other info windows
+      vehicleMarkers.value.forEach(m => {
+        if (m.infoWindow) m.infoWindow.close()
+      })
+      infoWindow.open(map.value, marker)
+    })
+    
+    marker.infoWindow = infoWindow
+    vehicleMarkers.value.push(marker)
+  })
+
+  console.log(`✅ Created ${vehicleMarkers.value.length} vehicle markers`)
+}
+
+const clearVehicleMarkers = () => {
+  vehicleMarkers.value.forEach(marker => {
+    if (marker) {
+      marker.setMap(null)
+    }
+  })
+  vehicleMarkers.value = []
+}
+
+const startVehicleRefresh = async (routes, initialVehicleData = null) => {
+  // Clear any existing interval
+  stopVehicleRefresh()
+  
+  if (!routes || routes.length === 0) {
+    console.warn('⚠️ No routes provided for vehicle tracking')
+    return
+  }
+
+  trackingRoutes.value = routes
+  trackingActive.value = true
+
+  // Display initial vehicle data if provided
+  if (initialVehicleData) {
+    updateVehicleMarkers(initialVehicleData)
+  }
+
+  // Import here to avoid circular dependencies
+  const { getRealtimeVehicles } = await import('@/services/routingApi')
+  
+  // Function to fetch and update vehicles with caching
+  const fetchAndUpdateVehicles = async () => {
+    if (!trackingActive.value || !trackingRoutes.value) {
+      return
+    }
+
+    try {
+      // Check session storage cache
+      const cacheKey = 'vehicles_' + JSON.stringify(trackingRoutes.value)
+      const cached = sessionStorage.getItem(cacheKey)
+      
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached)
+        // Use cache if less than 2 minutes old
+        if (Date.now() - timestamp < 120000) {
+          const ageSeconds = Math.round((Date.now() - timestamp) / 1000)
+          console.log(`📦 Using cached vehicle data (${ageSeconds}s old)`)
+          updateVehicleMarkers(data)
+          return
+        }
+      }
+
+      // Fetch fresh data
+      console.log('🔄 Fetching fresh vehicle data...')
+      const vehicleData = await getRealtimeVehicles(trackingRoutes.value)
+      
+      if (vehicleData.success && vehicleData.data) {
+        // Cache the results
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          data: vehicleData.data,
+          timestamp: Date.now()
+        }))
+        
+        updateVehicleMarkers(vehicleData.data)
+        console.log(`✅ Updated ${vehicleData.data.vehicles?.length || 0} vehicle positions`)
+      }
+    } catch (error) {
+      console.warn('⚠️ Error refreshing vehicles:', error.message)
+    }
+  }
+
+  // Initial fetch if no initial data provided
+  if (!initialVehicleData) {
+    await fetchAndUpdateVehicles()
+  }
+  
+  // Set up interval to refresh every 2 minutes
+  vehicleRefreshInterval = setInterval(fetchAndUpdateVehicles, 120000)
+
+  console.log('🔄 Started vehicle refresh (every 2 minutes)')
+}
+
+const stopVehicleRefresh = () => {
+  if (vehicleRefreshInterval) {
+    clearInterval(vehicleRefreshInterval)
+    vehicleRefreshInterval = null
+  }
+  
+  trackingActive.value = false
+  trackingRoutes.value = null
+  clearVehicleMarkers()
+  
+  console.log('⏹️ Stopped vehicle refresh and cleared markers')
+}
+
+// Expose methods for parent component to control vehicle tracking
+defineExpose({
+  startVehicleTracking: startVehicleRefresh,
+  stopVehicleTracking: stopVehicleRefresh
+})
+
 // Routing functions
 const updateRoutingMarkers = () => {
   if (!map.value || !props.routingData) {
@@ -454,28 +724,65 @@ const drawRoute = (routeData) => {
     
     routeData.segments.forEach((segment, index) => {
       console.log(`Segment ${index}:`, segment.type, segment)
-      if (segment.type === 'transit' && segment.geometry) {
-        // Draw transit segment
-        let path = segment.geometry
-        
-        // If it's an encoded string, decode it
-        if (typeof path === 'string') {
-          path = decodePolyline(path)
-        }
-        
-        if (Array.isArray(path) && path.length > 0) {
-          const segmentColor = getRouteColor(segment.mode)
-          const polyline = markRaw(new window.google.maps.Polyline({
-            path: path,
-            geodesic: true,
-            strokeColor: segmentColor,
-            strokeOpacity: 0.8,
-            strokeWeight: 5,
-            map: map.value
-          }))
+      if (segment.type === 'transit') {
+        if (segment.geometry) {
+          console.log(`  Transit segment geometry type:`, typeof segment.geometry, 'length:', segment.geometry?.length)
+          // Draw transit segment with actual route geometry
+          let path = segment.geometry
           
-          routePolylines.value.push(polyline)
-          totalPoints += path.length
+          // If it's an encoded string, decode it
+          if (typeof path === 'string') {
+            path = decodePolyline(path)
+          }
+          
+          if (Array.isArray(path) && path.length > 0) {
+            console.log(`  Decoded ${path.length} points for ${segment.routeName || 'transit'}`)
+            console.log(`    Start: [${path[0].lat.toFixed(5)}, ${path[0].lng.toFixed(5)}]`)
+            console.log(`    End: [${path[path.length-1].lat.toFixed(5)}, ${path[path.length-1].lng.toFixed(5)}]`)
+            console.log(`    Should connect to boardStop: [${segment.boardStop?.latitude}, ${segment.boardStop?.longitude}]`)
+            console.log(`    Should connect to alightStop: [${segment.alightStop?.latitude}, ${segment.alightStop?.longitude}]`)
+            
+            const segmentColor = getRouteColor(segment.mode)
+            const polyline = markRaw(new window.google.maps.Polyline({
+              path: path,
+              geodesic: true,
+              strokeColor: segmentColor,
+              strokeOpacity: 0.8,
+              strokeWeight: 5,
+              map: map.value
+            }))
+            
+            routePolylines.value.push(polyline)
+            totalPoints += path.length
+          }
+        } else {
+          // Fallback: Draw straight line between board and alight stops if no geometry
+          console.log(`  ⚠️ No geometry for transit segment, drawing straight line`)
+          const boardLat = parseFloat(segment.boardStop?.latitude)
+          const boardLng = parseFloat(segment.boardStop?.longitude)
+          const alightLat = parseFloat(segment.alightStop?.latitude)
+          const alightLng = parseFloat(segment.alightStop?.longitude)
+          
+          if (!isNaN(boardLat) && !isNaN(boardLng) && !isNaN(alightLat) && !isNaN(alightLng)) {
+            const fallbackPath = [
+              { lat: boardLat, lng: boardLng },
+              { lat: alightLat, lng: alightLng }
+            ]
+            
+            const segmentColor = getRouteColor(segment.mode)
+            const polyline = markRaw(new window.google.maps.Polyline({
+              path: fallbackPath,
+              geodesic: true,
+              strokeColor: segmentColor,
+              strokeOpacity: 0.6,
+              strokeWeight: 4,
+              map: map.value
+            }))
+            
+            routePolylines.value.push(polyline)
+            totalPoints += 2
+            console.log(`  Drew fallback line for ${segment.routeName || 'transit'} segment`)
+          }
         }
       } else if (segment.type === 'walk') {
         // Draw walking segment as dashed line
@@ -484,6 +791,8 @@ const drawRoute = (routeData) => {
         const fromLng = parseFloat(segment.from?.longitude)
         const toLat = parseFloat(segment.to?.latitude)
         const toLng = parseFloat(segment.to?.longitude)
+        
+        console.log(`  Walk segment: [${fromLat.toFixed(5)}, ${fromLng.toFixed(5)}] → [${toLat.toFixed(5)}, ${toLng.toFixed(5)}]`)
         
         // Validate coordinates are valid numbers
         if (!isNaN(fromLat) && !isNaN(fromLng) && !isNaN(toLat) && !isNaN(toLng)) {
@@ -515,6 +824,55 @@ const drawRoute = (routeData) => {
           totalPoints += 2
         } else {
           console.warn('Invalid walking segment coordinates:', segment)
+        }
+      } else if (segment.type === 'transfer') {
+        // For transfer segments, find the previous transit segment to connect it
+        const prevSegment = index > 0 ? routeData.segments[index - 1] : null
+        
+        // Get coordinates from transfer point or surrounding segments
+        let fromLat, fromLng, toLat, toLng
+        
+        if (segment.transferPoint) {
+          // Transfer segment has explicit transfer point coordinates
+          const transferLat = parseFloat(segment.transferPoint.latitude)
+          const transferLng = parseFloat(segment.transferPoint.longitude)
+          
+          // Draw from previous segment's end to transfer point
+          if (prevSegment?.type === 'transit' && prevSegment.alightStop) {
+            fromLat = parseFloat(prevSegment.alightStop.latitude)
+            fromLng = parseFloat(prevSegment.alightStop.longitude)
+            toLat = transferLat
+            toLng = transferLng
+          }
+          
+          // If coordinates are valid, draw the connection
+          if (!isNaN(fromLat) && !isNaN(fromLng) && !isNaN(toLat) && !isNaN(toLng)) {
+            const transferPath = [
+              { lat: fromLat, lng: fromLng },
+              { lat: toLat, lng: toLng }
+            ]
+            
+            const polyline = markRaw(new window.google.maps.Polyline({
+              path: transferPath,
+              geodesic: true,
+              strokeColor: '#FF9800', // Orange for transfers
+              strokeOpacity: 0.7,
+              strokeWeight: 3,
+              icons: [{
+                icon: {
+                  path: 'M 0,-1 0,1',
+                  strokeOpacity: 1,
+                  scale: 2
+                },
+                offset: '0',
+                repeat: '8px'
+              }],
+              map: map.value
+            }))
+            
+            routePolylines.value.push(polyline)
+            totalPoints += 2
+          }
         }
       }
     })
@@ -759,12 +1117,21 @@ onMounted(async () => {
 
 // Component unmounted
 onUnmounted(() => {
+  console.log('🧹 GoogleMap component unmounting - cleaning up...')
+  
   // Clean up timers
   if (updateMarkersTimer) {
     clearTimeout(updateMarkersTimer)
   }
   if (visibilityTimer) {
     clearTimeout(visibilityTimer)
+  }
+  
+  // ⚠️ CRITICAL: Stop vehicle tracking interval
+  if (vehicleRefreshInterval) {
+    console.log('🛑 Clearing vehicle refresh interval on component unmount')
+    clearInterval(vehicleRefreshInterval)
+    vehicleRefreshInterval = null
   }
   
   // Clean up listeners
@@ -776,13 +1143,18 @@ onUnmounted(() => {
   clearMarkers()
   clearUserLocationMarker()
   clearRoutingMarkers()
+  clearVehicleMarkers()
   
   // Clean up state
   visibleMarkers.clear()
+  trackingActive.value = false
+  trackingRoutes.value = null
   
   if (map.value) {
     map.value = null
   }
+  
+  console.log('✅ GoogleMap cleanup completed')
 })
 </script>
 

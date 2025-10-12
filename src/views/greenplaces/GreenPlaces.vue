@@ -21,7 +21,7 @@
       <div class="flex items-center gap-4">
         <div class="flex-1 flex gap-2">
           <button
-            @click="viewMode = 'search'"
+            @click="handleModeChange('search')"
             :class="viewMode === 'search' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
             class="px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2"
           >
@@ -31,7 +31,7 @@
             Search Places
           </button>
           <button
-            @click="viewMode = 'routing'"
+            @click="handleModeChange('routing')"
             :class="viewMode === 'routing' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
             class="px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2"
           >
@@ -195,9 +195,11 @@
             <RouteComparison
               ref="routeComparisonRef"
               :user-location="greenPlaceStore.userLocation"
+              :vehicle-data-freshness="vehicleDataFreshness"
               @location-select-start="handleLocationSelectStart"
               @location-selected="handleLocationSelected"
               @route-selected="handleRouteSelected"
+              @vehicle-tracking-toggle="handleVehicleTrackingToggle"
             />
           </div>
         </template>
@@ -206,6 +208,7 @@
       <!-- Right side map -->
       <div class="w-2/3 relative">
         <GoogleMap
+          ref="googleMapRef"
           :places="mapPlaces"
           :center="mapCenter"
           :zoom="mapZoom"
@@ -215,6 +218,7 @@
           :routing-mode="viewMode === 'routing'"
           @place-click="selectPlace"
           @map-click="handleMapClick"
+          @vehicle-data-freshness="handleVehicleDataFreshness"
         />
       </div>
     </div>
@@ -242,7 +246,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGreenPlaceStore } from '../../stores/greenPlace'
 import Header from '../components/header.vue'
@@ -267,7 +271,9 @@ const mapZoom = ref(12)
 const mapPlaces = ref([])
 const showLocationModal = ref(false)
 const routeComparisonRef = ref(null)
+const googleMapRef = ref(null)
 const routingData = ref(null) // Store routing origin, destination, and route data
+const vehicleDataFreshness = ref(null) // Store vehicle data freshness info
 
 // Computed properties
 const searchResults = computed(() => greenPlaceStore.searchResults)
@@ -410,15 +416,30 @@ const handleLocationSelected = ({ type, lat, lng }) => {
   // Update map center to show the selected location
   mapCenter.value = { lat, lng }
   mapZoom.value = 13
+  
+  // Update routing data to show markers immediately
+  if (!routingData.value) {
+    routingData.value = { origin: null, destination: null, selectedRoute: null }
+  }
+  
+  if (type === 'origin') {
+    routingData.value.origin = { latitude: lat, longitude: lng }
+  } else if (type === 'destination') {
+    routingData.value.destination = { latitude: lat, longitude: lng }
+  }
+  
+  // Trigger reactivity by creating a new object
+  routingData.value = { ...routingData.value }
 }
 
 const handleRouteSelected = (data) => {
   console.log('Route selected:', data)
-  // Pass the entire data including the selected scenario route
+  // Pass the entire data including the selected scenario route and real-time vehicles
   routingData.value = {
     origin: data.origin,
     destination: data.destination,
-    selectedRoute: data.scenario  // Include the selected route/scenario
+    selectedRoute: data.scenario,  // Include the selected route/scenario
+    realtimeVehicles: data.realtimeVehicles || null  // Include real-time vehicle data
   }
   
   // Update map to show both origin and destination
@@ -438,6 +459,46 @@ const handleRouteSelected = (data) => {
     else if (maxDiff < 0.1) mapZoom.value = 11
     else mapZoom.value = 10
   }
+}
+
+const handleVehicleTrackingToggle = (data) => {
+  console.log('🔔 Vehicle tracking toggle event received:', data.action)
+  
+  if (!googleMapRef.value) {
+    console.error('❌ GoogleMap ref not available!')
+    return
+  }
+  
+  if (data.action === 'start') {
+    // Start vehicle tracking
+    console.log('🚌 Starting vehicle tracking on map with routes:', data.routes)
+    googleMapRef.value.startVehicleTracking(data.routes, data.vehicleData)
+  } else if (data.action === 'stop') {
+    // Stop vehicle tracking
+    console.log('🛑 Calling stopVehicleTracking on GoogleMap component')
+    try {
+      googleMapRef.value.stopVehicleTracking()
+      console.log('✅ GoogleMap stopVehicleTracking called successfully')
+    } catch (error) {
+      console.error('❌ Error stopping vehicle tracking:', error)
+    }
+  }
+}
+
+const handleVehicleDataFreshness = (freshnessData) => {
+  vehicleDataFreshness.value = freshnessData
+  console.log('📊 Vehicle data freshness updated:', freshnessData.message)
+}
+
+const handleModeChange = (newMode) => {
+  // Stop vehicle tracking when switching modes
+  if (viewMode.value === 'routing' && newMode === 'search') {
+    if (googleMapRef.value) {
+      googleMapRef.value.stopVehicleTracking()
+    }
+  }
+  
+  viewMode.value = newMode
 }
 
 // Check if geolocation is supported and permission state
@@ -563,6 +624,22 @@ onMounted(async () => {
       lng: greenPlaceStore.userLocation.lng
     }
     mapZoom.value = 13
+  }
+})
+
+// Cleanup when leaving the page
+onUnmounted(() => {
+  console.log('🧹 GreenPlaces component unmounting - cleaning up...')
+  
+  // Stop vehicle tracking if active
+  if (googleMapRef.value) {
+    try {
+      console.log('🛑 Stopping vehicle tracking on unmount')
+      googleMapRef.value.stopVehicleTracking()
+      console.log('✅ Vehicle tracking stopped on unmount')
+    } catch (error) {
+      console.error('❌ Error stopping vehicle tracking on unmount:', error)
+    }
   }
 })
 </script>

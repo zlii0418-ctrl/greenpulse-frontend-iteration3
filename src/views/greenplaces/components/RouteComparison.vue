@@ -40,6 +40,17 @@
         />
       </div>
 
+      <!-- Region Info -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs">
+        <div class="flex items-start gap-2">
+          <span class="text-blue-600 text-base">ℹ️</span>
+          <div class="text-blue-800">
+            <span class="font-semibold">Available in KL & Selangor only</span>
+            <div class="mt-1 text-blue-700">Other regions coming soon!</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Compare Button -->
       <button
         @click="handleCompare"
@@ -51,7 +62,7 @@
     </div>
 
     <!-- Results Section -->
-    <div v-if="results" class="mt-4">
+    <div v-if="results && !showingDetails" class="mt-4">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 gap-3 mb-4">
         <div class="bg-green-50 p-3 rounded-lg">
@@ -109,6 +120,9 @@
                 <div>
                   <div class="font-semibold text-sm text-gray-900">{{ scenario.name }}</div>
                   <div class="text-xs text-gray-500 capitalize">{{ scenario.category }}</div>
+                  <div v-if="scenario.mode === 'transit' && getTransitSummary(scenario)" class="text-xs text-blue-600 font-medium mt-0.5">
+                    {{ getTransitSummary(scenario) }}
+                  </div>
                 </div>
                 <span
                   v-if="scenario.rank === 1"
@@ -149,11 +163,156 @@
                   </span>
                 </div>
               </div>
+              
+              <!-- Transit Route Actions -->
+              <div v-if="scenario.mode === 'transit' && scenario.segments" class="mt-2 space-y-2">
+                <button
+                  @click.stop="viewRouteDetails(scenario)"
+                  class="w-full px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  📋 View Step-by-Step Directions
+                </button>
+                
+                <!-- Live vehicles availability indicator (only for trackable routes) -->
+                <div v-if="hasTrackableVehicles(scenario)" class="bg-blue-50 border border-blue-200 rounded-lg p-2 text-xs text-blue-800 flex items-center gap-2">
+                  <span class="text-base">🚌</span>
+                  <span>Live vehicle tracking available</span>
+                </div>
+              </div>
             </div>
 
             <div class="text-right ml-2">
               <div class="text-2xl font-bold" :class="getRankColor(scenario.rank)">
                 #{{ scenario.rank }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detailed Steps View -->
+    <div v-if="showingDetails && detailedRoute" class="mt-4 overflow-y-auto">
+      <!-- Back Button -->
+      <button
+        @click="backToRoutes"
+        class="mb-3 flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Routes
+      </button>
+      
+      <!-- Live tracking status indicator (only in detailed view) -->
+      <div v-if="hasTrackableVehicles(detailedRoute)" class="mb-3">
+        <!-- Loading state -->
+        <div v-if="isLoadingVehicles" class="bg-purple-50 border border-purple-200 rounded-lg p-2 text-xs text-purple-800 flex items-center gap-2">
+          <div class="animate-spin h-3 w-3 border-2 border-purple-600 border-t-transparent rounded-full"></div>
+          <span>Loading live vehicles...</span>
+        </div>
+        
+        <!-- Tracking active -->
+        <div v-else-if="isTrackingVehicles && !vehicleTrackingError" class="rounded-lg p-2 text-xs flex items-center gap-2"
+             :class="vehicleDataFreshness?.isStale ? 'bg-orange-50 border border-orange-200 text-orange-800' : 'bg-green-50 border border-green-200 text-green-800'">
+          <span class="text-base">📍</span>
+          <div class="flex-1">
+            <div class="font-semibold flex items-center gap-2">
+              <span>Live tracking active</span>
+              <span v-if="vehicleDataFreshness" class="px-1.5 py-0.5 rounded text-xs font-medium"
+                    :class="vehicleDataFreshness.isStale ? 'bg-orange-200 text-orange-900' : 'bg-green-200 text-green-900'">
+                {{ vehicleDataFreshness.message }}
+              </span>
+            </div>
+            <div :class="vehicleDataFreshness?.isStale ? 'text-orange-700' : 'text-green-700'" class="mt-0.5">
+              <span v-if="vehicleDataFreshness?.vehicleCount">{{ vehicleDataFreshness.vehicleCount }} vehicles</span>
+              <span v-else>Updates every 2 minutes</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Error state -->
+        <div v-else-if="vehicleTrackingError" class="bg-orange-50 border border-orange-200 rounded-lg p-2 text-xs text-orange-800">
+          <div class="font-semibold mb-1">⚠️ Vehicle Tracking Issue</div>
+          <div>{{ vehicleTrackingError }}</div>
+          <button @click.stop="retryVehicleTracking(detailedRoute)" class="mt-2 text-orange-700 underline hover:text-orange-900">
+            Try Again
+          </button>
+        </div>
+      </div>
+      
+      <!-- Route Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg p-4 mb-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-2xl">{{ getIcon(detailedRoute.mode) }}</span>
+          <div>
+            <div class="font-semibold text-lg">{{ detailedRoute.name }}</div>
+            <div class="text-xs opacity-90">{{ getTransitSummary(detailedRoute) }}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mt-3 text-sm">
+          <div>
+            <div class="opacity-75">Distance</div>
+            <div class="font-bold">{{ detailedRoute.distance?.toFixed(1) }} km</div>
+          </div>
+          <div>
+            <div class="opacity-75">Duration</div>
+            <div class="font-bold">{{ Math.round(detailedRoute.duration) }} min</div>
+          </div>
+          <div>
+            <div class="opacity-75">Emissions</div>
+            <div class="font-bold">{{ detailedRoute.emissions?.toFixed(3) }} kg</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Step-by-Step Directions -->
+      <div class="space-y-3">
+        <div
+          v-for="(step, index) in detailedRoute.segments"
+          :key="index"
+          class="bg-white border rounded-lg p-3"
+        >
+          <div class="flex items-start gap-3">
+            <!-- Step Number -->
+            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                 :class="step.type === 'transit' ? 'bg-blue-100 text-blue-700' : step.type === 'transfer' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'">
+              {{ index + 1 }}
+            </div>
+            
+            <!-- Step Content -->
+            <div class="flex-1">
+              <!-- Instruction -->
+              <div class="font-medium text-sm text-gray-900 mb-1">
+                {{ step.instruction }}
+              </div>
+              
+              <!-- Transit Details -->
+              <div v-if="step.type === 'transit'" class="space-y-1 text-xs">
+                <div class="flex items-center gap-2 text-gray-600">
+                  <span>🚏 Board:</span>
+                  <span class="font-medium">{{ step.boardStop?.name }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                  <span>🚏 Alight:</span>
+                  <span class="font-medium">{{ step.alightStop?.name }}</span>
+                </div>
+                <div class="text-gray-500 mt-1">
+                  {{ step.distance?.toFixed(1) }} km · {{ Math.round(step.duration) }} min
+                </div>
+              </div>
+              
+              <!-- Walk Details -->
+              <div v-else-if="step.type === 'walk'" class="text-xs text-gray-600">
+                <div>{{ step.distance?.toFixed(2) }} km · {{ Math.round(step.duration) }} min</div>
+              </div>
+              
+              <!-- Transfer Details -->
+              <div v-else-if="step.type === 'transfer'" class="text-xs text-gray-600">
+                <div class="flex items-center gap-1">
+                  <span>⏱️ Wait time:</span>
+                  <span class="font-medium">{{ Math.round(step.duration) }} min</span>
+                </div>
               </div>
             </div>
           </div>
@@ -170,8 +329,20 @@
     </div>
 
     <!-- Error State -->
-    <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-3">
-      <div class="text-red-800 text-sm font-medium">{{ error }}</div>
+    <div v-if="error" class="rounded-lg p-4 border-2" :class="error.includes('coming soon') || error.includes('Coming Soon') ? 'bg-blue-50 border-blue-300' : 'bg-red-50 border-red-200'">
+      <div class="flex items-start gap-3">
+        <div class="flex-shrink-0 text-2xl">
+          {{ error.includes('coming soon') || error.includes('Coming Soon') ? '🚀' : '❌' }}
+        </div>
+        <div class="flex-1">
+          <div class="font-semibold text-sm mb-1" :class="error.includes('coming soon') || error.includes('Coming Soon') ? 'text-blue-900' : 'text-red-900'">
+            {{ error.includes('coming soon') || error.includes('Coming Soon') ? 'Feature Coming Soon' : 'Error' }}
+          </div>
+          <div class="text-sm whitespace-pre-line" :class="error.includes('coming soon') || error.includes('Coming Soon') ? 'text-blue-800' : 'text-red-800'">
+            {{ error }}
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Initial State -->
@@ -188,19 +359,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { compareRoutes } from '@/services/routingApi'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { compareRoutes, getRealtimeVehicles } from '@/services/routingApi'
 
 // Props
 const props = defineProps({
   userLocation: {
     type: Object,
     default: null
+  },
+  vehicleDataFreshness: {
+    type: Object,
+    default: null
   }
 })
 
 // Emits
-const emit = defineEmits(['location-select-start', 'location-selected', 'route-selected'])
+const emit = defineEmits(['location-select-start', 'location-selected', 'route-selected', 'vehicle-tracking-toggle'])
 
 // Refs for inputs
 const originInput = ref(null)
@@ -215,12 +390,17 @@ const error = ref(null)
 const isGettingLocation = ref(false)
 const selectedRouteId = ref(null)
 const selectingFor = ref(null) // 'origin' or 'destination'
-const currentSortOption = ref('duration') // default: fastest
+const currentSortOption = ref('emissions') // default: lowest emissions
+const showingDetails = ref(false) // Track if showing detailed steps
+const detailedRoute = ref(null) // Store the route being viewed in detail
+const isTrackingVehicles = ref(false) // Track if vehicle tracking is active
+const isLoadingVehicles = ref(false) // Track if loading vehicles
+const vehicleTrackingError = ref(null) // Store vehicle tracking errors
 
 // Sort options
 const sortOptions = [
-  { value: 'duration', label: 'Fastest', icon: '⏱️' },
   { value: 'emissions', label: 'Lowest Emissions', icon: '🌱' },
+  { value: 'duration', label: 'Fastest', icon: '⏱️' },
   { value: 'distance', label: 'Shortest', icon: '📏' },
   { value: 'convenience', label: 'Most Convenient', icon: '⭐' },
   { value: 'balanced', label: 'Best Balance', icon: '⚖️' }
@@ -279,11 +459,19 @@ const initAutocomplete = () => {
     return
   }
 
+  // Define KL/Selangor bounds for autocomplete bias
+  const klSelangorBounds = new window.google.maps.LatLngBounds(
+    new window.google.maps.LatLng(2.5, 101.0),  // Southwest corner
+    new window.google.maps.LatLng(3.5, 102.0)   // Northeast corner
+  )
+
   // Initialize origin autocomplete
   if (originInput.value && !originAutocomplete) {
     originAutocomplete = new window.google.maps.places.Autocomplete(originInput.value, {
       componentRestrictions: { country: 'my' }, // Restrict to Malaysia
-      fields: ['formatted_address', 'geometry', 'name']
+      fields: ['formatted_address', 'geometry', 'name'],
+      bounds: klSelangorBounds, // Bias results to KL/Selangor
+      strictBounds: false // Allow results outside bounds but bias to KL/Selangor
     })
 
     originAutocomplete.addListener('place_changed', () => {
@@ -303,7 +491,9 @@ const initAutocomplete = () => {
   if (destinationInput.value && !destinationAutocomplete) {
     destinationAutocomplete = new window.google.maps.places.Autocomplete(destinationInput.value, {
       componentRestrictions: { country: 'my' }, // Restrict to Malaysia
-      fields: ['formatted_address', 'geometry', 'name']
+      fields: ['formatted_address', 'geometry', 'name'],
+      bounds: klSelangorBounds, // Bias results to KL/Selangor
+      strictBounds: false // Allow results outside bounds but bias to KL/Selangor
     })
 
     destinationAutocomplete.addListener('place_changed', () => {
@@ -364,8 +554,41 @@ const useCurrentLocation = (type) => {
   }, 300)
 }
 
+// Validate if location is within KL/Selangor region
+const isWithinKLSelangor = (location) => {
+  // Bounding box for KL and Selangor
+  const bounds = {
+    north: 3.5,
+    south: 2.5,
+    east: 102.0,
+    west: 101.0
+  }
+  
+  return location.latitude >= bounds.south && 
+         location.latitude <= bounds.north &&
+         location.longitude >= bounds.west && 
+         location.longitude <= bounds.east
+}
+
 const handleCompare = async () => {
   if (!canCompare.value) return
+
+  // Validate origin is within KL/Selangor
+  if (!isWithinKLSelangor(origin.value)) {
+    error.value = '📍 Origin must be within Kuala Lumpur or Selangor region.\n\n🚀 Routing for other regions coming soon!'
+    return
+  }
+
+  // Validate destination is within KL/Selangor
+  if (!isWithinKLSelangor(destination.value)) {
+    error.value = '📍 Destination must be within Kuala Lumpur or Selangor region.\n\n🚀 Routing for other regions coming soon!'
+    return
+  }
+
+  // Stop any existing vehicle tracking before new search
+  if (isTrackingVehicles.value) {
+    stopVehicleTracking()
+  }
 
   isLoading.value = true
   error.value = null
@@ -426,19 +649,163 @@ const handleCompare = async () => {
   }
 }
 
-const selectRoute = (scenario) => {
+const selectRoute = async (scenario) => {
+  console.log('🔄 Selecting route:', scenario.name)
+  
+  // Stop any existing vehicle tracking when switching routes
+  if (isTrackingVehicles.value) {
+    console.log('🛑 Stopping existing tracking before route switch')
+    stopVehicleTracking()
+    // Wait a bit to ensure cleanup completes
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+  
   selectedRouteId.value = scenario.id
+  
+  // Emit route selection to update map
   emit('route-selected', {
     scenario,
     origin: origin.value,
-    destination: destination.value
+    destination: destination.value,
+    realtimeVehicles: null
   })
+}
+
+// Check if route has trackable vehicles (buses or KTMB trains only)
+const hasTrackableVehicles = (scenario) => {
+  if (scenario.mode !== 'transit' || !scenario.segments) return false
+  
+  return scenario.segments.some(seg => 
+    seg.type === 'transit' && (
+      seg.category?.includes('bus') || 
+      seg.category?.includes('ktmb')
+    )
+  )
+}
+
+// Start vehicle tracking
+const startVehicleTracking = async (scenario) => {
+  isLoadingVehicles.value = true
+  vehicleTrackingError.value = null
+  
+  // Fetch initial vehicle data
+  try {
+    const transitSegments = scenario.segments.filter(s => s.type === 'transit')
+    const routes = transitSegments.map(seg => ({
+      category: seg.category,
+      routeId: seg.routeId,
+      options: {
+        minutesOld: 2
+        // directionId: seg.directionId || 0  // Temporarily removed - backend fix pending deployment
+      }
+    }))
+    
+    console.log('🚌 Starting vehicle tracking for:', routes)
+    const vehicleData = await getRealtimeVehicles(routes)
+    
+    if (vehicleData.success) {
+      isTrackingVehicles.value = true
+      vehicleTrackingError.value = null
+      
+      emit('vehicle-tracking-toggle', {
+        action: 'start',
+        scenario,
+        routes,
+        vehicleData: vehicleData.data || null
+      })
+      
+      console.log(`✅ Tracking ${vehicleData.data?.totalCount || 0} live vehicles`)
+      
+      // Show friendly message if no vehicles found
+      if (!vehicleData.data?.totalCount || vehicleData.data.totalCount === 0) {
+        vehicleTrackingError.value = 'No vehicles currently active on this route. They may appear soon!'
+      }
+    } else {
+      throw new Error(vehicleData.message || 'Failed to fetch vehicle data')
+    }
+  } catch (error) {
+    console.error('❌ Error starting vehicle tracking:', error)
+    isTrackingVehicles.value = false
+    
+    // User-friendly error message
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      vehicleTrackingError.value = 'Loading took too long. The server might be waking up - please try again in a moment.'
+    } else if (error.message?.includes('Network Error')) {
+      vehicleTrackingError.value = 'Network connection issue. Please check your internet and try again.'
+    } else {
+      vehicleTrackingError.value = 'Unable to load vehicle data at the moment. Please try again.'
+    }
+  } finally {
+    isLoadingVehicles.value = false
+  }
+}
+
+// Stop vehicle tracking
+const stopVehicleTracking = () => {
+  console.log('🛑 Stopping vehicle tracking - current state:', isTrackingVehicles.value)
+  
+  // Emit stop event first
+  emit('vehicle-tracking-toggle', {
+    action: 'stop',
+    scenario: null
+  })
+  
+  // Then clear local state
+  isTrackingVehicles.value = false
+  isLoadingVehicles.value = false
+  vehicleTrackingError.value = null
+  
+  console.log('✅ Vehicle tracking stopped')
+}
+
+// Retry vehicle tracking
+const retryVehicleTracking = (scenario) => {
+  vehicleTrackingError.value = null
+  startVehicleTracking(scenario)
 }
 
 // Sorting functions
 const setSortOption = (option) => {
   currentSortOption.value = option
   console.log(`📊 Sorting by: ${option}`)
+}
+
+// Detailed view functions
+const viewRouteDetails = async (scenario) => {
+  detailedRoute.value = scenario
+  showingDetails.value = true
+  console.log('📋 Viewing details for:', scenario.name)
+  
+  // Update the map to show the selected route
+  console.log('🗺️ Updating map to show route:', scenario.name)
+  emit('route-selected', {
+    scenario,
+    origin: origin.value,
+    destination: destination.value,
+    realtimeVehicles: null
+  })
+  
+  // Start vehicle tracking when viewing details for transit routes
+  if (scenario.mode === 'transit' && hasTrackableVehicles(scenario)) {
+    console.log('🚌 Starting vehicle tracking for detailed view')
+    await startVehicleTracking(scenario)
+  }
+}
+
+const backToRoutes = () => {
+  console.log('⬅️ Back to routes list')
+  
+  // Stop tracking BEFORE hiding the detailed view
+  if (isTrackingVehicles.value) {
+    console.log('🛑 Stopping vehicle tracking on back navigation')
+    stopVehicleTracking()
+  }
+  
+  // Small delay to ensure stop event is processed
+  setTimeout(() => {
+    showingDetails.value = false
+    detailedRoute.value = null
+  }, 100)
 }
 
 const getConvenienceScore = (scenario) => {
@@ -484,6 +851,45 @@ const getBalancedScore = (scenario) => {
   return score
 }
 
+const getTransitDetails = (scenario) => {
+  if (scenario.mode !== 'transit' || !scenario.segments) {
+    return null
+  }
+  
+  const transitSegments = scenario.segments.filter(s => s.type === 'transit')
+  if (transitSegments.length === 0) return null
+  
+  const details = transitSegments.map(seg => {
+    const isBus = seg.category?.includes('bus')
+    const isRail = seg.category?.includes('rail') || seg.category?.includes('ktmb')
+    const type = isBus ? 'Bus' : isRail ? 'Rail' : 'Transit'
+    const routeName = seg.routeName || seg.routeId || ''
+    const routeLongName = seg.routeLongName || ''
+    
+    return {
+      type,
+      routeName,
+      routeLongName,
+      category: seg.category
+    }
+  })
+  
+  return details
+}
+
+const getTransitSummary = (scenario) => {
+  const details = getTransitDetails(scenario)
+  if (!details || details.length === 0) return ''
+  
+  const types = [...new Set(details.map(d => d.type))]
+  const routes = details.map(d => d.routeName).filter(Boolean)
+  
+  if (routes.length > 0) {
+    return `${types.join(' + ')} (${routes.join(' → ')})`
+  }
+  return types.join(' + ')
+}
+
 const getIcon = (mode) => {
   const icons = {
     car: '🚗',
@@ -514,6 +920,17 @@ const getEmissionBarColor = (rank) => {
   return 'bg-red-500'
 }
 
+// Watch for detailed view changes to ensure tracking stops
+watch(() => showingDetails.value, (newValue, oldValue) => {
+  // When hiding detailed view, ensure tracking stops
+  if (oldValue === true && newValue === false) {
+    console.log('📴 Detailed view hidden, ensuring tracking stopped')
+    if (isTrackingVehicles.value) {
+      stopVehicleTracking()
+    }
+  }
+})
+
 // Lifecycle hooks
 onMounted(() => {
   // Initialize autocomplete after a short delay to ensure DOM is ready
@@ -534,6 +951,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  console.log('🔄 RouteComparison unmounting - cleaning up')
+  
+  // Stop vehicle tracking when component unmounts
+  if (isTrackingVehicles.value) {
+    console.log('🛑 Stopping tracking on unmount')
+    stopVehicleTracking()
+  }
+  
   // Cleanup autocomplete listeners
   if (originAutocomplete) {
     window.google.maps.event.clearInstanceListeners(originAutocomplete)

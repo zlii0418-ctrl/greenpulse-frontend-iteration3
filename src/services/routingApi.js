@@ -183,7 +183,10 @@ export const getEmissionFactors = async () => {
 export const getRealtimeVehicles = async (routes) => {
   try {
     const routesParam = encodeURIComponent(JSON.stringify(routes))
-    const response = await api.get(`/api/routing/realtime/vehicles-for-route?routes=${routesParam}`)
+    // Use longer timeout for real-time data (can be slow on first fetch)
+    const response = await api.get(`/api/routing/realtime/vehicles-for-route?routes=${routesParam}`, {
+      timeout: 30000 // 30 second timeout for real-time vehicle data
+    })
     return response.data
   } catch (error) {
     console.error('Error getting realtime vehicles:', error)

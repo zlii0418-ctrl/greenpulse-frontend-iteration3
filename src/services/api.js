@@ -4,12 +4,12 @@ import axios from 'axios'
 const getApiBaseUrl = () => {
   const isDevelopment = import.meta.env.DEV
   
-  // 开发环境：走 Vite 本地代理
+  // Development: Hit Vercel directly (bypass proxy to avoid timeout issues)
   if (isDevelopment) {
-    return ''
+    return 'https://gp-backend-iter3.vercel.app'
   }
   
-  // 生产环境：走同源 `/api`，由 Vercel rewrites 转发到后端，避免 CORS
+  // Production: Same-origin /api, forwarded by Vercel rewrites
   return ''
 }
 
