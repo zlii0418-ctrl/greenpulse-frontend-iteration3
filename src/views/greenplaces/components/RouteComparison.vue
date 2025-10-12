@@ -814,7 +814,7 @@ const startVehicleTracking = async (scenario) => {
         category: seg.category,
         routeId: seg.routeId,
         options: {
-          minutesOld: 10  // Allow vehicles up to 10 minutes old (realtime updater may not refresh every 2 min)
+          minutesOld: -1  // Initial fetch: Get most recent data available (regardless of age)
           // directionId: seg.directionId || 0  // Temporarily removed - backend fix pending deployment
         }
       }))

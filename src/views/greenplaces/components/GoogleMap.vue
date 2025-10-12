@@ -374,6 +374,7 @@ const clearUserLocationMarker = () => {
 // Real-time vehicle tracking state
 const trackingRoutes = ref(null)
 const trackingActive = ref(false)
+const currentDataTimestamp = ref(null) // Track most recent data timestamp for smart refresh
 
 // Real-time vehicle functions with improved visuals and caching
 const updateVehicleMarkers = (vehicleData) => {
@@ -587,61 +588,77 @@ const startVehicleRefresh = async (routes, initialVehicleData = null) => {
   // Display initial vehicle data if provided
   if (initialVehicleData) {
     updateVehicleMarkers(initialVehicleData)
+    // Extract timestamp from initial data
+    if (initialVehicleData.mostRecentDataTimestamp) {
+      currentDataTimestamp.value = initialVehicleData.mostRecentDataTimestamp
+      console.log(`📊 Initial data timestamp: ${currentDataTimestamp.value}`)
+    }
   }
 
   // Import here to avoid circular dependencies
   const { getRealtimeVehicles } = await import('@/services/routingApi')
   
-  // Function to fetch and update vehicles with caching
-  const fetchAndUpdateVehicles = async () => {
+  // Function to fetch and update vehicles with smart refresh
+  const fetchAndUpdateVehicles = async (isInitial = false) => {
     if (!trackingActive.value || !trackingRoutes.value) {
       return
     }
 
     try {
-      // Check session storage cache
-      const cacheKey = 'vehicles_' + JSON.stringify(trackingRoutes.value)
-      const cached = sessionStorage.getItem(cacheKey)
-      
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached)
-        // Use cache if less than 2 minutes old
-        if (Date.now() - timestamp < 120000) {
-          const ageSeconds = Math.round((Date.now() - timestamp) / 1000)
-          console.log(`📦 Using cached vehicle data (${ageSeconds}s old)`)
-          updateVehicleMarkers(data)
-          return
+      // Prepare routes with smart minutesOld parameter
+      const routesToFetch = trackingRoutes.value.map(route => ({
+        ...route,
+        options: {
+          ...route.options,
+          // Initial fetch: Get most recent data regardless of age (-1)
+          // Subsequent fetches: Check for data newer than what we have (10 min window)
+          minutesOld: isInitial ? -1 : 10
         }
-      }
+      }))
 
-      // Fetch fresh data
-      console.log('🔄 Fetching fresh vehicle data...')
-      const vehicleData = await getRealtimeVehicles(trackingRoutes.value)
+      console.log(`🔄 Fetching vehicle data... (initial: ${isInitial})`)
+      const vehicleData = await getRealtimeVehicles(routesToFetch)
       
-      if (vehicleData.success && vehicleData.data) {
-        // Cache the results
-        sessionStorage.setItem(cacheKey, JSON.stringify({
-          data: vehicleData.data,
-          timestamp: Date.now()
-        }))
+      if (vehicleData.success) {
+        const newDataTimestamp = vehicleData.mostRecentDataTimestamp
         
-        updateVehicleMarkers(vehicleData.data)
-        console.log(`✅ Updated ${vehicleData.data.vehicles?.length || 0} vehicle positions`)
+        // Smart update: Only update if new data is newer than current data
+        if (!currentDataTimestamp.value || !newDataTimestamp) {
+          // First time or no timestamp available - always update
+          console.log(`✅ Displaying ${vehicleData.totalCount || 0} vehicles (initial or no timestamp)`)
+          updateVehicleMarkers(vehicleData)
+          currentDataTimestamp.value = newDataTimestamp
+        } else {
+          // Compare timestamps
+          const currentTime = new Date(currentDataTimestamp.value).getTime()
+          const newTime = new Date(newDataTimestamp).getTime()
+          
+          if (newTime > currentTime) {
+            const ageDiff = Math.round((newTime - currentTime) / 1000)
+            console.log(`✅ Updating markers with newer data (+${ageDiff}s fresher, ${vehicleData.totalCount || 0} vehicles)`)
+            updateVehicleMarkers(vehicleData)
+            currentDataTimestamp.value = newDataTimestamp
+          } else {
+            const staleDiff = Math.round((currentTime - newTime) / 1000)
+            console.log(`⏸️  Keeping current markers (fetched data is ${staleDiff}s older, not updating)`)
+          }
+        }
       }
     } catch (error) {
       console.warn('⚠️ Error refreshing vehicles:', error.message)
     }
   }
 
-  // Initial fetch if no initial data provided
+  // Initial fetch: Get most recent data available (regardless of age)
   if (!initialVehicleData) {
-    await fetchAndUpdateVehicles()
+    console.log('🎯 Initial fetch: Getting most recent data available...')
+    await fetchAndUpdateVehicles(true)
   }
   
-  // Set up interval to refresh every 2 minutes
-  vehicleRefreshInterval = setInterval(fetchAndUpdateVehicles, 120000)
+  // Set up interval to check for updates every 2 minutes
+  vehicleRefreshInterval = setInterval(() => fetchAndUpdateVehicles(false), 120000)
 
-  console.log('🔄 Started vehicle refresh (every 2 minutes)')
+  console.log('🔄 Started smart vehicle refresh (checks every 2 minutes, only updates if newer)')
 }
 
 const stopVehicleRefresh = () => {
@@ -652,6 +669,7 @@ const stopVehicleRefresh = () => {
   
   trackingActive.value = false
   trackingRoutes.value = null
+  currentDataTimestamp.value = null // Reset timestamp tracking
   clearVehicleMarkers()
   
   console.log('⏹️ Stopped vehicle refresh and cleared markers')
