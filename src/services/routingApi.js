@@ -28,15 +28,18 @@ export const quickCompare = async (origin, destination) => {
 export const compareRoutes = async (origin, destination, options = {}) => {
   try {
     // Fetch private vehicle routes (car, bike, walk, motorcycle)
+    // OSRM routing can take time, especially for long distances
     const privatePromise = api.post('/api/routing/compare', {
       origin,
       destination,
       options,
       userId: options.userId || null
+    }, {
+      timeout: 30000 // 30 second timeout for private routes
     })
     
     // Fetch public transit routes (MRT, LRT, Bus, KTMB)
-    // Transit route calculation can take 20-30 seconds, use longer timeout
+    // Transit route calculation can take longer due to complex queries
     const transitPromise = api.post('/api/routing/transit/plan', {
       origin,
       destination
