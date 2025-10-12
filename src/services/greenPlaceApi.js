@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || 'http://3.218.247.158:8080',
+  baseURL: import.meta.env.VITE_API_BASE || 'https://greenpulse.vvvv.host',
   timeout: 30000, // Increased to 30 seconds, giving more time for large data requests
   headers: {
     'Content-Type': 'application/json'
