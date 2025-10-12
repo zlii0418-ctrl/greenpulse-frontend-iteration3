@@ -5,8 +5,7 @@
       <div class="flex items-start gap-2">
         <span class="text-blue-600 text-base">ℹ️</span>
         <div class="text-blue-800">
-          <span class="font-semibold">Available in KL & Selangor only</span>
-          <div class="mt-1 text-blue-700">Other regions coming soon!</div>
+          <span class="font-semibold">Public transport routing available in KL & Selangor only</span>
         </div>
       </div>
     </div>
@@ -442,6 +441,7 @@ const detailedRoute = ref(null) // Store the route being viewed in detail
 const isTrackingVehicles = ref(false) // Track if vehicle tracking is active
 const isLoadingVehicles = ref(false) // Track if loading vehicles
 const vehicleTrackingError = ref(null) // Store vehicle tracking errors
+const transitRoutes = ref([]) // Cache for transit route data
 
 // Sort options
 const sortOptions = [
@@ -573,18 +573,22 @@ const onDestinationFocus = () => {
 }
 
 const setLocation = (type, lat, lng, name = '') => {
+  console.log(`📍 setLocation called: type=${type}, lat=${lat}, lng=${lng}`)
+  
   if (type === 'origin') {
     origin.value = {
       latitude: lat,
       longitude: lng,
       name: name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`
     }
+    console.log('✅ Origin updated:', origin.value)
   } else {
     destination.value = {
       latitude: lat,
       longitude: lng,
       name: name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`
     }
+    console.log('✅ Destination updated:', destination.value)
   }
   
   // Clear old results and route from map when location changes
@@ -595,6 +599,7 @@ const setLocation = (type, lat, lng, name = '') => {
     showingDetails.value = false
     detailedRoute.value = null
     error.value = null
+    transitRoutes.value = [] // Clear transit routes cache
     
     // Stop vehicle tracking if active
     if (isTrackingVehicles.value) {
@@ -602,11 +607,11 @@ const setLocation = (type, lat, lng, name = '') => {
       stopVehicleTracking()
     }
     
-    // Emit to clear route from map
+    // Emit to clear route but keep origin/destination markers visible
     emit('route-selected', {
       scenario: null,
-      origin: type === 'origin' ? { latitude: lat, longitude: lng, name } : origin.value,
-      destination: type === 'destination' ? { latitude: lat, longitude: lng, name } : destination.value,
+      origin: origin.value,  // Keep showing origin marker
+      destination: destination.value,  // Keep showing destination marker
       realtimeVehicles: null
     })
   }
@@ -785,18 +790,25 @@ const handleCompare = async () => {
   error.value = null
   results.value = null
   selectedRouteId.value = null
+  transitRoutes.value = [] // Clear transit routes cache
+  showingDetails.value = false
+  detailedRoute.value = null
   
-  // Clear old route from map immediately
+  // Clear old route from map but keep markers visible
   console.log('🗺️ Clearing old route from map before new comparison')
   emit('route-selected', {
     scenario: null,
-    origin: origin.value,
-    destination: destination.value,
+    origin: origin.value,  // Keep origin marker visible during calculation
+    destination: destination.value,  // Keep destination marker visible during calculation
     realtimeVehicles: null
   })
 
   try {
     // Always use full comparison to show all routes
+    console.log('🔍 Sending route comparison request with:')
+    console.log('  Origin:', origin.value)
+    console.log('  Destination:', destination.value)
+    
     const response = await compareRoutes(origin.value, destination.value)
 
     console.log('API Response:', response)

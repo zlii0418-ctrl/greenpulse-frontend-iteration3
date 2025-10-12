@@ -18,6 +18,7 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
   state: () => ({
     // Search related state
     searchResults: [],
+    _allSearchResults: [], // Store all results for client-side pagination
     totalPages: 0,
     currentPage: 0,
     totalElements: 0,
@@ -163,19 +164,30 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
         this.isLoading = true
         this.error = null
         
+        // Load all results for proper distance-based sorting
         const response = await greenPlaceApiService.searchPlaces({
           keyword,
           category,
-          page,
-          size
+          page: 0,
+          size: 500  // Load all results at once for client-side sorting
         })
         
-        this.searchResults = response.content || []
-        this.totalPages = response.totalPages || 0
-        this.currentPage = response.currentPage || 0
-        this.totalElements = response.totalElements || 0
+        // Store all results for client-side pagination
+        const allResults = response.content || []
+        
+        // Calculate pagination on frontend
+        const startIndex = page * size
+        const endIndex = startIndex + size
+        
+        this.searchResults = allResults.slice(startIndex, endIndex)
+        this.totalPages = Math.ceil(allResults.length / size)
+        this.currentPage = page
+        this.totalElements = allResults.length
         this.searchKeyword = keyword
         this.selectedCategory = category
+        
+        // Store all results for later pagination
+        this._allSearchResults = allResults
         
       } catch (error) {
         console.error('Search failed:', error)
@@ -211,10 +223,27 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
     },
 
     /**
+     * Paginate through already-loaded results (for client-side pagination)
+     */
+    paginateResults(page, size = 10) {
+      if (!this._allSearchResults || this._allSearchResults.length === 0) {
+        return
+      }
+      
+      const startIndex = page * size
+      const endIndex = startIndex + size
+      
+      this.searchResults = this._allSearchResults.slice(startIndex, endIndex)
+      this.currentPage = page
+      this.totalPages = Math.ceil(this._allSearchResults.length / size)
+    },
+
+    /**
      * Clear search state
      */
     clearSearch() {
       this.searchResults = []
+      this._allSearchResults = []
       this.totalPages = 0
       this.currentPage = 0
       this.totalElements = 0
@@ -270,6 +299,7 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
           (error) => {
             this.isGettingLocation = false
             this.locationPermission = 'denied'
+            this.userLocation = null // Clear user location when denied
             
             let errorMessage = 'Failed to get location'
             switch (error.code) {

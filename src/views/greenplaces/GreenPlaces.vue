@@ -3,23 +3,10 @@
     <!-- Header -->
     <Header />
 
-    <!-- Back Button -->
-    <div class="bg-white border-b border-gray-200 px-4 py-2">
-      <button
-        @click="goBack"
-        class="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
-      >
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Back
-      </button>
-    </div>
-
     <!-- Mode Toggle Bar -->
     <div class="bg-white border-b border-gray-200 px-4 py-3">
-      <div class="flex items-center gap-4">
-        <div class="flex-1 flex gap-2">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex gap-2">
           <button
             @click="handleModeChange('search')"
             :class="viewMode === 'search' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
@@ -41,6 +28,20 @@
             Route Comparison
           </button>
         </div>
+        
+        <!-- Enable Location Services Toggle Button -->
+        <button
+          v-if="greenPlaceStore.locationPermission === 'denied'"
+          @click="handleEnableLocation"
+          :disabled="greenPlaceStore.isGettingLocation"
+          class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          {{ greenPlaceStore.isGettingLocation ? 'Getting Location...' : 'Enable Location Services' }}
+        </button>
       </div>
     </div>
 
@@ -140,6 +141,15 @@
                   
                   <!-- Address -->
                   <p class="text-sm text-gray-600 line-clamp-2">{{ place.fullAddress }}</p>
+                  
+                  <!-- Distance -->
+                  <div class="mt-2 flex items-center text-xs text-gray-500">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    {{ getDistanceText(place) }}
+                  </div>
                 </div>
                 
                 <!-- Arrow icon -->
@@ -165,9 +175,19 @@
               Previous
             </button>
             
-            <span class="text-sm font-semibold text-gray-700 bg-gray-100 px-4 py-2 rounded-lg">
-              Page {{ currentPage + 1 }} of {{ totalPages }}
-            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-gray-700">Page</span>
+              <input
+                type="number"
+                :value="currentPage + 1"
+                @input="handlePageInput"
+                @keyup.enter="jumpToPage"
+                min="1"
+                :max="totalPages"
+                class="w-16 text-center px-2 py-1.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
+              />
+              <span class="text-sm text-gray-700">of {{ totalPages }}</span>
+            </div>
             
             <button
               @click="goToPage(currentPage + 1)"
@@ -248,7 +268,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useGreenPlaceStore } from '../../stores/greenPlace'
 import Header from '../components/header.vue'
 import SearchBar from './components/SearchBar.vue'
@@ -259,7 +278,6 @@ import RouteComparison from './components/RouteComparison.vue'
 
 // Use Pinia store
 const greenPlaceStore = useGreenPlaceStore()
-const router = useRouter()
 
 // Reactive data
 const viewMode = ref('search') // 'search' or 'routing'
@@ -275,12 +293,76 @@ const routeComparisonRef = ref(null)
 const googleMapRef = ref(null)
 const routingData = ref(null) // Store routing origin, destination, and route data
 const vehicleDataFreshness = ref(null) // Store vehicle data freshness info
+const pageInputValue = ref(null) // Store temporary page input value
 
-// Computed properties
-const searchResults = computed(() => greenPlaceStore.searchResults)
-const totalPages = computed(() => greenPlaceStore.totalPages)
+// Helper function to calculate distance between two coordinates (Haversine formula)
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371 // Earth's radius in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c // Distance in kilometers
+}
+
+// Constant default KL location for sorting consistency
+const DEFAULT_KL_LAT = 3.1390
+const DEFAULT_KL_LNG = 101.6869
+
+// Helper computed to get ALL results sorted by distance
+const sortedAllResults = computed(() => {
+  const allResults = greenPlaceStore._allSearchResults
+  if (!allResults || allResults.length === 0) {
+    return []
+  }
+  
+  // Get reference location (user location or default KL location)
+  // Use constant default location, NOT mapCenter, to prevent re-sorting when map moves
+  const refLat = greenPlaceStore.userLocation?.lat || DEFAULT_KL_LAT
+  const refLng = greenPlaceStore.userLocation?.lng || DEFAULT_KL_LNG
+  
+  // Sort ALL results by distance from reference location
+  return [...allResults].sort((a, b) => {
+    const distanceA = calculateDistance(refLat, refLng, parseFloat(a.latitude), parseFloat(a.longitude))
+    const distanceB = calculateDistance(refLat, refLng, parseFloat(b.latitude), parseFloat(b.longitude))
+    return distanceA - distanceB
+  })
+})
+
+// Computed properties - Apply pagination to sorted results
+const searchResults = computed(() => {
+  const sorted = sortedAllResults.value
+  if (!sorted || sorted.length === 0) {
+    // Fallback to current page results if all results not available
+    return greenPlaceStore.searchResults
+  }
+  
+  // Return paginated slice of sorted results
+  const page = greenPlaceStore.currentPage
+  const size = 10
+  const startIndex = page * size
+  const endIndex = startIndex + size
+  
+  return sorted.slice(startIndex, endIndex)
+})
+const totalPages = computed(() => {
+  const sorted = sortedAllResults.value
+  if (!sorted || sorted.length === 0) {
+    return greenPlaceStore.totalPages
+  }
+  return Math.ceil(sorted.length / 10)
+})
 const currentPage = computed(() => greenPlaceStore.currentPage)
-const totalElements = computed(() => greenPlaceStore.totalElements)
+const totalElements = computed(() => {
+  const sorted = sortedAllResults.value
+  if (!sorted || sorted.length === 0) {
+    return greenPlaceStore.totalElements
+  }
+  return sorted.length
+})
 const isSearching = computed(() => greenPlaceStore.isSearching)
 const hasResults = computed(() => greenPlaceStore.hasResults)
 const hasError = computed(() => greenPlaceStore.hasError)
@@ -314,20 +396,31 @@ const handleSearch = (searchParams) => {
 }
 
 const selectPlace = async (place) => {
+  console.log('🔍 selectPlace called with:', {
+    id: place.id,
+    name: place.name,
+    lat: place.latitude,
+    lng: place.longitude
+  })
+  
   selectedPlaceId.value = place.id
   isDetailDrawerOpen.value = true
   
   // Update map center to selected place location
   if (place.latitude && place.longitude) {
-    mapCenter.value = {
+    const newCenter = {
       lat: parseFloat(place.latitude),
       lng: parseFloat(place.longitude)
     }
+    console.log('📍 Setting map center to:', newCenter)
+    mapCenter.value = newCenter
     mapZoom.value = 15 // Set appropriate zoom level for place details
   }
   
   // Load details
+  console.log('📥 Loading details for place ID:', place.id)
   await greenPlaceStore.loadById(place.id)
+  console.log('✅ Loaded place details:', greenPlaceStore.selectedPlace?.name)
 }
 
 const closeDetailDrawer = () => {
@@ -351,12 +444,22 @@ const retrySearch = () => {
 
 const goToPage = (page) => {
   if (page >= 0 && page < totalPages.value) {
-    greenPlaceStore.searchPlaces({
-      keyword: searchKeyword.value,
-      category: selectedCategory.value,
-      page,
-      size: 10
-    })
+    // Use client-side pagination from already-loaded results
+    greenPlaceStore.paginateResults(page, 10)
+  }
+}
+
+const handlePageInput = (event) => {
+  pageInputValue.value = event.target.value
+}
+
+const jumpToPage = () => {
+  const pageNum = parseInt(pageInputValue.value)
+  if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages.value) {
+    goToPage(pageNum - 1) // Convert to 0-based index
+  } else {
+    // Reset to current page if invalid
+    pageInputValue.value = currentPage.value + 1
   }
 }
 
@@ -365,8 +468,17 @@ const getRatingStars = (rating) => {
   return Math.round(rating)
 }
 
-const goBack = () => {
-  router.go(-1)
+const getDistanceText = (place) => {
+  // Use same reference location as sorting for consistency
+  const refLat = greenPlaceStore.userLocation?.lat || DEFAULT_KL_LAT
+  const refLng = greenPlaceStore.userLocation?.lng || DEFAULT_KL_LNG
+  const distance = calculateDistance(refLat, refLng, parseFloat(place.latitude), parseFloat(place.longitude))
+  
+  if (distance < 1) {
+    return `${Math.round(distance * 1000)} m away`
+  } else {
+    return `${distance.toFixed(1)} km away`
+  }
 }
 
 // Location permission related methods
@@ -387,6 +499,7 @@ const handleLocationAllow = async () => {
       mapZoom.value = 13 // Zoom in on user location
     }
     showLocationModal.value = false
+    localStorage.setItem('locationPromptShown', 'true')
   } catch (error) {
     console.error('Failed to get location:', error)
   }
@@ -395,7 +508,14 @@ const handleLocationAllow = async () => {
 const handleLocationDeny = () => {
   showLocationModal.value = false
   greenPlaceStore.locationPermission = 'denied'
+  greenPlaceStore.userLocation = null // Clear any cached location
   localStorage.setItem('locationPermission', 'denied')
+  localStorage.setItem('locationPromptShown', 'true')
+  console.log('Location permission denied by user')
+  
+  // Reset map to default KL location
+  mapCenter.value = { lat: 3.1390, lng: 101.6869 }
+  mapZoom.value = 12
 }
 
 // Routing-related methods
@@ -435,6 +555,19 @@ const handleLocationSelected = ({ type, lat, lng }) => {
 
 const handleRouteSelected = (data) => {
   console.log('Route selected:', data)
+  
+  // If scenario is null, this is a clear/reset event
+  if (!data.scenario) {
+    console.log('🗺️ Clearing route from map')
+    routingData.value = {
+      origin: data.origin || null,  // Keep markers if provided
+      destination: data.destination || null,  // Keep markers if provided
+      selectedRoute: null,
+      realtimeVehicles: null
+    }
+    return
+  }
+  
   // Pass the entire data including the selected scenario route and real-time vehicles
   routingData.value = {
     origin: data.origin,
@@ -506,14 +639,16 @@ const handleGetDirections = (place) => {
       // Set origin to user location if available, otherwise use default map center
       const originLat = greenPlaceStore.userLocation?.lat || mapCenter.value.lat
       const originLng = greenPlaceStore.userLocation?.lng || mapCenter.value.lng
+      const originName = greenPlaceStore.userLocation ? 'Your Location' : `${originLat.toFixed(4)}, ${originLng.toFixed(4)}`
       
       // Set destination to the selected place
       const destLat = parseFloat(place.latitude)
       const destLng = parseFloat(place.longitude)
+      const destName = place.name
       
-      // Set locations in the route comparison component
-      routeComparisonRef.value.setLocation('origin', originLat, originLng)
-      routeComparisonRef.value.setLocation('destination', destLat, destLng)
+      // Set locations in the route comparison component with names
+      routeComparisonRef.value.setLocation('origin', originLat, originLng, originName)
+      routeComparisonRef.value.setLocation('destination', destLat, destLng, destName)
       
       // Update routing data to show markers
       routingData.value = {
@@ -563,6 +698,12 @@ const handleModeChange = (newMode) => {
   }
   
   viewMode.value = newMode
+}
+
+const handleEnableLocation = async () => {
+  // Clear any stale location data before requesting again
+  greenPlaceStore.userLocation = null
+  showLocationModal.value = true
 }
 
 // Check if geolocation is supported and permission state
@@ -635,10 +776,10 @@ onMounted(async () => {
   if (!isLocationAvailable) {
     console.log('Location services not available or denied')
   } else {
-    // Only show location permission modal if permission hasn't been determined yet
-    if (greenPlaceStore.locationPermission === 'prompt') {
-      showLocationModal.value = true
-    } else if (greenPlaceStore.locationPermission === 'granted') {
+    // Check if location prompt has been shown before
+    const locationPromptShown = localStorage.getItem('locationPromptShown')
+    
+    if (greenPlaceStore.locationPermission === 'granted') {
       // If permission was granted, try to get location silently
       if (!greenPlaceStore.userLocation) {
         await greenPlaceStore.requestLocationPermission()
@@ -653,6 +794,15 @@ onMounted(async () => {
         }
         mapZoom.value = 13
       }
+    } else if (greenPlaceStore.locationPermission === 'denied') {
+      // If permission is denied, ensure location is cleared and use default KL location
+      greenPlaceStore.userLocation = null
+      mapCenter.value = { lat: 3.1390, lng: 101.6869 }
+      mapZoom.value = 12
+      console.log('Location denied, using default KL location')
+    } else if (!locationPromptShown) {
+      // Show location permission modal on first load only
+      showLocationModal.value = true
     }
   }
   

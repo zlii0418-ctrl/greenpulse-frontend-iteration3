@@ -321,15 +321,8 @@ const updateMarkers = () => {
 
   console.log(`Total created ${markers.value.length} markers, visibility: ${props.routingMode ? 'HIDDEN' : 'VISIBLE'}`)
 
-  // If there are markers and no user location, adjust map bounds to show all markers
-  // But only in search mode
-  if (markers.value.length > 0 && !props.userLocation && !props.routingMode) {
-    const bounds = new window.google.maps.LatLngBounds()
-    markers.value.forEach(marker => {
-      bounds.extend(marker.getPosition())
-    })
-    map.value.fitBounds(bounds)
-  }
+  // Don't auto-fit bounds - keep the default Kuala Lumpur view or user location
+  // This prevents zooming out to show all of Malaysia
   
   isUpdatingMarkers = false
 }
@@ -732,6 +725,13 @@ const updateRoutingMarkers = () => {
 
   const { origin, destination } = props.routingData
 
+  // If BOTH origin AND destination are null, clear everything (full reset)
+  if (!origin && !destination) {
+    console.log('🗺️ Clearing all routing markers and routes (null origin/destination)')
+    clearRoutingMarkers()
+    return
+  }
+
   // Create or update origin marker (with higher z-index to appear on top)
   if (origin && origin.latitude && origin.longitude) {
     if (originMarker.value) {
@@ -747,6 +747,10 @@ const updateRoutingMarkers = () => {
         zIndex: 1000 // High z-index to appear above other markers
       }))
     }
+  } else if (originMarker.value) {
+    // Clear origin marker if origin is null
+    originMarker.value.setMap(null)
+    originMarker.value = null
   }
 
   // Create or update destination marker (with higher z-index to appear on top)
@@ -764,6 +768,10 @@ const updateRoutingMarkers = () => {
         zIndex: 1001 // Slightly higher to appear above origin
       }))
     }
+  } else if (destinationMarker.value) {
+    // Clear destination marker if destination is null
+    destinationMarker.value.setMap(null)
+    destinationMarker.value = null
   }
 
   // Draw route from routing data
