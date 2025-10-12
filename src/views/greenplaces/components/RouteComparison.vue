@@ -28,14 +28,26 @@
               {{ isGettingLocation ? 'Getting...' : 'GPS' }}
             </button>
           </div>
-          <input
-            ref="originInput"
-            v-model="origin.name"
-            type="text"
-            placeholder="Your location"
-            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
-            @focus="onOriginFocus"
-          />
+          <div class="relative">
+            <input
+              ref="originInput"
+              v-model="origin.name"
+              type="text"
+              placeholder="Your location"
+              class="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+              @focus="onOriginFocus"
+            />
+            <button
+              v-if="origin.name"
+              @click="clearOrigin"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              title="Clear origin"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Destination Section -->
@@ -43,14 +55,26 @@
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-sm font-semibold text-gray-700">Destination</h3>
           </div>
-          <input
-            ref="destinationInput"
-            v-model="destination.name"
-            type="text"
-            placeholder="Where to?"
-            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
-            @focus="onDestinationFocus"
-          />
+          <div class="relative">
+            <input
+              ref="destinationInput"
+              v-model="destination.name"
+              type="text"
+              placeholder="Where to?"
+              class="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+              @focus="onDestinationFocus"
+            />
+            <button
+              v-if="destination.name"
+              @click="clearDestination"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              title="Clear destination"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -176,7 +200,10 @@
                   ></div>
                 </div>
                 <div class="text-xs text-gray-500 mt-1">
-                  {{ scenario.emissionsVsWorst || 0 }}% of worst
+                  <span v-if="scenario.emissionsVsWorst >= 100">Highest Emissions</span>
+                  <span v-else-if="scenario.emissionsVsWorst >= 80">High Emissions</span>
+                  <span v-else-if="scenario.emissionsVsWorst >= 50">Moderate Emissions</span>
+                  <span v-else>Low Emissions</span>
                   <span v-if="(scenario.savingsVsWorst || 0) > 0">
                     · Saves {{ scenario.savingsVsWorst?.toFixed(3) || '0.000' }} kg CO2
                   </span>
@@ -596,6 +623,60 @@ const useCurrentLocation = (type) => {
     setLocation(type, props.userLocation.lat, props.userLocation.lng, 'Current Location')
     isGettingLocation.value = false
   }, 300)
+}
+
+// Clear origin location
+const clearOrigin = () => {
+  origin.value = { latitude: null, longitude: null, name: '' }
+  
+  // Clear results when clearing origin
+  if (results.value) {
+    results.value = null
+    selectedRouteId.value = null
+    showingDetails.value = false
+    detailedRoute.value = null
+    error.value = null
+    
+    // Stop vehicle tracking if active
+    if (isTrackingVehicles.value) {
+      stopVehicleTracking()
+    }
+    
+    // Emit to clear route from map
+    emit('route-selected', {
+      scenario: null,
+      origin: null,
+      destination: destination.value,
+      realtimeVehicles: null
+    })
+  }
+}
+
+// Clear destination location
+const clearDestination = () => {
+  destination.value = { latitude: null, longitude: null, name: '' }
+  
+  // Clear results when clearing destination
+  if (results.value) {
+    results.value = null
+    selectedRouteId.value = null
+    showingDetails.value = false
+    detailedRoute.value = null
+    error.value = null
+    
+    // Stop vehicle tracking if active
+    if (isTrackingVehicles.value) {
+      stopVehicleTracking()
+    }
+    
+    // Emit to clear route from map
+    emit('route-selected', {
+      scenario: null,
+      origin: origin.value,
+      destination: null,
+      realtimeVehicles: null
+    })
+  }
 }
 
 // Swap origin and destination

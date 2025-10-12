@@ -395,6 +395,7 @@ export default {
   font-size: 3.5rem;
   font-weight: 700;
   margin: 0;
+  color: rgba(0, 0, 0, 1);
   font-family: 'Cormorant Garamond', serif;
   line-height: 1.2;
 }
