@@ -810,14 +810,14 @@ const startVehicleTracking = async (scenario) => {
   // Fetch initial vehicle data
   try {
     const transitSegments = scenario.segments.filter(s => s.type === 'transit')
-    const routes = transitSegments.map(seg => ({
-      category: seg.category,
-      routeId: seg.routeId,
-      options: {
-        minutesOld: 2
-        // directionId: seg.directionId || 0  // Temporarily removed - backend fix pending deployment
-      }
-    }))
+      const routes = transitSegments.map(seg => ({
+        category: seg.category,
+        routeId: seg.routeId,
+        options: {
+          minutesOld: 10  // Allow vehicles up to 10 minutes old (realtime updater may not refresh every 2 min)
+          // directionId: seg.directionId || 0  // Temporarily removed - backend fix pending deployment
+        }
+      }))
     
     console.log('🚌 Starting vehicle tracking for:', routes)
     const vehicleData = await getRealtimeVehicles(routes)
@@ -830,13 +830,13 @@ const startVehicleTracking = async (scenario) => {
         action: 'start',
         scenario,
         routes,
-        vehicleData: vehicleData.data || null
+        vehicleData: vehicleData // Pass the entire response, not vehicleData.data
       })
       
-      console.log(`✅ Tracking ${vehicleData.data?.totalCount || 0} live vehicles`)
+      console.log(`✅ Tracking ${vehicleData.totalCount || 0} live vehicles`)
       
       // Show friendly message if no vehicles found
-      if (!vehicleData.data?.totalCount || vehicleData.data.totalCount === 0) {
+      if (!vehicleData.totalCount || vehicleData.totalCount === 0) {
         vehicleTrackingError.value = 'No vehicles currently active on this route. They may appear soon!'
       }
     } else {

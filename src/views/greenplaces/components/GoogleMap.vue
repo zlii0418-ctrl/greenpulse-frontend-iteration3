@@ -16,21 +16,6 @@
         <p class="text-gray-600">Loading map...</p>
       </div>
     </div>
-    
-    <!-- Test Dummy Bus Button (only show in routing mode) -->
-    <div 
-      v-if="routingMode && isMapLoaded"
-      class="absolute bottom-4 right-4 z-10"
-    >
-      <button
-        @click="loadDummyBuses"
-        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium transition-colors"
-        title="Load test buses for demo"
-      >
-        <span class="text-lg">🚌</span>
-        <span>Test Buses</span>
-      </button>
-    </div>
   </div>
 </template>
 
@@ -406,7 +391,12 @@ const updateVehicleMarkers = (vehicleData) => {
   if (vehicleData.vehicles.length > 0) {
     const now = Date.now()
     const ages = vehicleData.vehicles.map(v => {
-      const timestamp = new Date(v.created_at || now).getTime()
+      // Add 'Z' to timestamp if it doesn't have timezone info (treat as UTC)
+      let timestampStr = v.created_at || new Date().toISOString()
+      if (!timestampStr.endsWith('Z') && !timestampStr.includes('+') && !timestampStr.includes('T')) {
+        timestampStr = timestampStr.replace(' ', 'T') + 'Z' // Convert "YYYY-MM-DD HH:MM:SS" to ISO with UTC
+      }
+      const timestamp = new Date(timestampStr).getTime()
       return (now - timestamp) / 1000
     })
     oldestDataAgeSeconds = Math.max(...ages)
@@ -497,8 +487,12 @@ const updateVehicleMarkers = (vehicleData) => {
       animation: window.google.maps.Animation.DROP
     }))
 
-    // Calculate individual vehicle data age
-    const vehicleTimestamp = new Date(vehicle.created_at || Date.now()).getTime()
+    // Calculate individual vehicle data age (handle timezone)
+    let vehicleTimestampStr = vehicle.created_at || new Date().toISOString()
+    if (!vehicleTimestampStr.endsWith('Z') && !vehicleTimestampStr.includes('+') && !vehicleTimestampStr.includes('T')) {
+      vehicleTimestampStr = vehicleTimestampStr.replace(' ', 'T') + 'Z' // Convert to UTC ISO format
+    }
+    const vehicleTimestamp = new Date(vehicleTimestampStr).getTime()
     const vehicleAgeSeconds = Math.floor((Date.now() - vehicleTimestamp) / 1000)
     let vehicleAgeDisplay = ''
     let vehicleAgeColor = '#22c55e' // Green for fresh
@@ -514,6 +508,21 @@ const updateVehicleMarkers = (vehicleData) => {
       vehicleAgeColor = '#ef4444' // Red
     }
     
+    // Convert GTFS status code to readable text
+    const getStatusText = (statusCode) => {
+      const statusMap = {
+        '0': '🔜 Approaching Stop',
+        '1': '🛑 Stopped',
+        '2': '🚌 In Transit'
+      }
+      return statusMap[String(statusCode)] || `Status ${statusCode}`
+    }
+    
+    // Convert direction ID to readable text
+    const getDirectionText = (directionId) => {
+      return directionId === 0 ? '➡️ Outbound' : directionId === 1 ? '⬅️ Inbound' : `Direction ${directionId}`
+    }
+    
     // Add info window with vehicle details
     const infoContent = `
       <div style="padding: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
@@ -523,9 +532,9 @@ const updateVehicleMarkers = (vehicleData) => {
         <p style="margin: 4px 0; font-size: 12px; color: #666;">
           <strong>Route:</strong> ${vehicle.route_id || vehicle.routeId || 'Unknown'}<br>
           ${vehicle.speed ? `<strong>Speed:</strong> ${vehicle.speed.toFixed(1)} km/h<br>` : ''}
-          ${vehicle.current_status ? `<strong>Status:</strong> ${vehicle.current_status}<br>` : ''}
-          ${vehicle.direction_id !== null && vehicle.direction_id !== undefined ? `<strong>Direction:</strong> ${vehicle.direction_id}<br>` : ''}
-          <strong>Updated:</strong> ${new Date(vehicle.created_at || Date.now()).toLocaleTimeString()}
+          ${vehicle.current_status ? `<strong>Status:</strong> ${getStatusText(vehicle.current_status)}<br>` : ''}
+          ${vehicle.direction_id !== null && vehicle.direction_id !== undefined ? `<strong>Direction:</strong> ${getDirectionText(vehicle.direction_id)}<br>` : ''}
+          <strong>Updated:</strong> ${new Date(vehicleTimestampStr).toLocaleTimeString()}
         </p>
         <div style="margin-top: 8px; padding: 4px 8px; background: ${vehicleAgeColor}22; border-left: 3px solid ${vehicleAgeColor}; border-radius: 4px;">
           <span style="font-size: 11px; color: ${vehicleAgeColor}; font-weight: 600;">

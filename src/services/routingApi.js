@@ -40,11 +40,12 @@ export const compareRoutes = async (origin, destination, options = {}) => {
     
     // Fetch public transit routes (MRT, LRT, Bus, KTMB)
     // Transit route calculation can take longer due to complex queries
+    // Set timeout: 0 to disable the default 10s timeout
     const transitPromise = api.post('/api/routing/transit/plan', {
       origin,
       destination
     }, {
-      timeout: 60000 // 60 second timeout to match Vercel maxDuration
+      timeout: 0 // No timeout - let backend complete naturally
     }).catch(err => {
       // Don't fail entire request if transit routes not available
       console.warn('Transit routes not available:', err.message)
@@ -183,9 +184,9 @@ export const getEmissionFactors = async () => {
 export const getRealtimeVehicles = async (routes) => {
   try {
     const routesParam = encodeURIComponent(JSON.stringify(routes))
-    // Use longer timeout for real-time data (can be slow on first fetch)
+    // No timeout - let backend complete naturally (serverless can take time on cold start)
     const response = await api.get(`/api/routing/realtime/vehicles-for-route?routes=${routesParam}`, {
-      timeout: 30000 // 30 second timeout for real-time vehicle data
+      timeout: 0 // No timeout - wait for backend response
     })
     return response.data
   } catch (error) {
