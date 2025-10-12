@@ -1,57 +1,76 @@
 <template>
   <div class="route-comparison flex flex-col" style="scroll-behavior: smooth;">
-    <!-- Location Inputs -->
-    <div class="space-y-4 mb-4">
-      <!-- Origin Section -->
-      <div class="location-section">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-sm font-semibold text-gray-700">Origin</h3>
-          <button
-            v-if="canUseGPS"
-            @click="useCurrentLocation('origin')"
-            :disabled="isGettingLocation"
-            class="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
-          >
-            {{ isGettingLocation ? 'Getting...' : 'Use GPS' }}
-          </button>
+    <!-- Region Info - Moved to top -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs mb-4">
+      <div class="flex items-start gap-2">
+        <span class="text-blue-600 text-base">ℹ️</span>
+        <div class="text-blue-800">
+          <span class="font-semibold">Available in KL & Selangor only</span>
+          <div class="mt-1 text-blue-700">Other regions coming soon!</div>
         </div>
-        <input
-          ref="originInput"
-          v-model="origin.name"
-          type="text"
-          placeholder="Enter address or click on map"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
-          @focus="onOriginFocus"
-        />
       </div>
+    </div>
 
-      <!-- Destination Section -->
-      <div class="location-section">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-sm font-semibold text-gray-700">Destination</h3>
-        </div>
-        <input
-          ref="destinationInput"
-          v-model="destination.name"
-          type="text"
-          placeholder="Enter address or click on map"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
-          @focus="onDestinationFocus"
-        />
-      </div>
-
-      <!-- Region Info -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs">
-        <div class="flex items-start gap-2">
-          <span class="text-blue-600 text-base">ℹ️</span>
-          <div class="text-blue-800">
-            <span class="font-semibold">Available in KL & Selangor only</span>
-            <div class="mt-1 text-blue-700">Other regions coming soon!</div>
+    <!-- Location Inputs with Side Swap Button -->
+    <div class="flex gap-2 mb-4">
+      <!-- Input Container -->
+      <div class="flex-1 space-y-3">
+        <!-- Origin Section -->
+        <div class="location-section">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-semibold text-gray-700">Origin</h3>
+            <button
+              v-if="canUseGPS"
+              @click="useCurrentLocation('origin')"
+              :disabled="isGettingLocation"
+              class="text-xs px-2.5 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
+            >
+              {{ isGettingLocation ? 'Getting...' : 'GPS' }}
+            </button>
           </div>
+          <input
+            ref="originInput"
+            v-model="origin.name"
+            type="text"
+            placeholder="Your location"
+            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+            @focus="onOriginFocus"
+          />
+        </div>
+
+        <!-- Destination Section -->
+        <div class="location-section">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-semibold text-gray-700">Destination</h3>
+          </div>
+          <input
+            ref="destinationInput"
+            v-model="destination.name"
+            type="text"
+            placeholder="Where to?"
+            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors"
+            @focus="onDestinationFocus"
+          />
         </div>
       </div>
 
-      <!-- Compare Button -->
+      <!-- Swap Button - Side Position -->
+      <div class="flex items-center pt-6">
+        <button
+          @click="swapLocations"
+          :disabled="!origin.latitude && !destination.latitude"
+          class="group bg-white hover:bg-green-50 disabled:bg-gray-50 border-2 border-gray-300 hover:border-green-500 disabled:border-gray-200 text-gray-700 hover:text-green-600 disabled:text-gray-400 rounded-lg p-2.5 transition-all disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+          title="Swap origin and destination"
+        >
+          <svg class="w-5 h-5 transition-transform group-hover:rotate-180 duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Compare Button -->
+    <div class="mb-4">
       <button
         @click="handleCompare"
         :disabled="!canCompare || isLoading"
@@ -540,6 +559,31 @@ const setLocation = (type, lat, lng, name = '') => {
       name: name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`
     }
   }
+  
+  // Clear old results and route from map when location changes
+  if (results.value) {
+    console.log('🗺️ Clearing old route - location changed')
+    results.value = null
+    selectedRouteId.value = null
+    showingDetails.value = false
+    detailedRoute.value = null
+    error.value = null
+    
+    // Stop vehicle tracking if active
+    if (isTrackingVehicles.value) {
+      console.log('🛑 Stopping vehicle tracking - location changed')
+      stopVehicleTracking()
+    }
+    
+    // Emit to clear route from map
+    emit('route-selected', {
+      scenario: null,
+      origin: type === 'origin' ? { latitude: lat, longitude: lng, name } : origin.value,
+      destination: type === 'destination' ? { latitude: lat, longitude: lng, name } : destination.value,
+      realtimeVehicles: null
+    })
+  }
+  
   selectingFor.value = null
   emit('location-selected', { type, lat, lng })
 }
@@ -552,6 +596,65 @@ const useCurrentLocation = (type) => {
     setLocation(type, props.userLocation.lat, props.userLocation.lng, 'Current Location')
     isGettingLocation.value = false
   }, 300)
+}
+
+// Swap origin and destination
+const swapLocations = () => {
+  // Don't swap if both locations are empty
+  if (!origin.value.latitude && !destination.value.latitude) {
+    return
+  }
+  
+  console.log('🔄 Swapping origin and destination')
+  
+  // Store origin values temporarily
+  const tempOrigin = { ...origin.value }
+  
+  // Swap the values
+  origin.value = { ...destination.value }
+  destination.value = { ...tempOrigin }
+  
+  // Clear results and route from map when swapping
+  if (results.value) {
+    console.log('🗺️ Clearing old route after swap')
+    results.value = null
+    selectedRouteId.value = null
+    showingDetails.value = false
+    detailedRoute.value = null
+    error.value = null
+    
+    // Stop vehicle tracking if active
+    if (isTrackingVehicles.value) {
+      console.log('🛑 Stopping vehicle tracking after swap')
+      stopVehicleTracking()
+    }
+    
+    // Emit to clear route from map
+    emit('route-selected', {
+      scenario: null,
+      origin: origin.value,
+      destination: destination.value,
+      realtimeVehicles: null
+    })
+  }
+  
+  // Emit location changes to update map markers
+  if (origin.value.latitude) {
+    emit('location-selected', { 
+      type: 'origin', 
+      lat: origin.value.latitude, 
+      lng: origin.value.longitude 
+    })
+  }
+  if (destination.value.latitude) {
+    emit('location-selected', { 
+      type: 'destination', 
+      lat: destination.value.latitude, 
+      lng: destination.value.longitude 
+    })
+  }
+  
+  console.log('✅ Locations swapped')
 }
 
 // Validate if location is within KL/Selangor region
@@ -589,11 +692,27 @@ const handleCompare = async () => {
   if (isTrackingVehicles.value) {
     stopVehicleTracking()
   }
+  
+  // Hide detailed view if showing
+  if (showingDetails.value) {
+    console.log('📋 Hiding detailed route view')
+    showingDetails.value = false
+    detailedRoute.value = null
+  }
 
   isLoading.value = true
   error.value = null
   results.value = null
   selectedRouteId.value = null
+  
+  // Clear old route from map immediately
+  console.log('🗺️ Clearing old route from map before new comparison')
+  emit('route-selected', {
+    scenario: null,
+    origin: origin.value,
+    destination: destination.value,
+    realtimeVehicles: null
+  })
 
   try {
     // Always use full comparison to show all routes

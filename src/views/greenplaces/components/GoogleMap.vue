@@ -16,11 +16,27 @@
         <p class="text-gray-600">Loading map...</p>
       </div>
     </div>
+    
+    <!-- Test Dummy Bus Button (only show in routing mode) -->
+    <div 
+      v-if="routingMode && isMapLoaded"
+      class="absolute bottom-4 right-4 z-10"
+    >
+      <button
+        @click="loadDummyBuses"
+        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium transition-colors"
+        title="Load test buses for demo"
+      >
+        <span class="text-lg">🚌</span>
+        <span>Test Buses</span>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick, shallowRef, markRaw } from 'vue'
+import { createDummyBusData, getDummyRoutes } from '@/utils/dummyBusData'
 
 // Props
 const props = defineProps({
@@ -632,10 +648,51 @@ const stopVehicleRefresh = () => {
   console.log('⏹️ Stopped vehicle refresh and cleared markers')
 }
 
+// Load dummy bus data for testing
+const loadDummyBuses = () => {
+  console.log('🧪 Loading dummy bus data for testing...')
+  
+  const dummyData = createDummyBusData()
+  const dummyRoutes = getDummyRoutes()
+  
+  console.log('📍 Dummy buses:', dummyData.data.vehicles.length)
+  console.log('🗺️ Routes:', dummyRoutes)
+  
+  // Stop any existing tracking
+  stopVehicleRefresh()
+  
+  // Start tracking with dummy data
+  trackingRoutes.value = dummyRoutes
+  trackingActive.value = true
+  
+  // Update markers with dummy data
+  updateVehicleMarkers(dummyData.data)
+  
+  // Zoom to show all buses
+  if (map.value && dummyData.data.vehicles.length > 0) {
+    const bounds = new window.google.maps.LatLngBounds()
+    dummyData.data.vehicles.forEach(vehicle => {
+      bounds.extend({ lat: vehicle.latitude, lng: vehicle.longitude })
+    })
+    map.value.fitBounds(bounds)
+    
+    // Zoom out a bit so buses aren't right at the edge
+    setTimeout(() => {
+      const currentZoom = map.value.getZoom()
+      if (currentZoom > 13) {
+        map.value.setZoom(13)
+      }
+    }, 100)
+  }
+  
+  console.log('✅ Dummy buses loaded! Click on them to see details.')
+}
+
 // Expose methods for parent component to control vehicle tracking
 defineExpose({
   startVehicleTracking: startVehicleRefresh,
-  stopVehicleTracking: stopVehicleRefresh
+  stopVehicleTracking: stopVehicleRefresh,
+  loadDummyBuses
 })
 
 // Routing functions
@@ -684,9 +741,9 @@ const updateRoutingMarkers = () => {
   // Draw route from routing data
   if (props.routingData && props.routingData.selectedRoute) {
     drawRoute(props.routingData.selectedRoute)
-  } else if (origin && destination) {
-    // Fallback: draw straight line if no route data
-    drawRoute(null)
+  } else {
+    // Clear any existing route polylines when no route is selected
+    clearRoutePolylines()
   }
   
   console.log('Routing markers updated:', { 
