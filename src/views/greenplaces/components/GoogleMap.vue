@@ -217,6 +217,7 @@ const initMap = async () => {
       center: props.center,
       zoom: props.zoom,
       mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+      mapTypeControl: false, // Hide Map/Satellite toggle buttons
       styles: [
         {
           featureType: 'poi',

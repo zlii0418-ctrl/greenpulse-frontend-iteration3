@@ -46,7 +46,7 @@ export const compareRoutes = async (origin, destination, options = {}) => {
       destination
     }, {
       timeout: 0 // No timeout - let backend complete naturally
-    }).catch(err => {
+    }).catch(err => { 
       // Don't fail entire request if transit routes not available
       console.warn('Transit routes not available:', err.message)
       return { data: { success: false, data: { routes: [] } } }

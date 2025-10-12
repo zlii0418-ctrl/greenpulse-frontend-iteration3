@@ -231,6 +231,7 @@
       :error="detailError"
       @close="closeDetailDrawer"
       @retry="retryLoadDetail"
+      @get-directions="handleGetDirections"
     />
     
     <!-- Location permission request modal -->
@@ -488,6 +489,69 @@ const handleVehicleTrackingToggle = (data) => {
 const handleVehicleDataFreshness = (freshnessData) => {
   vehicleDataFreshness.value = freshnessData
   console.log('📊 Vehicle data freshness updated:', freshnessData.message)
+}
+
+const handleGetDirections = (place) => {
+  console.log('Get directions to:', place.name)
+  
+  // Close the detail drawer
+  closeDetailDrawer()
+  
+  // Switch to routing mode
+  viewMode.value = 'routing'
+  
+  // Wait for next tick to ensure RouteComparison component is rendered
+  setTimeout(() => {
+    if (routeComparisonRef.value) {
+      // Set origin to user location if available, otherwise use default map center
+      const originLat = greenPlaceStore.userLocation?.lat || mapCenter.value.lat
+      const originLng = greenPlaceStore.userLocation?.lng || mapCenter.value.lng
+      
+      // Set destination to the selected place
+      const destLat = parseFloat(place.latitude)
+      const destLng = parseFloat(place.longitude)
+      
+      // Set locations in the route comparison component
+      routeComparisonRef.value.setLocation('origin', originLat, originLng)
+      routeComparisonRef.value.setLocation('destination', destLat, destLng)
+      
+      // Update routing data to show markers
+      routingData.value = {
+        origin: { latitude: originLat, longitude: originLng },
+        destination: { latitude: destLat, longitude: destLng },
+        selectedRoute: null,
+        realtimeVehicles: null
+      }
+      
+      // Update map center to show both locations
+      const centerLat = (originLat + destLat) / 2
+      const centerLng = (originLng + destLng) / 2
+      mapCenter.value = { lat: centerLat, lng: centerLng }
+      
+      // Adjust zoom based on distance
+      const latDiff = Math.abs(originLat - destLat)
+      const lngDiff = Math.abs(originLng - destLng)
+      const maxDiff = Math.max(latDiff, lngDiff)
+      
+      if (maxDiff < 0.01) mapZoom.value = 14
+      else if (maxDiff < 0.05) mapZoom.value = 12
+      else if (maxDiff < 0.1) mapZoom.value = 11
+      else mapZoom.value = 10
+      
+      console.log('Routing setup complete:', {
+        origin: { lat: originLat, lng: originLng },
+        destination: { lat: destLat, lng: destLng }
+      })
+      
+      // Automatically trigger route comparison after a short delay
+      setTimeout(() => {
+        console.log('Automatically starting route comparison...')
+        routeComparisonRef.value.handleCompare()
+      }, 300)
+    } else {
+      console.error('RouteComparison ref not available')
+    }
+  }, 100)
 }
 
 const handleModeChange = (newMode) => {

@@ -10,12 +10,12 @@
     
     <!-- Drawer -->
     <div 
-      class="fixed right-0 w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out"
+      class="fixed right-0 w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col"
       style="top: 80px; height: calc(100vh - 80px);"
       :class="isOpen ? 'translate-x-0' : 'translate-x-full'"
     >
       <!-- Drawer header -->
-      <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
         <h2 class="text-lg font-semibold text-gray-900">Place Details</h2>
         <button
           @click="closeDrawer"
@@ -28,8 +28,8 @@
         </button>
       </div>
       
-      <!-- Drawer content -->
-      <div class="flex-1 overflow-y-auto p-4">
+      <!-- Drawer content (scrollable) -->
+      <div class="flex-1 overflow-y-auto p-4 min-h-0 pb-20">
         <!-- Loading state -->
         <div v-if="isLoading" class="flex items-center justify-center py-8">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
@@ -127,6 +127,19 @@
           
         </div>
       </div>
+      
+      <!-- Get Directions Button - Sticky at bottom -->
+      <div v-if="place && !isLoading && !error" class="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
+        <button
+          @click="handleGetDirections"
+          class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all shadow-md hover:shadow-lg font-medium"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+          </svg>
+          Get Directions to Here
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -155,7 +168,7 @@ const props = defineProps({
 })
 
 // Emits
-const emit = defineEmits(['close', 'retry'])
+const emit = defineEmits(['close', 'retry', 'get-directions'])
 
 // Computed properties
 const isOpen = computed(() => props.isOpen)
@@ -178,6 +191,12 @@ const formatOperatingHours = (hours) => {
   if (!hours) return ''
   // Handle operating hours format, support \n and || separation
   return hours.replace(/\|\|/g, '\n').trim()
+}
+
+const handleGetDirections = () => {
+  if (props.place) {
+    emit('get-directions', props.place)
+  }
 }
 
 </script>

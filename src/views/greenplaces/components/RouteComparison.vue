@@ -1090,7 +1090,8 @@ onUnmounted(() => {
 // Expose methods for parent component
 defineExpose({
   setLocation,
-  selectingFor
+  selectingFor,
+  handleCompare
 })
 </script>
 
