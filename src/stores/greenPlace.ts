@@ -61,7 +61,7 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
     
     // User location related state
     userLocation: null as UserLocation | null,
-    locationPermission: 'prompt' as LocationPermission,
+    locationPermission: (localStorage.getItem('locationPermission') as LocationPermission) || 'prompt',
     isGettingLocation: false,
     
     // Error state
@@ -284,11 +284,13 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
               accuracy: position.coords.accuracy
             }
             this.locationPermission = 'granted'
+            localStorage.setItem('locationPermission', 'granted')
             resolve(this.userLocation)
           },
           (error) => {
             this.isGettingLocation = false
             this.locationPermission = 'denied'
+            localStorage.setItem('locationPermission', 'denied')
             
             let errorMessage = 'Failed to get location'
             switch (error.code) {
@@ -333,6 +335,7 @@ export const useGreenPlaceStore = defineStore('greenPlace', {
     clearUserLocation() {
       this.userLocation = null
       this.locationPermission = 'prompt'
+      localStorage.setItem('locationPermission', 'prompt')
       this.isGettingLocation = false
     }
   }

@@ -4,22 +4,25 @@
     <div 
       v-if="isOpen"
       class="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+      style="top: 80px;"
       @click="closeDrawer"
     ></div>
     
     <!-- Drawer -->
     <div 
-      class="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out"
+      class="fixed right-0 w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out"
+      style="top: 80px; height: calc(100vh - 80px);"
       :class="isOpen ? 'translate-x-0' : 'translate-x-full'"
     >
       <!-- Drawer header -->
-      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
         <h2 class="text-lg font-semibold text-gray-900">Place Details</h2>
         <button
           @click="closeDrawer"
-          class="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          class="p-2 hover:bg-red-100 rounded-full transition-colors text-gray-600 hover:text-red-600"
+          title="Close"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>

@@ -3,7 +3,7 @@
     <div class="header__container">
       <!-- Brand -->
       <div class="header__brand">
-        <RouterLink to="/" class="header__title">GreenPluseMY</RouterLink>
+        <RouterLink to="/" class="header__title">GreenPulseMY</RouterLink>
       </div>
 
       <!-- Navigation Menu -->

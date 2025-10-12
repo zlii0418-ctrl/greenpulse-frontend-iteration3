@@ -6,7 +6,7 @@
       <div class="footer-left-box">
         <div class="footer-brand">
           <img src="@/assets/img/greenpulse_logo.png" alt="GreenPulse Logo" class="footer-logo" />
-          <span class="footer-brand-text">GreenPluseMY</span>
+          <span class="footer-brand-text">GreenPulseMY</span>
         </div>
         <p class="footer-tagline">{{ t('footer.tagline') }}</p>
       </div>

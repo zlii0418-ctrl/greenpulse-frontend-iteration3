@@ -36,7 +36,7 @@ export default defineConfig({
         }
       },
       '/api': {
-        target: 'https://gp-backend-iter2.vercel.app',
+        target: 'https://gp-backend-iter3.vercel.app',
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path.replace(/^\/api/, '/api'),

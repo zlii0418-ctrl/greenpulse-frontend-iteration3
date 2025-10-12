@@ -7,7 +7,7 @@
           v-model="keyword"
           type="text"
           placeholder="Search green places..."
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none text-gray-900 placeholder-gray-500"
           @keyup.enter="handleSearch"
         />
       </div>
@@ -16,7 +16,7 @@
       <div class="w-48">
         <select
           v-model="selectedCategory"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none bg-white"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none bg-white text-gray-900"
           @change="handleSearch"
         >
           <option value="">All Categories</option>
