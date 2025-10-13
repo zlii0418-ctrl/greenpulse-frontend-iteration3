@@ -20,8 +20,8 @@
         <RouterLink to="/green-places" class="footer-text_4">{{ t('footer.map') }}</RouterLink>
       </div>
 
-      <!-- Language Switch Button -->
-      <div class="language-switch-container">
+      <!-- Language Switch Button (Hidden) -->
+      <div class="language-switch-container" style="display: none;">
         <button
           class="language-switch-btn"
           @click="toggleLanguage"

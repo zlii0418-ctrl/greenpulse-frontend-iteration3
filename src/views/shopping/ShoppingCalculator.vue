@@ -782,14 +782,14 @@ const calculationError = ref<string | null>(null)
   
   .modal-content {
     background: white;
-    padding: 10px;
+    padding: 20px;
     border-radius: 20px;
-    max-width: 700px;
-    width: 90%;
+    max-width: 1000px;
+    width: 95%;
     height: auto;
-    max-height: calc(100vh - 150px);
+    max-height: calc(100vh - 100px);
     overflow: hidden;
-    min-height: 250px;
+    min-height: 400px;
     font-family: var(--font-display);
     box-shadow: 0 12px 48px rgba(0,0,0,0.2);
     border: 1px solid rgba(255,255,255,0.2);
@@ -799,20 +799,20 @@ const calculationError = ref<string | null>(null)
   
   .modal-content h3 {
     color: rgba(61, 124, 74, 1);
-    font-size: 18px;
-    margin-bottom: 10px;
+    font-size: 22px;
+    margin-bottom: 15px;
     text-align: center;
     border-bottom: 2px solid rgba(61, 124, 74, 0.2);
-    padding-bottom: 6px;
+    padding-bottom: 10px;
   }
   
   .modal-section {
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     flex: 1;
     overflow-y: scroll;
     overflow-x: hidden;
     min-height: 0;
-    max-height: 200px;
+    max-height: 500px;
   }
 
   /* Show scrollbar for modal section */
@@ -1019,6 +1019,7 @@ const calculationError = ref<string | null>(null)
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.8);
     font-size: 13px;
+    color: black;
     width: 100%;
     font-family: var(--font-display);
   }

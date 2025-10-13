@@ -20,7 +20,7 @@
           </div>
         </div>
         <RouterLink to="/green-places" class="header__nav-link">Map</RouterLink>
-        <a href="#" class="header__nav-link">Language</a>
+        <a href="#" class="header__nav-link" style="display: none;">Language</a>
       </nav>
     </div>
   </header>
@@ -49,15 +49,15 @@ const toggleDropdown = () => {
 /* Header Container */
 .header {
   width: 100%;
-  background: rgba(0, 0, 0, 0.7); /* 添加半透明背景 */
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9999; /* 增加z-index确保在最上层 */
+  z-index: 9999; /* Ensure header is on top */
   animation: fadeInDown 0.6s ease-out;
-  backdrop-filter: blur(5px); /* 添加模糊效果 */
+  backdrop-filter: blur(5px); /* Blur effect */
   -webkit-backdrop-filter: blur(5px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
 }
 
 .header__container {
