@@ -440,12 +440,12 @@ const showToastMessage = (message: string) => {
   left: 0;
   width: 100%;
   height: 100dvh;
-  background: none;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 20px; /* unified padding to avoid reducing available height */
-  z-index: 999999;
+  z-index: 99999999;
   overflow-y: auto;
 }
 
@@ -466,7 +466,7 @@ const showToastMessage = (message: string) => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   margin: 0 auto;
-  z-index: 1000000;
+  z-index: 99999999;
 }
 
 .modal-header {
@@ -867,7 +867,7 @@ const showToastMessage = (message: string) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10001;
+  z-index: 999999999;
 }
 
 .info-popup .popup-content {
@@ -1081,7 +1081,7 @@ const showToastMessage = (message: string) => {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 10000;
+  z-index: 9999999999;
   animation: slideInRight 0.3s ease-out;
 }
 
