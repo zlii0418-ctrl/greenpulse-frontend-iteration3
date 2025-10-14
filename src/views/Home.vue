@@ -2,19 +2,23 @@
   <div>
     <Header />
     <div class="page flex-col">
-      <div class="hero-section flex-col">
-        <img
-          class="video-background"
-          :src="homeBackground"
-          alt="Background"
-        />
-        <span class="hero-title">Small Steps, Greener Future.</span>
-        <span class="hero-subtitle">TAKE URGENT ACTION TO COMBAT CLIMATE CHANGE AND ITS IMPACTS.</span>
+      <div class="hero-section">
+        <img class="video-background" :src="homeBackground" alt="Background" />
+
+        <div class="hero-blank"></div>
+
+        <div class="hero-title-section">
+          <span class="hero-title">Small Steps, Greener Future.</span>
+          <span class="hero-subtitle">TAKE URGENT ACTION TO COMBAT CLIMATE CHANGE AND ITS IMPACTS.</span>
           <div class="cta-button flex-col" @click="scrollToNextSection">
             <span class="button-text">Start Now</span>
           </div>
-        <div class="scroll-down-button" @click="scrollToNextSection">
-          <span class="arrow-down">↓</span>
+        </div>
+
+        <div class="hero-down-section">
+          <div class="scroll-down-button" @click="scrollToNextSection">
+            <span class="arrow-down">↓</span>
+          </div>
         </div>
       </div>
       <div class="hero-question">
@@ -22,55 +26,57 @@
       </div>
 
       <div class="content-section">
-         <div class="box-left">
-            <div class="calculator-content">
-               <h2 class="calculator-title">{{ currentSlideData.title }}</h2>
-               <p class="calculator-description">
-                  {{ currentSlideData.description }}
-               </p>
-               <RouterLink :to="currentSlideData.buttonLink" class="discover-button">
-                  <span class="button-text">{{ currentSlideData.buttonText }}</span>
-               </RouterLink>
-            </div>
-         </div>
-         <div class="box-right">
-            <div class="slider-container">
-               <!-- 切换按钮（只保留左边的，点击切换下一张） -->
-               <button class="slide-button prev-button" @click="nextSlide" aria-label="Next slide">
-                  <span class="arrow">‹</span>
-               </button>
+        <div class="box-left">
+          <div class="calculator-content">
+            <h2 class="calculator-title">{{ currentSlideData.title }}</h2>
+            <p class="calculator-description">
+              {{ currentSlideData.description }}
+            </p>
+            <RouterLink :to="currentSlideData.buttonLink" class="discover-button">
+              <span class="button-text">{{ currentSlideData.buttonText }}</span>
+            </RouterLink>
+          </div>
+        </div>
+        <div class="box-right">
+          <div class="slider-container">
+            <!-- 切换按钮 -->
+            <button class="slide-button next-button" @click="nextSlide" aria-label="Next slide">
+              <span class="arrow">←</span>
+            </button>
 
-               <!-- 图片显示区域 -->
-               <div class="images-container">
-                  <div
-                     v-for="(slide, index) in reorderedSlides"
-                     :key="slide.id"
-                     class="slide-image"
-                     :class="{ active: slide.id === slides[currentSlide].id }"
-                     :style="{ backgroundImage: `url(${slide.image})` }"
-                  ></div>
-               </div>
+            <!-- 图片显示区域 -->
+            <div class="images-container">
+              <div class="slides-wrapper" :style="{ transform: `translateX(-${currentSlide * slideWidth}px)` }">
+                <div v-for="(slide, index) in extendedSlides" :key="`${slide.id}-${index}`" class="slide-image"
+                  :class="{ active: index === currentSlide }"
+                  :style="{ backgroundImage: `url(${slide.image})` }"></div>
+              </div>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
 
       <div class="about-section">
         <div class="about-title">About Us</div>
         <div class="about-subtitle">GreenPulse's mission is to promote carbon reduction knowledge at scale</div>
         <div class="about-description">
-          Climate change is an urgent global crisis, driven by human activities such as burning fossil fuels. It leads to rising
-          temperatures, extreme weather events, and sea-level rise, threatening ecosystems and communities worldwide. Aligned with
-          SDG 13: Climate Action, GreenPulse empowers Malaysia’s urban youth to take immediate action through simple daily
-          challenges, personalised recommendations, and gamified tools. By turning awareness into action, GreenPulse helps reduce
+          Climate change is an urgent global crisis, driven by human activities such as burning fossil fuels. It leads
+          to rising
+          temperatures, extreme weather events, and sea-level rise, threatening ecosystems and communities worldwide.
+          Aligned with
+          SDG 13: Climate Action, GreenPulse empowers Malaysia’s urban youth to take immediate action through simple
+          daily
+          challenges, personalised recommendations, and gamified tools. By turning awareness into action, GreenPulse
+          helps reduce
           carbon emissions and build sustainable habits—ensuring a livable future for all.
         </div>
       </div>
 
       <div class="footer-section flex-col">
-        <Footer/>
+        <Footer />
       </div>
     </div>
-    
+
     <!-- 聊天机器人组件 -->
     <ChatBot />
   </div>
@@ -96,48 +102,49 @@ export default {
   },
   name: 'Home',
   data() {
+    const originalSlides = [
+      {
+        id: 1,
+        parent_title: 'What happens in Malaysia?',
+        title: 'Guide',
+        description: 'Malaysia emitted 291 million tons of CO₂ in 2022, yet aims for a 45% cut in emissions intensity by 2030 and net-zero by 2050—targets at risk without stronger public engagement. Urban Malaysians, major contributors through energy use, transport, and consumption, lack a localized, reliable carbon footprint tool.',
+        image: homeSlide0,
+        buttonText: 'Discover More',
+        buttonLink: '/guide'
+      },
+      {
+        id: 2,
+        parent_title: 'What can we do ?',
+        title: 'Footprint Calculator',
+        description: 'Want to know how much impact your daily habits have on the planet? Enter your travel, eating, and spending habits to generate your carbon footprint report with one click. It also recommends tailored emissions reduction tips, making it easier to start living green today.',
+        image: homeSlide1,
+        buttonText: 'Calculator',
+        buttonLink: '/calculator/travel'
+      },
+      {
+        id: 3,
+        parent_title: 'Take action!',
+        title: 'Green Map',
+        description: 'Discover eco-friendly spots near you! 🌍 From recycling centers and green restaurants to sustainable events, Green Map helps you easily explore and save eco-friendly locations across Malaysia. Bookmark your favorite spots for future visits and join the journey toward a more sustainable lifestyle.',
+        image: homeSlide3,
+        buttonText: 'Map',
+        buttonLink: '/green-places'
+      },
+      {
+        id: 4,
+        parent_title: 'Your AI assistant',
+        title: 'Green AI Chatbot',
+        description: "Embark on a green future with AI! Whether it's energy conservation and emissions reduction or eco-friendly transportation, chatbots provide real-time personalized recommendations to help you effortlessly take every step toward green action. Reduce your carbon footprint and safeguard a sustainable future",
+        image: homeSlide2,
+        buttonText: 'AI ChatBot',
+        buttonLink: '/chatbot'
+      },
+    ]
+    
     return {
       homeBackground,
-      currentSlide: 0,
-      slides: [
-       {
-          id: 1,
-          parent_title: 'What happens in Malaysia?',
-          title: 'Guide',
-          description: 'Malaysia emitted 291 million tons of CO₂ in 2022, yet aims for a 45% cut in emissions intensity by 2030 and net-zero by 2050—targets at risk without stronger public engagement. Urban Malaysians, major contributors through energy use, transport, and consumption, lack a localized, reliable carbon footprint tool.',
-          image: homeSlide0,
-          buttonText: 'Discover More',
-          buttonLink: '/guide'
-        },
-        {
-          id: 2,
-          parent_title: 'What can we do ?',
-          title: 'Footprint Calculator',
-          description: 'Want to know how much impact your daily habits have on the planet? Enter your travel, eating, and spending habits to generate your carbon footprint report with one click. It also recommends tailored emissions reduction tips, making it easier to start living green today.',
-          image: homeSlide1,
-          buttonText: 'Calculator',
-          buttonLink: '/calculator/travel'
-        },
-        {
-          id: 3,
-          parent_title: 'Take action!',
-          title: 'Green Map',
-          description: 'Discover eco-friendly spots near you! 🌍 From recycling centers and green restaurants to sustainable events, Green Map helps you easily explore and save eco-friendly locations across Malaysia. Bookmark your favorite spots for future visits and join the journey toward a more sustainable lifestyle.',
-          image: homeSlide3,
-          buttonText: 'Map',
-          buttonLink: '/green-places'
-        },
-        {
-          id: 4,
-          parent_title: 'Your AI assistant',
-          title: 'Green AI Chatbot',
-          description: "Embark on a green future with AI! Whether it's energy conservation and emissions reduction or eco-friendly transportation, chatbots provide real-time personalized recommendations to help you effortlessly take every step toward green action. Reduce your carbon footprint and safeguard a sustainable future",
-          image: homeSlide2,
-          buttonText: 'AI ChatBot',
-          buttonLink: '/chatbot'
-        },
-
-      ]
+      currentSlide: 0, // 从第一张开始
+      slides: originalSlides
     }
   },
   mounted() {
@@ -151,7 +158,28 @@ export default {
   },
   computed: {
     currentSlideData() {
-      return this.slides[this.currentSlide]
+      // 获取当前显示的图片对应的原始数据
+      const slideIndex = this.currentSlide % this.slides.length
+      return this.slides[slideIndex]
+    },
+    extendedSlides() {
+      // 创建扩展的图片数组：10倍原始图片
+      return [
+        ...this.slides, ...this.slides, ...this.slides, ...this.slides, ...this.slides,
+        ...this.slides, ...this.slides, ...this.slides, ...this.slides, ...this.slides
+      ]
+    },
+    slideWidth() {
+      // 根据屏幕尺寸返回不同的图片宽度
+      if (window.innerWidth <= 480) {
+        return 160 + 6 // 图片宽度 + gap
+      } else if (window.innerWidth <= 768) {
+        return 190 + 8 // 图片宽度 + gap
+      } else if (window.innerWidth <= 1024) {
+        return 280 + 15 // 图片宽度 + gap
+      } else {
+        return 320 + 15 // 图片宽度 + gap
+      }
     },
     reorderedSlides() {
       // 将选中的图片放在第一位，其余图片按原顺序排列
@@ -178,10 +206,8 @@ export default {
       }, 600)
     },
     nextSlide() {
-      this.currentSlide = (this.currentSlide + 1) % this.slides.length
-    },
-    prevSlide() {
-      this.currentSlide = this.currentSlide === 0 ? this.slides.length - 1 : this.currentSlide - 1
+      // 在10倍数据中循环切换
+      this.currentSlide = (this.currentSlide + 1) % this.extendedSlides.length
     },
     scrollToNextSection() {
       window.scrollBy({
@@ -213,6 +239,7 @@ export default {
 /* Video background text interactions */
 .hero-title,
 .hero-subtitle {
+  
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: pointer;
 }
@@ -261,15 +288,42 @@ export default {
   height: 100vh;
   overflow: hidden;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 }
 
 .hero-section span,
 .hero-section .cta-button,
 .hero-section .scroll-down-button {
-  position: relative; /* ensure text stays above video */
+  position: relative;
+  /* ensure text stays above video */
   z-index: 1;
-  color: white; /* optional: improves readability */
+  color: white;
+  /* optional: improves readability */
+}
+
+.hero-blank {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title-section {
+  flex: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-down-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-section::before {
@@ -279,7 +333,8 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.35); /* dark overlay for contrast */
+  background: rgba(0, 0, 0, 0.35);
+  /* dark overlay for contrast */
   z-index: 1;
 }
 
@@ -506,16 +561,9 @@ export default {
   flex: 1;
   height: 100%;
   position: relative;
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   border-radius: 20px;
-  padding: 20px;
-  align-items: center;
-  justify-content: flex-start;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(34, 139, 34, 0.3) transparent;
+  padding: 20px 20px 20px 0;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -523,22 +571,14 @@ export default {
   min-height: 440px;
 }
 
-.images-container::-webkit-scrollbar {
-  height: 6px;
+.slides-wrapper {
+  display: flex;
+  gap: 15px;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
+  align-items: center;
 }
 
-.images-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.images-container::-webkit-scrollbar-thumb {
-  background: rgba(34, 139, 34, 0.3);
-  border-radius: 3px;
-}
-
-.images-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(34, 139, 34, 0.6);
-}
 
 .slide-image {
   position: relative;
@@ -624,8 +664,8 @@ export default {
     font-size: 20px;
   }
 
-  .prev-button {
-    left: 10px;
+  .next-button {
+    right: 10px;
   }
 
   .slide-image {
@@ -637,9 +677,7 @@ export default {
   .images-container {
     height: auto;
     min-height: 280px;
-    padding: 10px;
-    gap: 8px;
-    align-items: flex-start;
+    padding: 10px 10px 10px 0;
   }
 
   .slider-container {
@@ -672,8 +710,7 @@ export default {
 
   .images-container {
     min-height: 390px;
-    padding: 18px;
-    align-items: flex-start;
+    padding: 18px 18px 18px 0;
   }
 
   .slider-container {
@@ -737,9 +774,7 @@ export default {
 
   .images-container {
     min-height: 230px;
-    padding: 8px;
-    gap: 6px;
-    align-items: flex-start;
+    padding: 8px 8px 8px 0;
   }
 
   .slider-container {
@@ -756,7 +791,8 @@ export default {
   margin: 40px auto 20px;
   position: relative;
   z-index: 1;
-  border-radius: 40px; /* 高度的一半，使两侧成为半圆 */
+  border-radius: 40px;
+  /* 高度的一半，使两侧成为半圆 */
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   cursor: pointer;
@@ -772,7 +808,6 @@ export default {
   background: rgba(255, 255, 255, 0.08);
   height: 50px;
   width: 50px;
-  margin: 0 auto;
   border-radius: 50%;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -816,9 +851,11 @@ export default {
   font-weight: normal;
   text-align: center;
   white-space: nowrap;
-  line-height: 1;           /* avoid extra vertical space */
+  line-height: 1;
+  /* avoid extra vertical space */
   margin: 0;
-  display: flex;            /* center content */
+  display: flex;
+  /* center content */
   align-items: center;
   justify-content: center;
 }
@@ -847,5 +884,4 @@ body {
   height: 100%;
   overflow-x: hidden;
 }
-
 </style>
