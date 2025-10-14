@@ -10,11 +10,9 @@
         />
         <span class="hero-title">Small Steps, Greener Future.</span>
         <span class="hero-subtitle">TAKE URGENT ACTION TO COMBAT CLIMATE CHANGE AND ITS IMPACTS.</span>
-        <RouterLink to="/guide">
-          <div class="cta-button flex-col">
+          <div class="cta-button flex-col" @click="scrollToNextSection">
             <span class="button-text">Start Now</span>
           </div>
-        </RouterLink>
         <div class="scroll-down-button" @click="scrollToNextSection">
           <span class="arrow-down">↓</span>
         </div>
