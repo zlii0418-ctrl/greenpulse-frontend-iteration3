@@ -1,6 +1,6 @@
 <template>
   <div class="chatbot-container">
-    <!-- 悬浮按钮 -->
+    <!-- Floating Button -->
     <button 
       class="chatbot-toggle-btn" 
       @click="toggleChat"
@@ -12,7 +12,7 @@
       </svg>
     </button>
 
-    <!-- 聊天对话框 -->
+    <!-- Chat Dialog -->
     <div class="chatbot-dialog" :class="{ open: isOpen }">
       <div class="chatbot-header">
         <h3>Carbon Assistant</h3>
@@ -32,7 +32,7 @@
           </div>
         </div>
         
-        <!-- 预设问题 -->
+        <!-- Preset Questions -->
         <div v-if="showPresetQuestions" class="preset-questions">
           <div class="preset-questions-title">Quick Questions:</div>
           <div class="preset-questions-list">
@@ -48,7 +48,7 @@
           </div>
         </div>
         
-        <!-- 加载指示器 -->
+        <!-- Loading Indicator -->
         <div v-if="isLoading" class="message bot-message">
           <div class="message-bubble">
             <div class="typing-indicator">
@@ -81,8 +81,9 @@
   </div>
 </template>
 
-<script>
+<script lang="js">
 import chatbotIcon from '@/assets/img/chatbot.jpg'
+import { marked } from 'marked'
 
 export default {
   name: 'ChatBot',
@@ -175,7 +176,7 @@ export default {
     },
     
     async sendToAPI(message) {
-      // 使用同源 /api，通过 Vercel rewrites 代理到后端，避免浏览器 Mixed Content/CORS
+      // Use same-origin /api, proxy to backend through Vercel rewrites to avoid browser Mixed Content/CORS
       const chatId = this.generateChatId()
       const url = `/api/ai/carbon_assistant/chat/sse?message=${encodeURIComponent(message)}&chatId=${encodeURIComponent(chatId)}`
       
@@ -186,7 +187,13 @@ export default {
         this.eventSource.onmessage = (event) => {
           // Handle SSE data format: data: content
           if (event.data && event.data !== '[DONE]') {
+            console.log('Raw backend response chunk:', JSON.stringify(event.data))
+            // Add space between chunks to prevent concatenation, but be smart about it
+            if (botResponse && !botResponse.endsWith(' ') && !event.data.startsWith(' ')) {
+              botResponse += ' '
+            }
             botResponse += event.data
+            console.log('Accumulated response so far:', JSON.stringify(botResponse))
             this.updateLastMessage(botResponse)
           }
         }
@@ -237,8 +244,41 @@ export default {
     },
     
     formatMessage(content) {
-      // Simple line break handling
-      return content.replace(/\n/g, '<br>')
+      // Enhanced text formatting with markdown support
+      console.log('Original content before formatting:', JSON.stringify(content))
+      
+      // Remove trailing newlines first
+      const trimmedContent = content.replace(/\n+$/, '')
+      
+      try {
+        // Configure marked options
+        marked.setOptions({
+          breaks: false, // Don't convert \n to <br> automatically
+          gfm: true, // GitHub Flavored Markdown
+        })
+        
+        // Parse markdown
+        const formatted = marked.parse(trimmedContent)
+        
+        // Clean up the output: remove extra newlines and normalize spacing
+        const cleaned = formatted
+          .replace(/\n+/g, '') // Remove all newlines from markdown output
+          .replace(/\s+/g, ' ') // Normalize multiple spaces
+          .trim()
+        
+        console.log('Formatted content after processing:', JSON.stringify(cleaned))
+        return cleaned
+      } catch (error) {
+        console.log('Marked parsing failed, using fallback formatting:', error)
+        // Fallback to simple formatting
+        const formatted = trimmedContent
+          .replace(/\n\n/g, '<br><br>') // Double line breaks for paragraphs
+          .replace(/\n/g, '<br>') // Single line breaks
+          .replace(/\s+/g, ' ') // Normalize spaces
+          .trim()
+        console.log('Formatted content after processing (fallback):', JSON.stringify(formatted))
+        return formatted
+      }
     },
     
     formatTime(timestamp) {
@@ -330,7 +370,7 @@ export default {
 
 .chatbot-header {
   background: linear-gradient(135deg, #4CAF50, #45a049);
-  color: white;
+  color: #ffffff;
   padding: 20px;
   text-align: center;
 }
@@ -338,13 +378,17 @@ export default {
 .chatbot-header h3 {
   margin: 0 0 5px 0;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .chatbot-header p {
   margin: 0;
   font-size: 14px;
-  opacity: 0.9;
+  color: #ffffff;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .chatbot-messages {
@@ -353,7 +397,7 @@ export default {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
 }
 
 .message {
@@ -371,9 +415,10 @@ export default {
 
 .message-bubble {
   max-width: 80%;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-radius: 18px;
   position: relative;
+  margin-bottom: 2px;
 }
 
 .user-message .message-bubble {
@@ -386,12 +431,117 @@ export default {
   background: #f5f5f5;
   color: #333;
   border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .message-content {
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.6;
   word-wrap: break-word;
+  white-space: pre-wrap;
+  text-align: left;
+  letter-spacing: 0.3px;
+  word-spacing: 0.1em;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+}
+
+/* Style all HTML elements within message content with maximum specificity */
+.chatbot-container .bot-message .message-content {
+  color: #333333 !important;
+}
+
+.chatbot-container .bot-message .message-content * {
+  color: inherit !important;
+}
+
+.chatbot-container .bot-message .message-content p {
+  color: #333333 !important;
+  margin: 8px 0;
+}
+
+.chatbot-container .bot-message .message-content ul,
+.chatbot-container .bot-message .message-content ol {
+  color: #333333 !important;
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.chatbot-container .bot-message .message-content li {
+  color: #333333 !important;
+  margin: 4px 0;
+}
+
+/* Style headers within message content with maximum specificity */
+.chatbot-container .bot-message .message-content h1,
+.chatbot-container .bot-message .message-content h2,
+.chatbot-container .bot-message .message-content h3,
+.chatbot-container .bot-message .message-content h4,
+.chatbot-container .bot-message .message-content h5,
+.chatbot-container .bot-message .message-content h6 {
+  color: #2c3e50 !important;
+  font-weight: 700 !important;
+  margin: 16px 0 8px 0;
+  line-height: 1.3;
+}
+
+.chatbot-container .bot-message .message-content h1 {
+  font-size: 20px;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 4px;
+  color: #2c3e50 !important;
+}
+
+.chatbot-container .bot-message .message-content h2 {
+  font-size: 18px;
+  border-bottom: 1px solid #4CAF50;
+  padding-bottom: 2px;
+  color: #2c3e50 !important;
+}
+
+.chatbot-container .bot-message .message-content h3 {
+  font-size: 16px;
+  color: #4CAF50 !important;
+}
+
+.chatbot-container .bot-message .message-content h4 {
+  font-size: 15px;
+  color: #4CAF50 !important;
+}
+
+.chatbot-container .bot-message .message-content h5,
+.chatbot-container .bot-message .message-content h6 {
+  font-size: 14px;
+  color: #4CAF50 !important;
+}
+
+/* Style other markdown elements */
+.message-content strong,
+.message-content b {
+  color: #333333;
+  font-weight: 700;
+}
+
+.message-content em,
+.message-content i {
+  color: #333333;
+  font-style: italic;
+}
+
+.message-content code {
+  background-color: #f5f5f5;
+  color: #333333;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.message-content blockquote {
+  border-left: 4px solid #4CAF50;
+  padding-left: 16px;
+  margin: 8px 0;
+  color: #333333;
+  font-style: italic;
 }
 
 .message-time {
@@ -448,6 +598,8 @@ export default {
   border-radius: 25px;
   outline: none;
   font-size: 14px;
+  background-color: #ffffff;
+  color: #333333;
   transition: border-color 0.3s ease;
 }
 
@@ -535,7 +687,7 @@ export default {
   opacity: 0.6;
 }
 
-/* 响应式设计 */
+/* Responsive Design */
 @media (max-width: 480px) {
   .chatbot-dialog {
     width: 300px;
@@ -551,5 +703,23 @@ export default {
     width: 50px;
     height: 50px;
   }
+}
+
+/* Global override to ensure chatbot text colors are not overridden by page styles */
+.chatbot-container .message-content,
+.chatbot-container .message-content * {
+  color: #333333 !important;
+}
+
+.chatbot-container .message-content h1,
+.chatbot-container .message-content h2 {
+  color: #2c3e50 !important;
+}
+
+.chatbot-container .message-content h3,
+.chatbot-container .message-content h4,
+.chatbot-container .message-content h5,
+.chatbot-container .message-content h6 {
+  color: #4CAF50 !important;
 }
 </style>
