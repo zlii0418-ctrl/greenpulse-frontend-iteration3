@@ -625,26 +625,37 @@ const handleVehicleDataFreshness = (freshnessData) => {
 }
 
 const handleGetDirections = (place) => {
-  console.log('Get directions to:', place.name)
+  console.log('🚀 Get directions to:', place.name)
+  console.log('📍 Place coordinates:', { lat: place.latitude, lng: place.longitude })
   
   // Close the detail drawer
   closeDetailDrawer()
   
   // Switch to routing mode
+  console.log('🔄 Switching to routing mode')
   viewMode.value = 'routing'
   
   // Wait for next tick to ensure RouteComparison component is rendered
-  setTimeout(() => {
+  const setupRouteComparison = () => {
+    console.log('⏰ Timeout callback executing, checking routeComparisonRef...')
+    console.log('🔍 routeComparisonRef.value:', routeComparisonRef.value)
+    
     if (routeComparisonRef.value) {
+      console.log('✅ RouteComparison ref is available')
+      
       // Set origin to user location if available, otherwise use default map center
       const originLat = greenPlaceStore.userLocation?.lat || mapCenter.value.lat
       const originLng = greenPlaceStore.userLocation?.lng || mapCenter.value.lng
-      const originName = greenPlaceStore.userLocation ? 'Your Location' : `${originLat.toFixed(4)}, ${originLng.toFixed(4)}`
+      const originName = greenPlaceStore.userLocation ? 'Your Location' : 'Kuala Lumpur'
+      
+      console.log('📍 Setting origin:', { lat: originLat, lng: originLng, name: originName })
       
       // Set destination to the selected place
       const destLat = parseFloat(place.latitude)
       const destLng = parseFloat(place.longitude)
       const destName = place.name
+      
+      console.log('📍 Setting destination:', { lat: destLat, lng: destLng, name: destName })
       
       // Set locations in the route comparison component with names
       routeComparisonRef.value.setLocation('origin', originLat, originLng, originName)
@@ -673,20 +684,30 @@ const handleGetDirections = (place) => {
       else if (maxDiff < 0.1) mapZoom.value = 11
       else mapZoom.value = 10
       
-      console.log('Routing setup complete:', {
+      console.log('✅ Routing setup complete:', {
         origin: { lat: originLat, lng: originLng },
         destination: { lat: destLat, lng: destLng }
       })
       
       // Automatically trigger route comparison after a short delay
       setTimeout(() => {
-        console.log('Automatically starting route comparison...')
-        routeComparisonRef.value.handleCompare()
+        console.log('🚀 Automatically starting route comparison...')
+        console.log('🔍 routeComparisonRef.value.handleCompare:', typeof routeComparisonRef.value.handleCompare)
+        
+        if (typeof routeComparisonRef.value.handleCompare === 'function') {
+          routeComparisonRef.value.handleCompare()
+        } else {
+          console.error('❌ handleCompare method not available on routeComparisonRef')
+        }
       }, 300)
     } else {
-      console.error('RouteComparison ref not available')
+      console.error('❌ RouteComparison ref not available, retrying...')
+      // Retry after another 500ms
+      setTimeout(setupRouteComparison, 500)
     }
-  }, 100)
+  }
+  
+  setTimeout(setupRouteComparison, 500)
 }
 
 const handleModeChange = (newMode) => {

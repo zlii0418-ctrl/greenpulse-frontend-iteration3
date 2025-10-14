@@ -24,7 +24,7 @@
               :disabled="isGettingLocation"
               class="text-xs px-2.5 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
             >
-              {{ isGettingLocation ? 'Getting...' : 'GPS' }}
+              {{ isGettingLocation ? 'Getting...' : (props.userLocation ? 'GPS' : 'KL') }}
             </button>
           </div>
           <div class="relative">
@@ -429,6 +429,10 @@ const destinationInput = ref(null)
 // Data
 const origin = ref({ latitude: null, longitude: null, name: '' })
 const destination = ref({ latitude: null, longitude: null, name: '' })
+
+// Default Kuala Lumpur coordinates
+const DEFAULT_KL_LAT = 3.1390
+const DEFAULT_KL_LNG = 101.6869
 const results = ref(null)
 const isLoading = ref(false)
 const error = ref(null)
@@ -464,7 +468,8 @@ const canCompare = computed(() => {
 })
 
 const canUseGPS = computed(() => {
-  return props.userLocation && props.userLocation.lat && props.userLocation.lng
+  // Always show GPS button - if no user location, it will use default Kuala Lumpur
+  return true
 })
 
 // Sorted scenarios based on current sort option
@@ -573,7 +578,7 @@ const onDestinationFocus = () => {
 }
 
 const setLocation = (type, lat, lng, name = '') => {
-  console.log(`📍 setLocation called: type=${type}, lat=${lat}, lng=${lng}`)
+  console.log(`📍 setLocation called: type=${type}, lat=${lat}, lng=${lng}, name=${name}`)
   
   if (type === 'origin') {
     origin.value = {
@@ -621,7 +626,12 @@ const setLocation = (type, lat, lng, name = '') => {
 }
 
 const useCurrentLocation = (type) => {
-  if (!props.userLocation) return
+  if (!props.userLocation) {
+    // If no user location available, use default Kuala Lumpur
+    console.log('📍 No user location available, using default Kuala Lumpur')
+    setLocation(type, DEFAULT_KL_LAT, DEFAULT_KL_LNG, 'Kuala Lumpur')
+    return
+  }
   
   isGettingLocation.value = true
   setTimeout(() => {
@@ -760,16 +770,26 @@ const isWithinKLSelangor = (location) => {
 }
 
 const handleCompare = async () => {
-  if (!canCompare.value) return
+  console.log('🚀 handleCompare called')
+  console.log('📍 Origin:', origin.value)
+  console.log('📍 Destination:', destination.value)
+  console.log('✅ Can compare:', canCompare.value)
+  
+  if (!canCompare.value) {
+    console.log('❌ Cannot compare - missing origin or destination')
+    return
+  }
 
   // Validate origin is within KL/Selangor
   if (!isWithinKLSelangor(origin.value)) {
+    console.log('❌ Origin not within KL/Selangor')
     error.value = '📍 Origin must be within Kuala Lumpur or Selangor region.\n\n🚀 Routing for other regions coming soon!'
     return
   }
 
   // Validate destination is within KL/Selangor
   if (!isWithinKLSelangor(destination.value)) {
+    console.log('❌ Destination not within KL/Selangor')
     error.value = '📍 Destination must be within Kuala Lumpur or Selangor region.\n\n🚀 Routing for other regions coming soon!'
     return
   }
@@ -808,6 +828,16 @@ const handleCompare = async () => {
     console.log('🔍 Sending route comparison request with:')
     console.log('  Origin:', origin.value)
     console.log('  Destination:', destination.value)
+    
+    // Validate coordinates before sending
+    if (!origin.value.latitude || !origin.value.longitude) {
+      error.value = 'Origin coordinates are missing. Please select an origin location.'
+      return
+    }
+    if (!destination.value.latitude || !destination.value.longitude) {
+      error.value = 'Destination coordinates are missing. Please select a destination location.'
+      return
+    }
     
     const response = await compareRoutes(origin.value, destination.value)
 
@@ -1143,8 +1173,52 @@ watch(() => showingDetails.value, (newValue, oldValue) => {
   }
 })
 
+// Initialize default location when user location is not available
+const initializeDefaultLocation = () => {
+  // If no user location is provided, set default Kuala Lumpur as origin
+  if (!props.userLocation && !origin.value.latitude) {
+    console.log('📍 Setting default Kuala Lumpur location as origin')
+    origin.value = {
+      latitude: DEFAULT_KL_LAT,
+      longitude: DEFAULT_KL_LNG,
+      name: 'Kuala Lumpur'
+    }
+    
+    console.log('✅ Default origin set:', origin.value)
+    
+    // Emit the default location to update map markers
+    emit('location-selected', { 
+      type: 'origin', 
+      lat: DEFAULT_KL_LAT, 
+      lng: DEFAULT_KL_LNG 
+    })
+  } else {
+    console.log('📍 User location available or origin already set:', {
+      hasUserLocation: !!props.userLocation,
+      hasOrigin: !!origin.value.latitude,
+      origin: origin.value
+    })
+  }
+}
+
+// Watch for user location changes to set default if needed
+watch(() => props.userLocation, (newUserLocation) => {
+  // If user location becomes available, update origin
+  if (newUserLocation && newUserLocation.lat && newUserLocation.lng) {
+    console.log('📍 User location updated, setting as origin')
+    setLocation('origin', newUserLocation.lat, newUserLocation.lng, 'Current Location')
+  } else if (!newUserLocation && !origin.value.latitude) {
+    // If no user location and no origin set, use default Kuala Lumpur
+    console.log('📍 No user location, setting default Kuala Lumpur as origin')
+    initializeDefaultLocation()
+  }
+}, { immediate: true })
+
 // Lifecycle hooks
 onMounted(() => {
+  // Initialize default location first
+  initializeDefaultLocation()
+  
   // Initialize autocomplete after a short delay to ensure DOM is ready
   setTimeout(() => {
     initAutocomplete()

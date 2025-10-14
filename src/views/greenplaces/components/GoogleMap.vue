@@ -247,6 +247,9 @@ const initMap = async () => {
     // Add place markers
     updateMarkers()
     
+    // Create user location marker (either user location or default Kuala Lumpur)
+    createUserLocationMarker()
+    
   } catch (error) {
     console.error('Map initialization failed:', error)
   }
@@ -337,21 +340,25 @@ const clearMarkers = () => {
 
 // Create user location marker
 const createUserLocationMarker = () => {
-  if (!map.value || !props.userLocation) return
+  if (!map.value) return
 
   // Clear existing user location marker
   if (userLocationMarker.value) {
     userLocationMarker.value.setMap(null)
   }
 
+  // Use user location if available, otherwise use default Kuala Lumpur
+  const location = props.userLocation || { lat: 3.1390, lng: 101.6869 }
+  const title = props.userLocation ? 'My Location' : 'Kuala Lumpur'
+
   // Create new user location marker
   userLocationMarker.value = markRaw(new window.google.maps.Marker({
     position: {
-      lat: props.userLocation.lat,
-      lng: props.userLocation.lng
+      lat: location.lat,
+      lng: location.lng
     },
     map: map.value,
-    title: 'My Location',
+    title: title,
     icon: iconCache.userLocation, // Use cached icon
     animation: window.google.maps.Animation.DROP
   }))
@@ -1114,14 +1121,11 @@ watch(() => props.places, () => {
 // Watch user location changes
 watch(() => props.userLocation, (newLocation) => {
   if (isMapLoaded.value) {
-    if (newLocation) {
-      createUserLocationMarker()
-      // Ensure green place markers still display (but only in search mode)
-      if (!props.routingMode) {
-        throttledUpdateMarkers()
-      }
-    } else {
-      clearUserLocationMarker()
+    // Always create a marker - either user location or default Kuala Lumpur
+    createUserLocationMarker()
+    // Ensure green place markers still display (but only in search mode)
+    if (!props.routingMode) {
+      throttledUpdateMarkers()
     }
   }
 }, { deep: true })
