@@ -162,7 +162,7 @@
   import { ref, computed, watch, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import TopTravel from '../travel/travel_components/top_travel.vue'
-  import { shoppingQuestions, type ShoppingAnswers, calculateShoppingCarbonFootprint } from '@/data/shoppingQuestions'
+  import { shoppingQuestions, type ShoppingAnswers } from '@/data/shoppingQuestions'
 import { getShoppingDropdownData, initializeShoppingDropdownData } from '@/services/dropdownData'
 import SearchableDropdown from '@/views/components/SearchableDropdown.vue'
   
@@ -231,7 +231,7 @@ import SearchableDropdown from '@/views/components/SearchableDropdown.vue'
     initializeShoppingOptions()
   })
   const isDetailModalVisible = ref(false)
-  const detailData = ref<Record<string, any>>({})
+  const detailData = ref<Record<string, Array<{id: string, name: string, weight: number}>>>({})
   const showLimitMessage = ref(false)
   
   // Initialize detailItems with default values
@@ -270,7 +270,28 @@ import SearchableDropdown from '@/views/components/SearchableDropdown.vue'
   
   // Watch for changes in detailItems and save to localStorage
   watch(detailItems, (newItems) => {
+    // console.log('[ShoppingCalculator] DETAIL ITEMS CHANGED', {
+    //   newItems: JSON.parse(JSON.stringify(newItems)), // Deep clone for logging
+    //   timestamp: new Date().toISOString()
+    // })
     saveDetailItemsToStorage(newItems)
+  }, { deep: true })
+
+  // Watch for changes in individual item names to debug dropdown selection
+  watch(() => detailItems.value[currentQuestionIndex.value], (currentItems) => {
+    if (currentItems) {
+      // console.log('[ShoppingCalculator] CURRENT ITEMS CHANGED', {
+      //   questionIndex: currentQuestionIndex.value,
+      //   items: currentItems.map((item, index) => ({
+      //     index,
+      //     id: item.id,
+      //     name: item.name,
+      //     weight: item.weight,
+      //     hasName: !!item.name
+      //   })),
+      //   timestamp: new Date().toISOString()
+      // })
+    }
   }, { deep: true })
   
   const currentQuestion = computed(() => shoppingQuestions[currentQuestionIndex.value])
@@ -331,7 +352,7 @@ const calculationError = ref<string | null>(null)
     })
   })
   
-  const getSliderProgress = (slider: any) => {
+  const getSliderProgress = (slider: { min: number; max: number; id: string }) => {
     const value = answers.value[slider.id] || slider.defaultValue
     const progress = ((value - slider.min) / (slider.max - slider.min)) * 100
     return `${progress}%`
@@ -384,7 +405,16 @@ const calculationError = ref<string | null>(null)
   
   const getItemOptions = () => {
     const categoryIndex = currentQuestionIndex.value
-    return shoppingOptions.value[categoryIndex] || []
+    const options = shoppingOptions.value[categoryIndex] || []
+    // console.log('[ShoppingCalculator] Getting item options', {
+    //   categoryIndex,
+    //   optionsCount: options.length,
+    //   options: options.slice(0, 5), // Log first 5 options for debugging
+    //   isLoading: isLoading.value,
+    //   error: errorStates.value[categoryIndex],
+    //   timestamp: new Date().toISOString()
+    // })
+    return options
   }
   
   const addDetailRow = () => {
@@ -409,6 +439,18 @@ const calculationError = ref<string | null>(null)
   
   const saveDetailData = () => {
     const currentItems = detailItems.value[currentQuestionIndex.value]
+    // console.log('[ShoppingCalculator] SAVING DETAIL DATA', {
+    //   currentQuestionIndex: currentQuestionIndex.value,
+    //   itemsCount: currentItems.length,
+    //   items: currentItems.map(item => ({
+    //     id: item.id,
+    //     name: item.name,
+    //     weight: item.weight,
+    //     hasName: !!item.name,
+    //     nameLength: item.name?.length || 0
+    //   })),
+    //   timestamp: new Date().toISOString()
+    // })
     detailData.value[currentQuestionIndex.value] = [...currentItems]
     closeDetailModal()
     console.log('保存的详情数据:', currentItems)

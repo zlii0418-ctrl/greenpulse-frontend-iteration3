@@ -42,7 +42,8 @@
         :key="option"
         class="dropdown-option"
         :class="{ 'is-selected': selectedIndex === index, 'is-highlighted': highlightedIndex === index }"
-        @click="selectOption(option)"
+        @click="handleOptionClick(option, $event)"
+        @mousedown="handleOptionMouseDown"
         @mouseenter="highlightedIndex = index"
       >
         {{ option }}
@@ -102,6 +103,11 @@ const toggleDropdown = () => {
 const openDropdown = () => {
   if (props.disabled) return
   if (!isOpen.value) {
+    // console.log('[SearchableDropdown] Opening dropdown', {
+    //   currentValue: props.modelValue,
+    //   searchTerm: searchTerm.value,
+    //   optionsCount: props.options.length
+    // })
     isOpen.value = true
     nextTick(() => {
       checkDropdownPosition()
@@ -122,6 +128,11 @@ const checkDropdownPosition = () => {
 }
 
 const closeDropdown = () => {
+  // console.log('[SearchableDropdown] Closing dropdown', {
+  //   currentValue: props.modelValue,
+  //   searchTerm: searchTerm.value,
+  //   isOpen: isOpen.value
+  // })
   isOpen.value = false
   highlightedIndex.value = -1
   // Remove class from parent row
@@ -132,9 +143,38 @@ const closeDropdown = () => {
 }
 
 const selectOption = (option: string) => {
+  // console.log('[SearchableDropdown] SELECT OPTION CALLED', {
+  //   option,
+  //   previousValue: props.modelValue,
+  //   previousSearchTerm: searchTerm.value,
+  //   timestamp: new Date().toISOString()
+  // })
   searchTerm.value = option
   emit('update:modelValue', option)
+  // console.log('[SearchableDropdown] Emitted update:modelValue', {
+  //   newValue: option,
+  //   timestamp: new Date().toISOString()
+  // })
   closeDropdown()
+}
+
+const handleOptionClick = (option: string, event: MouseEvent) => {
+  // console.log('[SearchableDropdown] OPTION CLICKED', {
+  //   option,
+  //   timestamp: new Date().toISOString()
+  // })
+  // Prevent the blur event from interfering
+  event.preventDefault()
+  event.stopPropagation()
+  selectOption(option)
+}
+
+const handleOptionMouseDown = (event: MouseEvent) => {
+  // console.log('[SearchableDropdown] OPTION MOUSE DOWN', {
+  //   timestamp: new Date().toISOString()
+  // })
+  // Prevent the input from losing focus
+  event.preventDefault()
 }
 
 const clearSelection = () => {
@@ -144,12 +184,25 @@ const clearSelection = () => {
 }
 
 const handleBlur = (event: FocusEvent) => {
-  // Delay closing to allow click events on options
+  // console.log('[SearchableDropdown] BLUR EVENT', {
+  //   relatedTarget: event.relatedTarget,
+  //   isDropdownElement: event.relatedTarget ? (event.relatedTarget as Element).closest('.searchable-dropdown') : null,
+  //   isOpen: isOpen.value,
+  //   timestamp: new Date().toISOString()
+  // })
+  // Increased delay to allow click events on options to complete
   setTimeout(() => {
-    if (!event.relatedTarget || !(event.relatedTarget as Element).closest('.searchable-dropdown')) {
+    const shouldClose = !event.relatedTarget || !(event.relatedTarget as Element).closest('.searchable-dropdown')
+    // console.log('[SearchableDropdown] BLUR TIMEOUT CHECK', {
+    //   shouldClose,
+    //   relatedTarget: event.relatedTarget,
+    //   isOpen: isOpen.value,
+    //   timestamp: new Date().toISOString()
+    // })
+    if (shouldClose) {
       closeDropdown()
     }
-  }, 100)
+  }, 200) // Increased from 100ms to 200ms
 }
 
 const handleKeydown = (event: KeyboardEvent) => {
@@ -185,11 +238,22 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 // Watch for external changes to modelValue
 watch(() => props.modelValue, (newValue) => {
+  // console.log('[SearchableDropdown] MODEL VALUE CHANGED', {
+  //   newValue,
+  //   currentSearchTerm: searchTerm.value,
+  //   timestamp: new Date().toISOString()
+  // })
   searchTerm.value = newValue || ''
 })
 
 // Watch for changes in search term
 watch(searchTerm, (newValue) => {
+  // console.log('[SearchableDropdown] SEARCH TERM CHANGED', {
+  //   newValue,
+  //   currentModelValue: props.modelValue,
+  //   willEmit: newValue !== props.modelValue,
+  //   timestamp: new Date().toISOString()
+  // })
   if (newValue !== props.modelValue) {
     emit('update:modelValue', newValue)
   }
