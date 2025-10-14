@@ -9,7 +9,7 @@
       <!-- Navigation Menu -->
       <nav class="header__nav">
         <RouterLink to="/" class="header__nav-link">HOME</RouterLink>
-        <RouterLink to="/guide" class="header__nav-link">Guide</RouterLink>
+        <RouterLink to="/guide" class="header__nav-link">Knowledge</RouterLink>
         <div class="header__dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
           <button class="header__dropdown-trigger" @click="toggleDropdown">Calculator</button>
           <div class="header__dropdown-menu" :class="{ 'show': isDropdownOpen }">

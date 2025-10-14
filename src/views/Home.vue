@@ -15,9 +15,12 @@
             <span class="button-text">Start Now</span>
           </div>
         </RouterLink>
+        <div class="scroll-down-button" @click="scrollToNextSection">
+          <span class="arrow-down">↓</span>
+        </div>
       </div>
       <div class="hero-question">
-        What can we do ?
+        {{ currentSlideData.parent_title }}
       </div>
 
       <div class="content-section">
@@ -81,6 +84,7 @@ import Footer from './components/footer.vue'
 import ChatBot from './components/ChatBot.vue'
 import { RouterLink } from 'vue-router'
 
+import homeSlide0 from '@/assets/img/home_slide_0.jpg'
 import homeSlide1 from '@/assets/img/home_slide_1.png'
 import homeSlide2 from '@/assets/img/home_slide_2.jpg'
 import homeSlide3 from '@/assets/img/home_slide_3.png'
@@ -98,30 +102,43 @@ export default {
       homeBackground,
       currentSlide: 0,
       slides: [
-        {
+       {
           id: 1,
-          title: 'Footprint Calculator',
-          description: 'Want to know how much impact your daily habits have on the planet? Enter your travel, eating, and spending habits to generate your carbon footprint report with one click. It also recommends tailored emissions reduction tips, making it easier to start living green today.',
-          image: homeSlide1,
+          parent_title: 'What happens in Malaysia?',
+          title: 'Guide',
+          description: 'Malaysia emitted 291 million tons of CO₂ in 2022, yet aims for a 45% cut in emissions intensity by 2030 and net-zero by 2050—targets at risk without stronger public engagement. Urban Malaysians, major contributors through energy use, transport, and consumption, lack a localized, reliable carbon footprint tool.',
+          image: homeSlide0,
           buttonText: 'Discover More',
-          buttonLink: '/calculator/travel'
+          buttonLink: '/guide'
         },
         {
           id: 2,
-          title: 'Green AI Chatbot',
-          description: "Embark on a green future with AI! Whether it's energy conservation and emissions reduction or eco-friendly transportation, chatbots provide real-time personalized recommendations to help you effortlessly take every step toward green action. Reduce your carbon footprint and safeguard a sustainable future",
-          image: homeSlide2,
-          buttonText: 'Discover More',
-          buttonLink: '/chatbot'
+          parent_title: 'What can we do ?',
+          title: 'Footprint Calculator',
+          description: 'Want to know how much impact your daily habits have on the planet? Enter your travel, eating, and spending habits to generate your carbon footprint report with one click. It also recommends tailored emissions reduction tips, making it easier to start living green today.',
+          image: homeSlide1,
+          buttonText: 'Calculator',
+          buttonLink: '/calculator/travel'
         },
         {
           id: 3,
+          parent_title: 'Take action!',
           title: 'Green Map',
           description: 'Discover eco-friendly spots near you! 🌍 From recycling centers and green restaurants to sustainable events, Green Map helps you easily explore and save eco-friendly locations across Malaysia. Bookmark your favorite spots for future visits and join the journey toward a more sustainable lifestyle.',
           image: homeSlide3,
-          buttonText: 'Discover More',
+          buttonText: 'Map',
           buttonLink: '/green-places'
-        }
+        },
+        {
+          id: 4,
+          parent_title: 'Your AI assistant',
+          title: 'Green AI Chatbot',
+          description: "Embark on a green future with AI! Whether it's energy conservation and emissions reduction or eco-friendly transportation, chatbots provide real-time personalized recommendations to help you effortlessly take every step toward green action. Reduce your carbon footprint and safeguard a sustainable future",
+          image: homeSlide2,
+          buttonText: 'AI ChatBot',
+          buttonLink: '/chatbot'
+        },
+
       ]
     }
   },
@@ -167,6 +184,12 @@ export default {
     },
     prevSlide() {
       this.currentSlide = this.currentSlide === 0 ? this.slides.length - 1 : this.currentSlide - 1
+    },
+    scrollToNextSection() {
+      window.scrollBy({
+        top: window.innerHeight,
+        behavior: 'smooth'
+      })
     },
   },
 }
@@ -244,7 +267,8 @@ export default {
 }
 
 .hero-section span,
-.hero-section .cta-button {
+.hero-section .cta-button,
+.hero-section .scroll-down-button {
   position: relative; /* ensure text stays above video */
   z-index: 1;
   color: white; /* optional: improves readability */
@@ -731,7 +755,7 @@ export default {
   background: rgba(255, 255, 255, 0.08);
   height: 60px;
   width: 200px;
-  margin: 40px auto;
+  margin: 40px auto 20px;
   position: relative;
   z-index: 1;
   border-radius: 40px; /* 高度的一半，使两侧成为半圆 */
@@ -744,6 +768,41 @@ export default {
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
+}
+
+.scroll-down-button {
+  background: rgba(255, 255, 255, 0.08);
+  height: 50px;
+  width: 50px;
+  margin: 0 auto;
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-down-button:hover {
+  transform: translateY(5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.arrow-down {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 1);
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+
+.scroll-down-button:hover .arrow-down {
+  transform: scale(1.2);
 }
 
 
