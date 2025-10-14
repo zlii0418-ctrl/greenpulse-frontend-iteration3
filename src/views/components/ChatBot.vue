@@ -187,13 +187,11 @@ export default {
         this.eventSource.onmessage = (event) => {
           // Handle SSE data format: data: content
           if (event.data && event.data !== '[DONE]') {
-            console.log('Raw backend response chunk:', JSON.stringify(event.data))
             // Add space between chunks to prevent concatenation, but be smart about it
             if (botResponse && !botResponse.endsWith(' ') && !event.data.startsWith(' ')) {
               botResponse += ' '
             }
             botResponse += event.data
-            console.log('Accumulated response so far:', JSON.stringify(botResponse))
             this.updateLastMessage(botResponse)
           }
         }
@@ -245,8 +243,6 @@ export default {
     
     formatMessage(content) {
       // Enhanced text formatting with markdown support
-      console.log('Original content before formatting:', JSON.stringify(content))
-      
       // Remove trailing newlines first
       const trimmedContent = content.replace(/\n+$/, '')
       
@@ -266,17 +262,14 @@ export default {
           .replace(/\s+/g, ' ') // Normalize multiple spaces
           .trim()
         
-        console.log('Formatted content after processing:', JSON.stringify(cleaned))
         return cleaned
       } catch (error) {
-        console.log('Marked parsing failed, using fallback formatting:', error)
         // Fallback to simple formatting
         const formatted = trimmedContent
           .replace(/\n\n/g, '<br><br>') // Double line breaks for paragraphs
           .replace(/\n/g, '<br>') // Single line breaks
           .replace(/\s+/g, ' ') // Normalize spaces
           .trim()
-        console.log('Formatted content after processing (fallback):', JSON.stringify(formatted))
         return formatted
       }
     },
