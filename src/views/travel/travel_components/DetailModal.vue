@@ -521,7 +521,7 @@ const showToastMessage = (message: string) => {
 .mobile-container {
   width: 95% !important;
   max-width: 95% !important;
-  max-height: calc(100vh - 150px) !important;
+  max-height: calc(100dvh - 190px) !important;
   margin: 0 auto !important;
 }
 
@@ -923,7 +923,7 @@ const showToastMessage = (message: string) => {
   border-radius: 20px;
   max-width: 500px;
   width: 90%;
-  max-height: calc(100vh - 10vh);
+  max-height: calc(100dvh - 15vh);
   overflow-y: auto;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1102,7 +1102,7 @@ const showToastMessage = (message: string) => {
     width: 95% !important;
     max-width: 95% !important;
     margin: 10px !important;
-    max-height: calc(100vh - 150px) !important;
+    max-height: calc(100dvh - 190px) !important;
     overflow-y: auto !important;
   }
   
@@ -1316,7 +1316,7 @@ const showToastMessage = (message: string) => {
   .modal-container {
     width: 98% !important;
     margin: 5px !important;
-    max-height: calc(100vh - 120px) !important;
+    max-height: calc(100dvh - 160px) !important;
   }
   
   .modal-header,

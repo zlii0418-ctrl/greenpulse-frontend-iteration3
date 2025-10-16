@@ -896,7 +896,7 @@ const calculationError = ref<string | null>(null)
     width: 100%;
     height: 100%;
     background: transparent;
-    z-index: 10000;
+    z-index: 10001;
     justify-content: center;
     align-items: flex-start;
     padding: 20px;
@@ -1523,7 +1523,7 @@ const calculationError = ref<string | null>(null)
     margin: 0 !important;
     padding: 10px !important;
     border-radius: 15px !important;
-    max-height: calc(100vh - 120px) !important;
+    max-height: calc(100dvh - 160px) !important;
     min-height: auto !important;
     margin-top: 5px !important;
     overflow: hidden !important;
@@ -1535,7 +1535,7 @@ const calculationError = ref<string | null>(null)
   .modal-section {
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    max-height: calc(100vh - 250px) !important;
+    max-height: calc(100dvh - 290px) !important;
     box-sizing: border-box !important;
   }
   

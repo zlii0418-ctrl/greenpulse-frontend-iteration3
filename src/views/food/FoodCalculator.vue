@@ -1860,7 +1860,7 @@ foodQuestions.forEach(question => {
   width: 100%;
   height: 100%;
   background: transparent;
-  z-index: 10000;
+  z-index: 10001;
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
@@ -2378,7 +2378,7 @@ foodQuestions.forEach(question => {
     margin: 0 !important;
     padding: 10px !important;
     border-radius: 15px !important;
-    max-height: calc(100vh - 60px) !important;
+    max-height: calc(100dvh - 100px) !important;
     min-height: auto !important;
     margin-top: 5px !important;
     overflow: hidden !important;
@@ -2388,7 +2388,7 @@ foodQuestions.forEach(question => {
   .modal-section {
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    max-height: calc(100vh - 180px) !important;
+    max-height: calc(100dvh - 220px) !important;
     box-sizing: border-box !important;
   }
 }
