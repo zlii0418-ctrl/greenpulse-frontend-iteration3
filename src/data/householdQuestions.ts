@@ -28,10 +28,10 @@ export const householdQuestions: QuestionConfig[] = [
       {
         id: 'people',
         label: 'People',
-        min: 0,
+        min: 1,
         max: 10,
         step: 1,
-        defaultValue: 0,
+        defaultValue: 1,
         unit: 'people',
         iconPath: girlIcon,
       }

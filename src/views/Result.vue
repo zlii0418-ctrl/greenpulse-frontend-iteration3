@@ -668,12 +668,23 @@ async function calculateAndDisplayResults() {
         
         // If no detailed data or no values in detailed data, check simple data
         if (!hasAnyValue) {
-          const carValue = parseFloat(resultData.car) || 0
-          const motorcycleValue = parseFloat(resultData.motorcycle) || 0
-          const busValue = parseFloat(resultData.bus) || 0
-          const trainValue = parseFloat(resultData.train) || 0
-          
-          hasAnyValue = carValue > 0 || motorcycleValue > 0 || busValue > 0 || trainValue > 0
+          // Check if originalValues exists (from travel calculator)
+          if (resultData.originalValues) {
+            const carValue = parseFloat(resultData.originalValues.car) || 0
+            const motorcycleValue = parseFloat(resultData.originalValues.motorcycle) || 0
+            const busValue = parseFloat(resultData.originalValues.bus) || 0
+            const trainValue = parseFloat(resultData.originalValues.train) || 0
+            
+            hasAnyValue = carValue > 0 || motorcycleValue > 0 || busValue > 0 || trainValue > 0
+          } else {
+            // Fallback to direct values
+            const carValue = parseFloat(resultData.car) || 0
+            const motorcycleValue = parseFloat(resultData.motorcycle) || 0
+            const busValue = parseFloat(resultData.bus) || 0
+            const trainValue = parseFloat(resultData.train) || 0
+            
+            hasAnyValue = carValue > 0 || motorcycleValue > 0 || busValue > 0 || trainValue > 0
+          }
         }
         
         console.log('Pre-API zero value check (travel) - Raw input values:', resultData)
