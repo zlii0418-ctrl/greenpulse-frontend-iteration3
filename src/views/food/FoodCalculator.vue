@@ -1859,8 +1859,8 @@ foodQuestions.forEach(question => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
-  z-index: 10001;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99999999 !important;
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
@@ -1882,6 +1882,8 @@ foodQuestions.forEach(question => {
   border: 1px solid rgba(255,255,255,0.2);
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 99999999 !important;
 }
 
 .modal-content h3 {

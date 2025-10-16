@@ -469,7 +469,7 @@ const showToastMessage = (message: string) => {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  z-index: 99999999;
+  z-index: 99999999 !important;
   overflow-y: auto;
 }
 
@@ -498,7 +498,7 @@ const showToastMessage = (message: string) => {
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
   position: relative;
   margin: 0 auto;
-  z-index: 999999999;
+  z-index: 99999999 !important;
 }
 
 /* Desktop slider styles */
@@ -914,7 +914,7 @@ const showToastMessage = (message: string) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999999999;
+  z-index: 99999999 !important;
 }
 
 .info-popup .popup-content {
@@ -1398,7 +1398,7 @@ const showToastMessage = (message: string) => {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 9999999999;
+  z-index: 99999999 !important;
   animation: slideInRight 0.3s ease-out;
 }
 

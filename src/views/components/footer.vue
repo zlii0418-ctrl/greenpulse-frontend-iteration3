@@ -73,7 +73,7 @@ onMounted(() => {
   position: relative;
   bottom: auto;
   left: auto;
-  z-index: 10;
+  z-index: 1;
 }
 
 .footer_box {
@@ -377,7 +377,6 @@ onMounted(() => {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  z-index: 1000;
 }
 
 .language-switch-btn {
