@@ -7,6 +7,24 @@
           </span>
         </div>
 
+        <!-- Mobile Navigation Buttons -->
+        <div class="mobile-nav-container">
+          <div class="mobile-nav-buttons">
+            <RouterLink to="/calculator/travel" class="mobile-nav-btn">
+              <span>Travel</span>
+            </RouterLink>
+            <RouterLink to="/calculator/household" class="mobile-nav-btn">
+              <span>House</span>
+            </RouterLink>
+            <RouterLink to="/calculator/food" class="mobile-nav-btn active">
+              <span>Food</span>
+            </RouterLink>
+            <RouterLink to="/calculator/shopping" class="mobile-nav-btn">
+              <span>Shopping</span>
+            </RouterLink>
+          </div>
+        </div>
+
         <div v-if="currentQuestion.subtext" class="subtext-container">
           <div class="question-subtext">
             {{ currentQuestion.subtext }}
@@ -14,7 +32,7 @@
         </div>
 
         <div class="question-content">
-          <!-- 单选题 -->
+          <!-- Single Choice -->
           <div v-if="currentQuestion.type === 'single_choice'" class="options-container">
             <div 
               v-for="option in currentQuestion.options" 
@@ -31,7 +49,7 @@
             </div>
           </div>
 
-          <!-- 滑块 -->
+          <!-- Slider -->
           <div v-if="currentQuestion.type === 'slider'" class="sliders-container">
             <div v-for="slider in currentQuestion.sliders" :key="slider.id" class="slider-group">
               <div class="slider-container">
@@ -67,7 +85,7 @@
                 </div>
               </div>
             </div>
-            <!-- 详情按钮 - 为slider类型问题也添加 -->
+            <!-- Details button - also add for slider type questions -->
             <div v-if="[0, 1, 2].includes(currentQuestionIndex)" class="details-section">
               <button class="text_10" @click="showDetailModal">
                 ADD DETAILS TO IMPROVE ACCURACY
@@ -75,9 +93,9 @@
             </div>
           </div>
 
-          <!-- 文本输入 -->
+          <!-- Text Input -->
           <div v-if="currentQuestion.type === 'text_input'" class="text-input-container">
-            <!-- 多个文本输入 -->
+            <!-- Multiple text inputs -->
             <div v-if="currentQuestion.textInputs" class="multiple-inputs">
               <div v-for="input in currentQuestion.textInputs" :key="input.id" class="input-group">
                 <label class="input-label">{{ input.label }}</label>
@@ -94,14 +112,14 @@
                   <span v-if="input.unit" class="input-unit">{{ getDisplayUnit(input.unit) }}</span>
                 </div>
               </div>
-              <!-- 详情按钮 - 只在问题1,2,3显示 -->
+              <!-- Details button - only show for questions 1,2,3 -->
               <div v-if="[0, 1, 2].includes(currentQuestionIndex)" class="details-section">
                 <button class="text_10" @click="showDetailModal">
                   ADD DETAILS TO IMPROVE ACCURACY
                 </button>
               </div>
             </div>
-            <!-- 单个文本输入（向后兼容） -->
+            <!-- Single text input (backward compatibility) -->
             <div v-else class="single-input">
               <div class="input-group">
                 <input
@@ -161,169 +179,315 @@
         {{ calculationError }}
       </div>
 
-      <!-- 详情弹框 -->
+      <!-- Detail Modal -->
       <div v-if="isDetailModalVisible" class="detail-modal" @click="closeDetailModal">
         <div class="modal-content" @click.stop>
           <h3>{{ getDetailModalTitle() }}</h3>
           <div class="modal-section">
-            <!-- 动物产品详情 - 使用slider -->
+            <!-- Animal products details - using slider -->
             <div v-if="currentQuestionIndex === 0" class="animal-products-details">
-              <div class="detail-header">
-                <div class="header-icon-container">
-                  <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+              <!-- Desktop Layout -->
+              <div v-if="!isMobile" class="desktop-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
+                  <div class="header-labels">
+                    <span class="label-text">Animal Product Type</span>
+                    <span class="label-text">Times per week</span>
+                  </div>
                 </div>
-                <div class="header-labels">
-                  <span class="label-text">Animal Product Type</span>
-                  <span class="label-text">Times per week</span>
+                
+                <div v-for="(product, index) in animalProducts" :key="product.id" class="animal-product-row">
+                  <div class="row-number">{{ index + 1 }}</div>
+                  
+                  <div class="product-name">
+                    <span class="product-label">{{ product.name }}</span>
+                  </div>
+                  
+                  <div class="product-slider">
+                    <div class="slider-container">
+                      <div class="slider-content">
+                        <div class="slider-row">
+                          <div class="box_6 flex-col" :style="{ '--slider-progress': getAnimalProductSliderProgress(product.id) }">
+                            <div class="slider-labels">
+                              <span class="min-label">{{ getFrequencyLabel(0) }}</span>
+                              <span class="max-label">{{ getFrequencyLabel(4) }}</span>
+                            </div>
+                            <input
+                              type="range"
+                              class="gradient-slider"
+                              :min="0"
+                              :max="4"
+                              :value="animalProductValues[product.id] || 0"
+                              :step="1"
+                              :id="`animal-product-${product.id}`"
+                              @input="updateAnimalProductValue(product.id, $event)"
+                              :style="{ '--thumb-icon': `url(${product.iconPath})` }"
+                            >
+                            <div class="current-value" :style="{ '--slider-progress': getAnimalProductSliderProgress(product.id) }">
+                              {{ getFrequencyLabel(animalProductValues[product.id] !== undefined ? animalProductValues[product.id] : 0) }}
+                            </div>
+                          </div>
+                          <span class="unit-box"></span>
+                        </div>
+                        <!-- Frequency description -->
+                        <div class="frequency-description">
+                          {{ getFrequencyDescription(animalProductValues[product.id] !== undefined ? animalProductValues[product.id] : 0) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div v-for="(product, index) in animalProducts" :key="product.id" class="animal-product-row">
-                <div class="row-number">{{ index + 1 }}</div>
-                
-                <div class="product-name">
-                  <span class="product-label">{{ product.name }}</span>
+              <!-- Mobile Layout -->
+              <div v-else class="mobile-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
                 </div>
                 
-                <div class="product-slider">
-                  <div class="slider-container">
-                    <div class="slider-content">
-                      <div class="slider-row">
-                        <div class="box_6 flex-col" :style="{ '--slider-progress': getAnimalProductSliderProgress(product.id) }">
-                          <div class="slider-labels">
-                            <span class="min-label">{{ getFrequencyLabel(0) }}</span>
-                            <span class="max-label">{{ getFrequencyLabel(4) }}</span>
-                          </div>
-                          <input
-                            type="range"
-                            class="gradient-slider"
-                            :min="0"
-                            :max="4"
-                            :value="animalProductValues[product.id] || 0"
-                            :step="1"
-                            :id="`animal-product-${product.id}`"
-                            @input="updateAnimalProductValue(product.id, $event)"
-                            :style="{ '--thumb-icon': `url(${product.iconPath})` }"
-                          >
-                          <div class="current-value" :style="{ '--slider-progress': getAnimalProductSliderProgress(product.id) }">
-                            {{ getFrequencyLabel(animalProductValues[product.id] !== undefined ? animalProductValues[product.id] : 0) }}
+                <div v-for="(product, index) in animalProducts" :key="product.id" class="mobile-animal-product-row">
+                  <div class="mobile-row-number">{{ index + 1 }}</div>
+                  
+                  <div class="mobile-form-group">
+                    <label class="mobile-field-label">{{ product.name }}</label>
+                    <div class="mobile-slider-container">
+                      <div class="mobile-slider-content">
+                        <div class="mobile-slider-row">
+                          <div class="mobile-box-6" :style="{ '--slider-progress': getAnimalProductSliderProgress(product.id) }">
+                            <div class="mobile-slider-labels">
+                              <span class="mobile-min-label">{{ getFrequencyLabel(0) }}</span>
+                              <span class="mobile-max-label">{{ getFrequencyLabel(4) }}</span>
+                            </div>
+                            <input
+                              type="range"
+                              class="mobile-gradient-slider"
+                              :min="0"
+                              :max="4"
+                              :value="animalProductValues[product.id] || 0"
+                              :step="1"
+                              :id="`mobile-animal-product-${product.id}`"
+                              @input="updateAnimalProductValue(product.id, $event)"
+                              :style="{ '--thumb-icon': `url(${product.iconPath})` }"
+                            >
+                            <div class="mobile-current-value" :style="{ '--slider-progress': getAnimalProductSliderProgress(product.id) }">
+                              {{ getFrequencyLabel(animalProductValues[product.id] !== undefined ? animalProductValues[product.id] : 0) }}
+                            </div>
                           </div>
                         </div>
-                        <span class="unit-box"></span>
-                      </div>
-                      <!-- Frequency description -->
-                      <div class="frequency-description">
-                        {{ getFrequencyDescription(animalProductValues[product.id] !== undefined ? animalProductValues[product.id] : 0) }}
+                        <!-- Mobile Frequency description -->
+                        <div class="mobile-frequency-description">
+                          {{ getFrequencyDescription(animalProductValues[product.id] !== undefined ? animalProductValues[product.id] : 0) }}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
-            <!-- 水果蔬菜详情 - 使用slider -->
             <div v-else-if="currentQuestionIndex === 1" class="fruit-vegetable-details">
-              <div class="detail-header">
-                <div class="header-icon-container">
-                  <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+              <!-- Desktop Layout -->
+              <div v-if="!isMobile" class="desktop-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
+                  <div class="header-labels">
+                    <span class="label-text">Fruit/Vegetable Type</span>
+                    <span class="label-text">Times per week</span>
+                  </div>
                 </div>
-                <div class="header-labels">
-                  <span class="label-text">Fruit/Vegetable Type</span>
-                  <span class="label-text">Times per week</span>
+                
+                <div v-for="(item, index) in fruitVegetableItems" :key="item.id" class="fruit-veg-row">
+                  <div class="row-number">{{ index + 1 }}</div>
+                  
+                  <div class="item-name">
+                    <span class="item-label">{{ item.name }}</span>
+                  </div>
+                  
+                  <div class="item-slider">
+                    <div class="slider-container">
+                      <div class="slider-content">
+                        <div class="slider-row">
+                          <div class="box_6 flex-col" :style="{ '--slider-progress': getFruitVegSliderProgress(item.id) }">
+                            <div class="slider-labels">
+                              <span class="min-label">{{ getFrequencyLabel(0) }}</span>
+                              <span class="max-label">{{ getFrequencyLabel(4) }}</span>
+                            </div>
+                            <input
+                              type="range"
+                              class="gradient-slider"
+                              :min="0"
+                              :max="4"
+                              :value="fruitVegValues[item.id] || 0"
+                              :step="1"
+                              :id="`fruit-veg-${item.id}`"
+                              @input="updateFruitVegValue(item.id, $event)"
+                              :style="{ '--thumb-icon': `url(${item.iconPath})` }"
+                            >
+                            <div class="current-value" :style="{ '--slider-progress': getFruitVegSliderProgress(item.id) }">
+                              {{ getFrequencyLabel(fruitVegValues[item.id] !== undefined ? fruitVegValues[item.id] : 0) }}
+                            </div>
+                          </div>
+                          <span class="unit-box"></span>
+                        </div>
+                        <!-- Frequency description -->
+                        <div class="frequency-description">
+                          {{ getFrequencyDescription(fruitVegValues[item.id] !== undefined ? fruitVegValues[item.id] : 0) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div v-for="(item, index) in fruitVegetableItems" :key="item.id" class="fruit-veg-row">
-                <div class="row-number">{{ index + 1 }}</div>
-                
-                <div class="item-name">
-                  <span class="item-label">{{ item.name }}</span>
+              <!-- Mobile Layout -->
+              <div v-else class="mobile-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
                 </div>
                 
-                <div class="item-slider">
-                  <div class="slider-container">
-                    <div class="slider-content">
-                      <div class="slider-row">
-                        <div class="box_6 flex-col" :style="{ '--slider-progress': getFruitVegSliderProgress(item.id) }">
-                          <div class="slider-labels">
-                            <span class="min-label">{{ getFrequencyLabel(0) }}</span>
-                            <span class="max-label">{{ getFrequencyLabel(4) }}</span>
-                          </div>
-                          <input
-                            type="range"
-                            class="gradient-slider"
-                            :min="0"
-                            :max="4"
-                            :value="fruitVegValues[item.id] || 0"
-                            :step="1"
-                            :id="`fruit-veg-${item.id}`"
-                            @input="updateFruitVegValue(item.id, $event)"
-                            :style="{ '--thumb-icon': `url(${item.iconPath})` }"
-                          >
-                          <div class="current-value" :style="{ '--slider-progress': getFruitVegSliderProgress(item.id) }">
-                            {{ getFrequencyLabel(fruitVegValues[item.id] !== undefined ? fruitVegValues[item.id] : 0) }}
+                <div v-for="(item, index) in fruitVegetableItems" :key="item.id" class="mobile-fruit-veg-row">
+                  <div class="mobile-row-number">{{ index + 1 }}</div>
+                  
+                  <div class="mobile-form-group">
+                    <label class="mobile-field-label">{{ item.name }}</label>
+                    <div class="mobile-slider-container">
+                      <div class="mobile-slider-content">
+                        <div class="mobile-slider-row">
+                          <div class="mobile-box-6" :style="{ '--slider-progress': getFruitVegSliderProgress(item.id) }">
+                            <div class="mobile-slider-labels">
+                              <span class="mobile-min-label">{{ getFrequencyLabel(0) }}</span>
+                              <span class="mobile-max-label">{{ getFrequencyLabel(4) }}</span>
+                            </div>
+                            <input
+                              type="range"
+                              class="mobile-gradient-slider"
+                              :min="0"
+                              :max="4"
+                              :value="fruitVegValues[item.id] || 0"
+                              :step="1"
+                              :id="`mobile-fruit-veg-${item.id}`"
+                              @input="updateFruitVegValue(item.id, $event)"
+                              :style="{ '--thumb-icon': `url(${item.iconPath})` }"
+                            >
+                            <div class="mobile-current-value" :style="{ '--slider-progress': getFruitVegSliderProgress(item.id) }">
+                              {{ getFrequencyLabel(fruitVegValues[item.id] !== undefined ? fruitVegValues[item.id] : 0) }}
+                            </div>
                           </div>
                         </div>
-                        <span class="unit-box"></span>
-                      </div>
-                      <!-- Frequency description -->
-                      <div class="frequency-description">
-                        {{ getFrequencyDescription(fruitVegValues[item.id] !== undefined ? fruitVegValues[item.id] : 0) }}
+                        <!-- Mobile Frequency description -->
+                        <div class="mobile-frequency-description">
+                          {{ getFrequencyDescription(fruitVegValues[item.id] !== undefined ? fruitVegValues[item.id] : 0) }}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
-            <!-- 谷物主食详情 - 使用slider -->
             <div v-else-if="currentQuestionIndex === 2" class="grain-staple-details">
-              <div class="detail-header">
-                <div class="header-icon-container">
-                  <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+              <!-- Desktop Layout -->
+              <div v-if="!isMobile" class="desktop-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
+                  <div class="header-labels">
+                    <span class="label-text">Grain/Staple Type</span>
+                    <span class="label-text">Times per week</span>
+                  </div>
                 </div>
-                <div class="header-labels">
-                  <span class="label-text">Grain/Staple Type</span>
-                  <span class="label-text">Times per week</span>
+                
+                <div v-for="(item, index) in grainStapleItems" :key="item.id" class="grain-staple-row">
+                  <div class="row-number">{{ index + 1 }}</div>
+                  
+                  <div class="item-name">
+                    <span class="item-label">{{ item.name }}</span>
+                  </div>
+                  
+                  <div class="item-slider">
+                    <div class="slider-container">
+                      <div class="slider-content">
+                        <div class="slider-row">
+                          <div class="box_6 flex-col" :style="{ '--slider-progress': getGrainStapleSliderProgress(item.id) }">
+                            <div class="slider-labels">
+                              <span class="min-label">{{ getFrequencyLabel(0) }}</span>
+                              <span class="max-label">{{ getFrequencyLabel(4) }}</span>
+                            </div>
+                            <input
+                              type="range"
+                              class="gradient-slider"
+                              :min="0"
+                              :max="4"
+                              :value="grainStapleValues[item.id] || 0"
+                              :step="1"
+                              :id="`grain-staple-${item.id}`"
+                              @input="updateGrainStapleValue(item.id, $event)"
+                              :style="{ '--thumb-icon': `url(${item.iconPath})` }"
+                            >
+                            <div class="current-value" :style="{ '--slider-progress': getGrainStapleSliderProgress(item.id) }">
+                              {{ getFrequencyLabel(grainStapleValues[item.id] !== undefined ? grainStapleValues[item.id] : 0) }}
+                            </div>
+                          </div>
+                          <span class="unit-box"></span>
+                        </div>
+                        <!-- Frequency description -->
+                        <div class="frequency-description">
+                          {{ getFrequencyDescription(grainStapleValues[item.id] !== undefined ? grainStapleValues[item.id] : 0) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div v-for="(item, index) in grainStapleItems" :key="item.id" class="grain-staple-row">
-                <div class="row-number">{{ index + 1 }}</div>
-                
-                <div class="item-name">
-                  <span class="item-label">{{ item.name }}</span>
+              <!-- Mobile Layout -->
+              <div v-else class="mobile-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
                 </div>
                 
-                <div class="item-slider">
-                  <div class="slider-container">
-                    <div class="slider-content">
-                      <div class="slider-row">
-                        <div class="box_6 flex-col" :style="{ '--slider-progress': getGrainStapleSliderProgress(item.id) }">
-                          <div class="slider-labels">
-                            <span class="min-label">{{ getFrequencyLabel(0) }}</span>
-                            <span class="max-label">{{ getFrequencyLabel(4) }}</span>
-                          </div>
-                          <input
-                            type="range"
-                            class="gradient-slider"
-                            :min="0"
-                            :max="4"
-                            :value="grainStapleValues[item.id] || 0"
-                            :step="1"
-                            :id="`grain-staple-${item.id}`"
-                            @input="updateGrainStapleValue(item.id, $event)"
-                            :style="{ '--thumb-icon': `url(${item.iconPath})` }"
-                          >
-                          <div class="current-value" :style="{ '--slider-progress': getGrainStapleSliderProgress(item.id) }">
-                            {{ getFrequencyLabel(grainStapleValues[item.id] !== undefined ? grainStapleValues[item.id] : 0) }}
+                <div v-for="(item, index) in grainStapleItems" :key="item.id" class="mobile-grain-staple-row">
+                  <div class="mobile-row-number">{{ index + 1 }}</div>
+                  
+                  <div class="mobile-form-group">
+                    <label class="mobile-field-label">{{ item.name }}</label>
+                    <div class="mobile-slider-container">
+                      <div class="mobile-slider-content">
+                        <div class="mobile-slider-row">
+                          <div class="mobile-box-6" :style="{ '--slider-progress': getGrainStapleSliderProgress(item.id) }">
+                            <div class="mobile-slider-labels">
+                              <span class="mobile-min-label">{{ getFrequencyLabel(0) }}</span>
+                              <span class="mobile-max-label">{{ getFrequencyLabel(4) }}</span>
+                            </div>
+                            <input
+                              type="range"
+                              class="mobile-gradient-slider"
+                              :min="0"
+                              :max="4"
+                              :value="grainStapleValues[item.id] || 0"
+                              :step="1"
+                              :id="`mobile-grain-staple-${item.id}`"
+                              @input="updateGrainStapleValue(item.id, $event)"
+                              :style="{ '--thumb-icon': `url(${item.iconPath})` }"
+                            >
+                            <div class="mobile-current-value" :style="{ '--slider-progress': getGrainStapleSliderProgress(item.id) }">
+                              {{ getFrequencyLabel(grainStapleValues[item.id] !== undefined ? grainStapleValues[item.id] : 0) }}
+                            </div>
                           </div>
                         </div>
-                        <span class="unit-box"></span>
-                      </div>
-                      <!-- Frequency description -->
-                      <div class="frequency-description">
-                        {{ getFrequencyDescription(grainStapleValues[item.id] !== undefined ? grainStapleValues[item.id] : 0) }}
+                        <!-- Mobile Frequency description -->
+                        <div class="mobile-frequency-description">
+                          {{ getFrequencyDescription(grainStapleValues[item.id] !== undefined ? grainStapleValues[item.id] : 0) }}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -338,9 +502,9 @@
           </div>
         </div>
       </div>
+    </div>
 
-    <!-- 聊天机器人组件 -->
-  </div>
+    <!-- Chatbot component -->
 </template>
 
 <script setup lang="ts">
@@ -348,7 +512,6 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { foodQuestions, UNIT_MAPPING, type FoodAnswers } from '@/data/foodQuestions'
 import { getFoodDropdownData, initializeFoodDropdownData } from '@/services/dropdownData'
-import SearchableDropdown from '@/views/components/SearchableDropdown.vue'
 
 const router = useRouter()
 const currentQuestionIndex = ref(0)
@@ -359,7 +522,7 @@ const foodOptions = ref<Record<number, string[]>>({})
 const isLoading = ref(false)
 const errorStates = ref<Record<number, string | null>>({})
 
-// 动物产品数据
+// Animal products data
 const animalProducts = ref([
   { id: 'beef', name: 'Beef', iconPath: beefImg },
   { id: 'lamb', name: 'Lamb', iconPath: lambImg },
@@ -369,29 +532,34 @@ const animalProducts = ref([
   { id: 'eggs_dairy', name: 'Eggs, cheese or dairy', iconPath: cheeseImg }
 ])
 
-// 动物产品消费频率值
+// Animal products consumption frequency values
 const animalProductValues = ref<Record<string, number>>({})
 
-// 水果蔬菜数据
+// Fruits and vegetables data
 const fruitVegetableItems = ref([
   { id: 'fruits', name: 'Fruit', iconPath: appleImg },
   { id: 'vegetables', name: 'Vegetable', iconPath: broccoliImg }
 ])
 
-// 水果蔬菜消费频率值
+// Fruits and vegetables consumption frequency values
 const fruitVegValues = ref<Record<string, number>>({})
 
-// 谷物主食数据
+// Grains and staples data
 const grainStapleItems = ref([
   { id: 'rice', name: 'Rice', iconPath: riceImg },
   { id: 'noodles', name: 'Noodles', iconPath: noodlesImg },
   { id: 'bread', name: 'Bread', iconPath: baguetteImg }
 ])
 
-// 谷物主食消费频率值
+// Grains and staples consumption frequency values
 const grainStapleValues = ref<Record<string, number>>({})
 
-// 定义事件
+// Mobile detection
+const isMobile = computed(() => {
+  return window.innerWidth <= 768
+})
+
+// Define events
 const emit = defineEmits<{
   'question-change': [index: number]
 }>()
@@ -437,7 +605,7 @@ const initializeFoodOptions = async () => {
   }
 }
 
-// 监听问题索引变化并发射事件
+// Watch question index changes and emit events
 watch(currentQuestionIndex, (newIndex) => {
   emit('question-change', newIndex)
 }, { immediate: true })
@@ -447,8 +615,7 @@ onMounted(() => {
   initializeFoodOptions()
 })
 const isDetailModalVisible = ref(false)
-const detailData = ref<Record<string, any>>({})
-const showLimitMessage = ref(false)
+const detailData = ref<Record<string, Array<{id: string, name: string, weight: number}>>>({})
 
 // API calculation states
 const isCalculating = ref(false)
@@ -456,7 +623,7 @@ const calculationError = ref<string | null>(null)
 
 // Initialize detailItems with default values
 const getDefaultDetailItems = () => ({
-  0: [ // 动物产品 - 6 items
+  0: [ // Animal products - 6 items
     { id: '1', name: '', weight: 0 }, // Beef
     { id: '2', name: '', weight: 0 }, // Lamb
     { id: '3', name: '', weight: 0 }, // Pork
@@ -464,11 +631,11 @@ const getDefaultDetailItems = () => ({
     { id: '5', name: '', weight: 0 }, // Fish or shellfish
     { id: '6', name: '', weight: 0 }  // Eggs, cheese or dairy
   ],
-  1: [ // 水果蔬菜 - 2 items
+  1: [ // Fruits and vegetables - 2 items
     { id: '1', name: '', weight: 0 }, // Fruits
     { id: '2', name: '', weight: 0 }  // Vegetables
   ],
-  2: [ // 谷物主食 - 3 items
+  2: [ // Grains and staples - 3 items
     { id: '1', name: '', weight: 0 }, // Rice
     { id: '2', name: '', weight: 0 }, // Noodles
     { id: '3', name: '', weight: 0 }  // Bread
@@ -549,7 +716,7 @@ const updateSliderValue = (sliderId: string, event: Event) => {
   answers.value[sliderId] = value
 }
 
-// 动物产品slider处理方法
+// Animal products slider handling methods
 const updateAnimalProductValue = (productId: string, event: Event) => {
   const target = event.target as HTMLInputElement
   const value = Number(target.value)
@@ -563,7 +730,7 @@ const getAnimalProductSliderProgress = (productId: string) => {
   return `${progress}%`
 }
 
-// 水果蔬菜slider处理方法
+// Fruits and vegetables slider handling methods
 const updateFruitVegValue = (itemId: string, event: Event) => {
   const target = event.target as HTMLInputElement
   const value = Number(target.value)
@@ -577,7 +744,7 @@ const getFruitVegSliderProgress = (itemId: string) => {
   return `${progress}%`
 }
 
-// 谷物主食slider处理方法
+// Grains and staples slider handling methods
 const updateGrainStapleValue = (itemId: string, event: Event) => {
   const target = event.target as HTMLInputElement
   const value = Number(target.value)
@@ -607,228 +774,7 @@ const previousQuestion = () => {
     currentQuestionIndex.value--
   }
 }
-const calculateCarbonFootprint = (answers: FoodAnswers) => {
-  const dietaryPreference = answers.dietary_preference || 'omnivore'
-  const vegFruitKg = answers.veg_fruit_kg || 0
-  const meatKg = answers.meat_kg || 0
-  const grainsKg = answers.grains_kg || 0
-  const otherKg = answers.other_kg || 0
-  const dairyConsumption = answers.dairy || 0
-  const localFoodPercentage = answers.local_food_percentage || 0
-  const organicFoodPercentage = answers.organic_food_percentage || 0
-  const foodWaste = answers.waste || 0
-  const cookingFrequency = answers.cooking_frequency || 0
-  const mockResult = {
-    totalFootprint: '15.6',
-    breakdown: {
-      diet: 2.5,
-      meat: 8.2,
-      dairy: 3.1,
-      local: -0.5,
-      organic: -0.3,
-      waste: 1.8,
-      cooking: 0.8
-    },
-    details: {
-      dietType: dietaryPreference,
-      meatConsumption: meatKg,
-      dairyConsumption: dairyConsumption,
-      localPercentage: localFoodPercentage,
-      organicPercentage: organicFoodPercentage,
-      foodWaste: foodWaste,
-      cookingFrequency: cookingFrequency
-    },
-    breakdownCards: [
-      {
-        title: 'Diet & Consumption Breakdown',
-        data: {
-          diet: 2.5,
-          meat: 8.2,
-          dairy: 3.1
-        }
-      },
-      {
-        title: 'Sustainability & Waste Details',
-        data: {
-          local: -0.5,
-          organic: -0.3,
-          waste: 1.8,
-          cooking: 0.8
-        }
-      }
-    ]
-  }
 
-  return mockResult
-}
-
-// Convert food calculator data to API format
-const convertFoodDataForAPI = (data: FoodAnswers) => {
-  // Transform the food answers into the new API format with foodItems array
-  const foodItems = []
-  
-  // Helper function to convert slider value to frequency string
-  const getFrequencyString = (value: number) => {
-    const frequency = frequencyLabels.find(f => f.value === value)
-    return frequency ? frequency.label : 'Never'
-  }
-  
-  // Check if user has submitted detailed data from popups
-  const hasDetailedData = Object.keys(detailData.value).length > 0
-  
-  if (hasDetailedData) {
-    // Use detailed data from popups (user clicked "ADD DETAILS..." and submitted)
-    // Map question indices to categories
-    const categoryMapping = {
-      0: 'animal',    // Animal products
-      1: 'plant',     // Fruits and vegetables  
-      2: 'grain'      // Grains and staples
-    }
-    
-    Object.keys(detailData.value).forEach(questionIndex => {
-      const index = parseInt(questionIndex)
-      const category = categoryMapping[index as keyof typeof categoryMapping]
-      if (!category) return
-      
-      const items = detailData.value[questionIndex]
-      const detailedItems: Array<{type: string, frequency: string}> = []
-      
-      items.forEach((item: any) => {
-        // Check if this is a slider-based detailed modal (weight > 0 but name might be empty)
-        // or a dropdown-based modal (name exists and weight > 0)
-        if (item.weight > 0) {
-          let mappedType = ''
-          let frequency = getFrequencyString(item.weight)
-          
-          // If name exists, this is dropdown-based detailed modal
-          if (item.name && item.name.trim() !== '') {
-            // Map specific food types to the new API format
-            mappedType = item.name
-            
-            // Map animal product types
-            if (category === 'animal') {
-              if (item.name.toLowerCase().includes('beef')) mappedType = 'Beef'
-              else if (item.name.toLowerCase().includes('lamb')) mappedType = 'Lamb'
-              else if (item.name.toLowerCase().includes('pork')) mappedType = 'Pork'
-              else if (item.name.toLowerCase().includes('poultry') || item.name.toLowerCase().includes('chicken')) mappedType = 'Poultry'
-              else if (item.name.toLowerCase().includes('fish') || item.name.toLowerCase().includes('seafood')) mappedType = 'Fish or shellfish'
-              else if (item.name.toLowerCase().includes('egg') || item.name.toLowerCase().includes('dairy') || item.name.toLowerCase().includes('cheese')) mappedType = 'Eggs, cheese or dairy'
-            }
-            // Map plant types
-            else if (category === 'plant') {
-              if (item.name.toLowerCase().includes('fruit')) mappedType = 'Fruits'
-              else if (item.name.toLowerCase().includes('vegetable')) mappedType = 'Vegetables'
-            }
-            // Map grain types
-            else if (category === 'grain') {
-              if (item.name.toLowerCase().includes('rice')) mappedType = 'Rice'
-              else if (item.name.toLowerCase().includes('noodle')) mappedType = 'Noodles'
-              else if (item.name.toLowerCase().includes('bread')) mappedType = 'Bread'
-            }
-          } else {
-            // This is slider-based detailed modal - map based on category and item index
-            if (category === 'animal') {
-              const animalTypes = ['Beef', 'Lamb', 'Pork', 'Poultry', 'Fish or shellfish', 'Eggs, cheese or dairy']
-              mappedType = animalTypes[parseInt(item.id) - 1] || 'Beef'
-            } else if (category === 'plant') {
-              const plantTypes = ['Fruits', 'Vegetables']
-              mappedType = plantTypes[parseInt(item.id) - 1] || 'Fruits'
-            } else if (category === 'grain') {
-              const grainTypes = ['Rice', 'Noodles', 'Bread']
-              mappedType = grainTypes[parseInt(item.id) - 1] || 'Rice'
-            }
-          }
-          
-          if (mappedType) {
-            detailedItems.push({
-              type: mappedType,
-              frequency: frequency
-            })
-          }
-        }
-      })
-      
-      if (detailedItems.length > 0) {
-        // Find the highest frequency in detailed items to set as category frequency
-        const frequencyOrder = ['Never', 'Infrequently', 'Occasionally', 'Often', 'Very Often']
-        const highestFrequency = detailedItems.reduce((highest, item) => {
-          const currentIndex = frequencyOrder.indexOf(item.frequency)
-          const highestIndex = frequencyOrder.indexOf(highest)
-          return currentIndex > highestIndex ? item.frequency : highest
-        }, 'Never')
-        
-        foodItems.push({
-          category: category,
-          frequency: highestFrequency, // Use highest frequency from detailed items
-          detailed: detailedItems
-        })
-      }
-    })
-    
-    // Add categories without detailed data using simple frequency
-    const categoriesWithDetails = Object.keys(detailData.value).map(q => categoryMapping[parseInt(q) as keyof typeof categoryMapping])
-    const allCategories = ['animal', 'plant', 'grain']
-    
-    allCategories.forEach(category => {
-      if (!categoriesWithDetails.includes(category)) {
-        // Map category names to actual data field names
-        const fieldMapping = {
-          'animal': 'animal_products_frequency',
-          'plant': 'fruit_veg_frequency',
-          'grain': 'grain_frequency'
-        }
-        const fieldName = fieldMapping[category as keyof typeof fieldMapping]
-        const frequency = getFrequencyString(Number(data[fieldName]) || 0)
-        if (frequency !== 'Never') {
-          foodItems.push({
-            category: category,
-            frequency: frequency
-          })
-        }
-      }
-    })
-  } else {
-    // Use simple frequency approach (user didn't click "ADD DETAILS...")
-    // Get frequency values from slider answers
-    const animalFrequency = getFrequencyString(Number(data.animal_products_frequency) || 0)
-    const plantFrequency = getFrequencyString(Number(data.fruit_veg_frequency) || 0)
-    const grainFrequency = getFrequencyString(Number(data.grain_frequency) || 0)
-    
-    // Add animal products if frequency is not "Never"
-    if (animalFrequency !== 'Never') {
-      foodItems.push({
-        category: 'animal',
-        frequency: animalFrequency
-      })
-    }
-    
-    // Add plant products if frequency is not "Never"
-    if (plantFrequency !== 'Never') {
-      foodItems.push({
-        category: 'plant',
-        frequency: plantFrequency
-      })
-    }
-    
-    // Add grain products if frequency is not "Never"
-    if (grainFrequency !== 'Never') {
-      foodItems.push({
-        category: 'grain',
-        frequency: grainFrequency
-      })
-    }
-  }
-  
-  const apiData = {
-    foodItems: foodItems
-  }
-  
-  console.log('Converting food data for API:', apiData)
-  console.log('Raw answers data:', data)
-  console.log('Has detailed data:', hasDetailedData)
-  console.log('Detail data:', detailData.value)
-  return apiData
-}
 
 const nextQuestion = async () => {
   if (currentQuestionIndex.value < foodQuestions.length - 1) {
@@ -860,8 +806,8 @@ const nextQuestion = async () => {
     }
   }
 }
-const getSliderProgress = (slider: any) => {
-  const value = answers.value[slider.id] !== undefined ? answers.value[slider.id] : slider.defaultValue
+const getSliderProgress = (slider: {id: string, min: number, max: number, defaultValue: number}) => {
+  const value = Number(answers.value[slider.id] !== undefined ? answers.value[slider.id] : slider.defaultValue)
   const progress = ((value - slider.min) / (slider.max - slider.min)) * 100
   return `${progress}%`
 }
@@ -883,12 +829,8 @@ const getDetailModalTitle = () => {
   return titles[currentQuestionIndex.value as keyof typeof titles] || 'Details'
 }
 
-// 获取当前问题的详情项目
-const getCurrentDetailItems = () => {
-  return detailItems.value[currentQuestionIndex.value] || []
-}
 
-// 获取项目类型名称
+// Get item type name
 const getItemType = () => {
   const types = {
     0: 'Animal Product',
@@ -898,30 +840,29 @@ const getItemType = () => {
   return types[currentQuestionIndex.value as keyof typeof types] || 'Item'
 }
 
-// 导入图片
+// Import images
 import vegetableImg from '@/assets/img/vegetable.png'
 import proteinsImg from '@/assets/img/proteins.png'
 import ramenImg from '@/assets/img/ramen.png'
 import cheeseImg from '@/assets/img/cheese.png'
-import addIcon from '@/assets/img/add.png'
 
-// 动物产品图标
+// Animal products icons
 import beefImg from '@/assets/img/beef.png'
 import lambImg from '@/assets/img/lamb.png'
 import porkImg from '@/assets/img/pork.png'
 import foodImg from '@/assets/img/food.png'
 import fishImg from '@/assets/img/fish.png'
 
-// 水果蔬菜图标
+// Fruits and vegetables icons
 import appleImg from '@/assets/img/apple.png'
 import broccoliImg from '@/assets/img/broccoli.png'
 
-// 谷物主食图标
+// Grains and staples icons
 import riceImg from '@/assets/img/rice.png'
 import noodlesImg from '@/assets/img/noodles.png'
 import baguetteImg from '@/assets/img/baguette.png'
 
-// 图标映射
+// Icon mapping
 const iconMap: Record<string, string> = {
   'proteins': proteinsImg,
   'vegetable': vegetableImg,
@@ -929,47 +870,22 @@ const iconMap: Record<string, string> = {
   'cheese': cheeseImg
 }
 
-// 获取标题图标
+// Get header icon
 const getHeaderIcon = () => {
   const icons = {
-    0: proteinsImg,   // 问题1 - 动物产品
-    1: vegetableImg,  // 问题2 - 水果蔬菜
-    2: ramenImg       // 问题3 - 谷物主食
+    0: proteinsImg,   // Question 1 - Animal products
+    1: vegetableImg,  // Question 2 - Fruits and vegetables
+    2: ramenImg       // Question 3 - Grains and staples
   }
   return icons[currentQuestionIndex.value as keyof typeof icons] || proteinsImg
 }
 
 
-// 获取选项列表
-const getItemOptions = () => {
-  const categoryIndex = currentQuestionIndex.value
-  return foodOptions.value[categoryIndex] || []
-}
 
-// 添加详情行
-const addDetailRow = () => {
-  const currentItems = detailItems.value[currentQuestionIndex.value]
-  if (currentItems.length >= 20) {
-    showLimitMessage.value = true
-    setTimeout(() => {
-      showLimitMessage.value = false
-    }, 3000)
-    return
-  }
-  const newId = (currentItems.length + 1).toString()
-  currentItems.push({ id: newId, name: '', weight: 0 })
-}
 
-// 删除详情行
-const removeDetailRow = (index: number) => {
-  const currentItems = detailItems.value[currentQuestionIndex.value]
-  if (currentItems.length > 1) {
-    currentItems.splice(index, 1)
-  }
-}
 
 const saveDetailData = () => {
-  // 保存当前问题的详情数据
+  // Save current question's detail data
   const currentItems = detailItems.value[currentQuestionIndex.value]
   
   // Transfer slider values and names to the detail items
@@ -1027,15 +943,15 @@ const saveDetailData = () => {
   
   detailData.value[currentQuestionIndex.value] = updatedItems
   
-  // 关闭弹框
+  // Close modal
   closeDetailModal()
   
-  console.log('保存的详情数据:', updatedItems)
+  console.log('Saved detail data:', updatedItems)
 }
 
 
 
-// 初始化默认值
+// Initialize default values
 foodQuestions.forEach(question => {
   if (question.sliders) {
     question.sliders.forEach(slider => {
@@ -1123,7 +1039,7 @@ foodQuestions.forEach(question => {
   margin-right: 60px;
 }
 
-/* 单选题样式 */
+/* Single choice styles */
 .options-container {
   display: flex;
   flex-direction: column;
@@ -1200,7 +1116,7 @@ foodQuestions.forEach(question => {
   font-family: var(--font-display);
 }
 
-/* 滑块样式 */
+/* Slider styles */
 .sliders-container {
   display: flex;
   flex-direction: column;
@@ -1268,7 +1184,6 @@ foodQuestions.forEach(question => {
   overflow: visible;
   z-index: 1;
   top: -10px;
-  margin: 0 30px;
 }
 .box_6::before {
   content: '';
@@ -1325,14 +1240,15 @@ foodQuestions.forEach(question => {
 .current-value::before {
   content: '';
   position: absolute;
-  top: -4px;
+  top: -30px;
   left: 50%;
   transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 4px solid #3d7c4a;
+  width: 40px;
+  height: 40px;
+  background-image: var(--thumb-icon);
+  background-size: 40px 40px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .frequency-description {
@@ -1382,7 +1298,7 @@ foodQuestions.forEach(question => {
   transition: none !important;
 }
 
-/* 文本输入样式 */
+/* Text input styles */
 .text-input-container {
   margin-top: 20px;
   display: flex;
@@ -1538,10 +1454,121 @@ foodQuestions.forEach(question => {
 }
 
 
-/* 响应式设计 */
+/* Mobile Navigation Buttons */
+.mobile-nav-container {
+  display: none;
+  margin: 20px 0;
+  padding: 0 15px;
+}
+
+.mobile-nav-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #2d5a37;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.mobile-nav-btn.active {
+  background: linear-gradient(135deg, #4a7c59, #2d5a37);
+  color: white;
+  border-color: #2d5a37;
+}
+
+/* Mobile layout fixes and slider enhancements */
 @media (max-width: 768px) {
+  .page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+  
   .combined-vehicle-container {
-    padding: 15px 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 15px 10px !important;
+  }
+  
+  .sliders-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .slider-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .mobile-nav-container {
+    display: block;
+  }
+  
+  /* Fix text visibility on mobile */
+  .text_5, .slider-label, .unit-box, .vehicle-section {
+    color: #333 !important;
+    font-weight: 600 !important;
+  }
+  
+  .text_5 {
+    font-size: 18px !important;
+    color: #000 !important;
+    font-weight: 700 !important;
+  }
+  
+  .slider-label {
+    font-size: 16px !important;
+    color: #2d5a37 !important;
+    font-weight: 600 !important;
+  }
+  
+  .unit-box {
+    color: #2d5a37 !important;
+    font-weight: 600 !important;
+  }
+
+  /* Mobile slider enhancements - thicker tracks with gradient */
+  .gradient-slider {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .gradient-slider::-webkit-slider-runnable-track,
+  .gradient-slider::-moz-range-track {
+    height: 40px !important;
+    background: linear-gradient(to right, #e0e0e0, #81c263) !important;
+    border-radius: 20px !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .gradient-slider::-webkit-slider-thumb,
+  .gradient-slider::-moz-range-thumb {
+    width: 50px !important;
+    height: 50px !important;
+    background-size: 40px 40px !important;
+    transform: translateY(-50%) !important;
   }
   
   .text_5 {
@@ -1554,24 +1581,229 @@ foodQuestions.forEach(question => {
   }
   
   .text_10 {
-    font-size: 12px;
-    padding: 8px 16px;
-    letter-spacing: 0.3px;
-    min-width: 350px;
+    font-size: 12px !important;
+    padding: 8px 16px !important;
+    letter-spacing: 0.3px !important;
+    min-width: 350px !important;
   }
 }
 
 @media (max-width: 480px) {
   .text_10 {
-    font-size: 11px;
-    padding: 6px 12px;
-    letter-spacing: 0.2px;
-    min-width: 300px;
+    font-size: 11px !important;
+    padding: 6px 12px !important;
+    letter-spacing: 0.2px !important;
+    min-width: 300px !important;
   }
   
   .btn {
     padding: 10px 20px;
     font-size: 13px;
+  }
+}
+
+/* Mobile styles for detail modal */
+@media (max-width: 768px) {
+  .detail-modal {
+    padding: 10px !important;
+    align-items: flex-start !important;
+    padding-top: 10px !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+  
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 15px !important;
+    border-radius: 15px !important;
+    max-height: calc(100vh - 20px) !important;
+    min-height: auto !important;
+    margin-top: 10px !important;
+  }
+  
+  .modal-content h3 {
+    font-size: 18px !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 8px !important;
+  }
+  
+  .modal-section {
+    max-height: calc(100vh - 200px) !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .modal-footer {
+    padding: 10px 0 !important;
+    gap: 10px !important;
+  }
+  
+  .btn {
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Mobile styles for food detail sections */
+  .animal-products-details,
+  .fruit-vegetable-details,
+  .grain-staple-details {
+    padding: 15px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .detail-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    margin-bottom: 15px !important;
+  }
+  
+  .header-icon-container {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  .add-button {
+    align-self: flex-end !important;
+  }
+  
+  .animal-product-row,
+  .fruit-vegetable-row,
+  .grain-staple-row {
+    flex-direction: column !important;
+    gap: 15px !important;
+    padding: 15px !important;
+    width: 100% !important;
+    margin-bottom: 20px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    display: flex !important;
+    align-items: stretch !important;
+  }
+  
+  .item-name {
+    font-size: 14px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  .custom-select,
+  .custom-input {
+    width: 100% !important;
+    font-size: 16px !important;
+    padding: 12px 16px !important;
+    border: 2px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    background: white !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .custom-select:focus,
+  .custom-input:focus {
+    border-color: #4a7c59 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1) !important;
+  }
+  
+  .delete-button {
+    align-self: flex-end !important;
+    margin-top: 10px !important;
+    padding: 8px 16px !important;
+    background: #ff4757 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .delete-button:hover {
+    background: #ff3742 !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Hide header labels on mobile */
+  .animal-products-details .header-labels,
+  .fruit-vegetable-details .header-labels,
+  .grain-staple-details .header-labels {
+    display: none !important;
+  }
+  
+  /* Adjust slider-row width in detail modal to prevent overflow */
+  .animal-products-details .slider-row,
+  .fruit-vegetable-details .slider-row,
+  .grain-staple-details .slider-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+    overflow: hidden !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 17vh;
+  }
+  
+  /* Make slider width bigger and centered */
+  .animal-products-details .box_6,
+  .fruit-vegetable-details .box_6,
+  .grain-staple-details .box_6 {
+    flex: 1 !important;
+    min-width: 200px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  /* Center the slider content within box_6 */
+  .animal-products-details .slider-content,
+  .fruit-vegetable-details .slider-content,
+  .grain-staple-details .slider-content {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  /* Ensure icons stay visible and centered */
+  .animal-products-details .slider-row .slider-label,
+  .fruit-vegetable-details .slider-row .slider-label,
+  .grain-staple-details .slider-row .slider-label {
+    min-width: 80px !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+    margin: 0 10px !important;
+  }
+  
+  /* Center sliders properly */
+  .animal-products-details .slider-row,
+  .fruit-vegetable-details .slider-row,
+  .grain-staple-details .slider-row {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 15px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Adjust slider width in detail modal */
+  .animal-products-details .gradient-slider,
+  .fruit-vegetable-details .gradient-slider,
+  .grain-staple-details .gradient-slider {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
   }
 }
 
@@ -1619,7 +1851,7 @@ foodQuestions.forEach(question => {
   box-shadow: 0 2px 10px rgba(61, 124, 74, 0.3);
 }
 
-/* 详情弹框样式 */
+/* Detail modal styles */
 .detail-modal {
   display: flex;
   position: fixed;
@@ -1699,7 +1931,7 @@ foodQuestions.forEach(question => {
   scrollbar-color: #c1c1c1 #f1f1f1;  /* Firefox */
 }
 
-/* 食物详情样式 */
+/* Food details styles */
 .food-details {
   width: 100%;
 }
@@ -1936,7 +2168,7 @@ foodQuestions.forEach(question => {
   font-family: var(--font-display);
 }
 
-/* 动物产品详情样式 */
+/* Animal products details styles */
 .animal-products-details {
   width: 100%;
 }
@@ -1985,7 +2217,7 @@ foodQuestions.forEach(question => {
 }
 
 .product-slider .box_6 {
-  margin: 0 10px;
+  margin: 0;
   height: 20px;
 }
 
@@ -1996,7 +2228,7 @@ foodQuestions.forEach(question => {
   min-width: 80px;
 }
 
-/* 动物产品slider的拖动手柄样式 - 更小的尺寸 */
+/* Animal products slider thumb styles - smaller size */
 .animal-products-details .gradient-slider::-webkit-slider-thumb {
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -2028,7 +2260,7 @@ foodQuestions.forEach(question => {
   box-shadow: none !important;
 }
 
-/* 水果蔬菜详情样式 */
+/* Fruits and vegetables details styles */
 .fruit-vegetable-details {
   width: 100%;
 }
@@ -2077,7 +2309,7 @@ foodQuestions.forEach(question => {
 }
 
 .item-slider .box_6 {
-  margin: 0 10px;
+  margin: 0;
   height: 20px;
 }
 
@@ -2088,7 +2320,7 @@ foodQuestions.forEach(question => {
   min-width: 80px;
 }
 
-/* 水果蔬菜slider的拖动手柄样式 - 更小的尺寸 */
+/* Fruits and vegetables slider thumb styles - smaller size */
 .fruit-vegetable-details .gradient-slider::-webkit-slider-thumb {
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -2118,6 +2350,252 @@ foodQuestions.forEach(question => {
   border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
+}
+
+/* Mobile Layout Styles for Fruit and Vegetable Details */
+.mobile-layout {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Mobile modal content adjustments */
+@media (max-width: 768px) {
+  .detail-modal {
+    padding: 5px !important;
+    align-items: flex-start !important;
+    padding-top: 5px !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+  
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    border-radius: 15px !important;
+    max-height: calc(100vh - 60px) !important;
+    min-height: auto !important;
+    margin-top: 5px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  
+  .modal-section {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: calc(100vh - 180px) !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.mobile-animal-product-row,
+.mobile-fruit-veg-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding: 15px 15px 0 15px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 
+    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  gap: 15px;
+}
+
+.mobile-row-number {
+  width: 30px;
+  height: 30px;
+  background: #3d7c4a;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.mobile-form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.mobile-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  font-family: var(--font-display);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.mobile-slider-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.mobile-slider-content {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mobile-slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.mobile-box-6 {
+  width: 100%;
+  max-width: 100%;
+  height: 60px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.mobile-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.mobile-min-label,
+.mobile-max-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.mobile-gradient-slider {
+  width: 100%;
+  max-width: calc(100% - 20px);
+  height: 8px;
+  background: linear-gradient(to right, #e0e0e0, #4a7c59);
+  border-radius: 4px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.mobile-gradient-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background-image: var(--thumb-icon);
+  background-size: 40px 40px;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  z-index: 2;
+  transform: translateY(-50%);
+  border-radius: 0;
+  box-shadow: none;
+  transition: none;
+}
+
+.mobile-gradient-slider::-moz-range-thumb {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background-image: var(--thumb-icon);
+  background-size: 40px 40px;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mobile-current-value {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(74, 124, 89, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-family: var(--font-display);
+}
+
+.mobile-frequency-description {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Mobile Layout Styles for Grain and Staple Details */
+.mobile-grain-staple-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding: 15px 15px 0 15px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 
+    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  gap: 15px;
 }
 
 /* 谷物主食详情样式 */
@@ -2169,7 +2647,7 @@ foodQuestions.forEach(question => {
 }
 
 .grain-staple-row .item-slider .box_6 {
-  margin: 0 10px;
+  margin: 0;
   height: 20px;
 }
 

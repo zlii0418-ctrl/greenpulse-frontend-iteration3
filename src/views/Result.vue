@@ -629,51 +629,129 @@ async function calculateAndDisplayResults() {
       
       // Check for zero values on original data before API call
       if (route.query.type === 'travel' || route.query.type === 'private') {
-        const carValue = parseFloat(resultData.carFootprint) || 0
-        const motorcycleValue = parseFloat(resultData.motorcycleFootprint) || 0
-        const publicTransportValue = parseFloat(resultData.publicTransportFootprint) || 0
-        const totalValue = parseFloat(resultData.totalFootprint) || 0
+        // For travel, check both detailed data and simple data
+        // Priority: detailed data over simple data
+        let hasAnyValue = false
         
-        console.log('Pre-API zero value check (travel) - Car:', carValue, 'Motorcycle:', motorcycleValue, 'Public Transport:', publicTransportValue, 'Total:', totalValue)
-        
-        // If all values are zero, show popup and return early
-        if (carValue === 0 && motorcycleValue === 0 && publicTransportValue === 0 && totalValue === 0) {
-          console.log('Zero values detected in original travel data, showing popup')
-          showZeroValuesPopup.value = true
-          return
+        // First check if there's detailed data
+        if (resultData.details && Object.keys(resultData.details).length > 0) {
+          console.log('Checking detailed data for travel:', resultData.details)
+          hasAnyValue = Object.values(resultData.details).some((questionData: any) => {
+            console.log('Checking question data:', questionData)
+            // Check for private transport (cars, motorcycles)
+            if (questionData.vehicles) {
+              console.log('Found vehicles data:', questionData.vehicles)
+              // Check cars
+              if (questionData.vehicles.cars && Array.isArray(questionData.vehicles.cars)) {
+                const hasCarValue = questionData.vehicles.cars.some((car: any) => car.distance && car.distance > 0)
+                console.log('Cars check result:', hasCarValue)
+                if (hasCarValue) return true
+              }
+              // Check motorcycles
+              if (questionData.vehicles.motorcycles && Array.isArray(questionData.vehicles.motorcycles)) {
+                const hasMotorcycleValue = questionData.vehicles.motorcycles.some((motorcycle: any) => motorcycle.distance && motorcycle.distance > 0)
+                console.log('Motorcycles check result:', hasMotorcycleValue)
+                if (hasMotorcycleValue) return true
+              }
+            }
+            // Check for public transport (lrt, mrt, ktm, monorail, bus)
+            if (questionData.transport) {
+              console.log('Found transport data:', questionData.transport)
+              const transportValues = Object.values(questionData.transport)
+              const hasTransportValue = transportValues.some((value: any) => typeof value === 'number' && value > 0)
+              console.log('Transport values:', transportValues, 'Has transport value:', hasTransportValue)
+              if (hasTransportValue) return true
+            }
+            return false
+          })
         }
-      } else if (route.query.type === 'household' || route.query.type === 'shopping') {
-        // Check if any input values are greater than 0
-        const hasAnyValue = Object.values(resultData).some(value => 
-          typeof value === 'number' && value > 0
-        )
         
-        console.log('Pre-API zero value check (' + route.query.type + ') - Raw input values:', resultData)
+        // If no detailed data or no values in detailed data, check simple data
+        if (!hasAnyValue) {
+          const carValue = parseFloat(resultData.car) || 0
+          const motorcycleValue = parseFloat(resultData.motorcycle) || 0
+          const busValue = parseFloat(resultData.bus) || 0
+          const trainValue = parseFloat(resultData.train) || 0
+          
+          hasAnyValue = carValue > 0 || motorcycleValue > 0 || busValue > 0 || trainValue > 0
+        }
+        
+        console.log('Pre-API zero value check (travel) - Raw input values:', resultData)
+        console.log('Pre-API zero value check (travel) - Details data:', resultData.details)
         console.log('Has any value > 0:', hasAnyValue)
         
         // If no values are greater than 0, show popup and return early
         if (!hasAnyValue) {
-          console.log('Zero values detected in original ' + route.query.type + ' data, showing popup')
+          console.log('Zero values detected in travel input data, showing popup')
           showZeroValuesPopup.value = true
           return
         }
-      } else       if (route.query.type === 'food') {
-        // For food, check both raw input values and detailed data
-        let hasAnyValue = false
-        
-        // Check raw input values (fruit_kg, veg_kg, etc.)
-        hasAnyValue = Object.values(resultData).some(value => 
+      } else if (route.query.type === 'household') {
+        // For household, check simple data only (no detailed data functionality)
+        const hasAnyValue = Object.values(resultData).some(value => 
           typeof value === 'number' && value > 0
         )
         
-        // If no raw values, check detailed data
-        if (!hasAnyValue && resultData.details) {
+        console.log('Pre-API zero value check (household) - Raw input values:', resultData)
+        console.log('Has any value > 0:', hasAnyValue)
+        
+        // If no values are greater than 0, show popup and return early
+        if (!hasAnyValue) {
+          console.log('Zero values detected in household input data, showing popup')
+          showZeroValuesPopup.value = true
+          return
+        }
+      } else if (route.query.type === 'shopping') {
+        // For shopping, check if any input values are greater than 0
+        // Priority: detailed data over simple data
+        let hasAnyValue = false
+        
+        // First check if there's detailed data with weight values
+        if (resultData.details && Object.keys(resultData.details).length > 0) {
           hasAnyValue = Object.values(resultData.details).some((items: any) => {
             if (Array.isArray(items)) {
               return items.some((item: any) => item.weight && item.weight > 0)
             }
             return false
           })
+        }
+        
+        // If no detailed data or no values in detailed data, check simple data
+        if (!hasAnyValue) {
+          hasAnyValue = Object.values(resultData).some(value => 
+            typeof value === 'number' && value > 0
+          )
+        }
+        
+        console.log('Pre-API zero value check (shopping) - Raw input values:', resultData)
+        console.log('Has any value > 0:', hasAnyValue)
+        
+        // If no values are greater than 0, show popup and return early
+        if (!hasAnyValue) {
+          console.log('Zero values detected in shopping input data, showing popup')
+          showZeroValuesPopup.value = true
+          return
+        }
+      } else if (route.query.type === 'food') {
+        // For food, check both raw input values and detailed data
+        // Priority: detailed data over simple data
+        let hasAnyValue = false
+        
+        // First check if there's detailed data with weight values
+        if (resultData.details && Object.keys(resultData.details).length > 0) {
+          hasAnyValue = Object.values(resultData.details).some((items: any) => {
+            if (Array.isArray(items)) {
+              return items.some((item: any) => item.weight && item.weight > 0)
+            }
+            return false
+          })
+        }
+        
+        // If no detailed data or no values in detailed data, check simple data
+        if (!hasAnyValue) {
+          hasAnyValue = Object.values(resultData).some(value => 
+            typeof value === 'number' && value > 0
+          )
         }
         
         console.log('Pre-API zero value check (food) - Raw input values:', resultData)

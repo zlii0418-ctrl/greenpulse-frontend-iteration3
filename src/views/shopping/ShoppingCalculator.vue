@@ -7,6 +7,24 @@
               {{ currentQuestion.question }}
             </span>
           </div>
+
+          <!-- Mobile Navigation Buttons -->
+          <div class="mobile-nav-container">
+            <div class="mobile-nav-buttons">
+              <RouterLink to="/calculator/travel" class="mobile-nav-btn">
+                <span>Travel</span>
+              </RouterLink>
+              <RouterLink to="/calculator/household" class="mobile-nav-btn">
+                <span>House</span>
+              </RouterLink>
+              <RouterLink to="/calculator/food" class="mobile-nav-btn">
+                <span>Food</span>
+              </RouterLink>
+              <RouterLink to="/calculator/shopping" class="mobile-nav-btn active">
+                <span>Shopping</span>
+              </RouterLink>
+            </div>
+          </div>
   
           <div class="sliders-container">
             <div v-for="slider in currentQuestion.sliders" :key="slider.id" class="slider-group">
@@ -91,54 +109,112 @@
           <h3>{{ getDetailModalTitle() }}</h3>
           <div class="modal-section">
             <div class="shopping-details">
-              <div class="detail-header">
-                <div class="header-icon-container">
-                  <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
-                </div>
-                <div class="header-labels">
-                  <span class="label-text">Name</span>
-                  <span class="label-text">Spend (RM)</span>
-                </div>
-                <div class="add-button" :class="{ 'disabled': getCurrentDetailItems().length >= 20 }">
-                  <img :src="addIcon" alt="Add" @click="addDetailRow" />
-                </div>
-              </div>
-              
-              <!-- Limit message -->
-              <div v-if="showLimitMessage" class="limit-message">
-                Maximum 20 items allowed per category
-              </div>
-              
-              <div v-for="(item, index) in getCurrentDetailItems()" :key="item.id" class="detail-row">
-                <div class="row-number">{{ index + 1 }}</div>
-                
-                <div class="name-select">
-                  <SearchableDropdown
-                    v-model="item.name"
-                    :options="getItemOptions()"
-                    :placeholder="isLoading ? 'Loading all options...' : 
-                                 errorStates[currentQuestionIndex] ? 'Error loading options' : 
-                                 `Select ${getItemType()}`"
-                    :disabled="isLoading"
-                  />
-                  <div v-if="errorStates[currentQuestionIndex]" class="error-message">
-                    {{ errorStates[currentQuestionIndex] }}
+              <!-- Desktop Layout -->
+              <div v-if="!isMobile" class="desktop-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
+                  <div class="header-labels">
+                    <span class="label-text">Name</span>
+                    <span class="label-text">Spend (RM)</span>
+                  </div>
+                  <div class="add-button" :class="{ 'disabled': getCurrentDetailItems().length >= 20 }">
+                    <img :src="addIcon" alt="Add" @click="addDetailRow" />
                   </div>
                 </div>
                 
-                <div class="weight-input">
-                  <input 
-                    type="number" 
-                    v-model.number="item.weight" 
-                    class="custom-input"
-                    min="0" 
-                    max="10000" 
-                    step="0.01"
-                    placeholder="0.00"
-                  />
+                <!-- Limit message -->
+                <div v-if="showLimitMessage" class="limit-message">
+                  Maximum 20 items allowed per category
                 </div>
                 
-                <div class="delete-button" @click="removeDetailRow(index)">Delete</div>
+                <div v-for="(item, index) in getCurrentDetailItems()" :key="item.id" class="detail-row">
+                  <div class="row-number">{{ index + 1 }}</div>
+                  
+                  <div class="name-select">
+                    <SearchableDropdown
+                      v-model="item.name"
+                      :options="getItemOptions()"
+                      :placeholder="isLoading ? 'Loading all options...' : 
+                                   errorStates[currentQuestionIndex] ? 'Error loading options' : 
+                                   `Select ${getItemType()}`"
+                      :disabled="isLoading"
+                    />
+                    <div v-if="errorStates[currentQuestionIndex]" class="error-message">
+                      {{ errorStates[currentQuestionIndex] }}
+                    </div>
+                  </div>
+                  
+                  <div class="weight-input">
+                    <input 
+                      type="number" 
+                      v-model.number="item.weight" 
+                      class="custom-input"
+                      min="0" 
+                      max="10000" 
+                      step="0.01"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div class="delete-button" @click="removeDetailRow(index)">Delete</div>
+                </div>
+              </div>
+              
+              <!-- Mobile Layout -->
+              <div v-else class="mobile-layout">
+                <div class="detail-header">
+                  <div class="header-icon-container">
+                    <img :src="getHeaderIcon()" :alt="getItemType()" class="header-icon" />
+                  </div>
+                  <div class="add-button" :class="{ 'disabled': getCurrentDetailItems().length >= 20 }">
+                    <img :src="addIcon" alt="Add" @click="addDetailRow" />
+                  </div>
+                </div>
+                
+                <!-- Limit message -->
+                <div v-if="showLimitMessage" class="limit-message">
+                  Maximum 20 items allowed per category
+                </div>
+                
+                <div v-for="(item, index) in getCurrentDetailItems()" :key="item.id" class="mobile-detail-row">
+                  <div class="mobile-row-number">{{ index + 1 }}</div>
+                  
+                  <div class="mobile-form-group">
+                    <label class="mobile-field-label">Name</label>
+                    <div class="mobile-name-select">
+                      <SearchableDropdown
+                        v-model="item.name"
+                        :options="getItemOptions()"
+                        :placeholder="isLoading ? 'Loading all options...' : 
+                                     errorStates[currentQuestionIndex] ? 'Error loading options' : 
+                                     `Select ${getItemType()}`"
+                        :disabled="isLoading"
+                      />
+                      <div v-if="errorStates[currentQuestionIndex]" class="error-message">
+                        {{ errorStates[currentQuestionIndex] }}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="mobile-form-group">
+                    <label class="mobile-field-label">Spend (RM)</label>
+                    <div class="mobile-weight-input">
+                      <input 
+                        type="number" 
+                        v-model.number="item.weight" 
+                        class="mobile-custom-input"
+                        min="0" 
+                        max="10000" 
+                        step="0.01"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class="mobile-delete-button" @click="removeDetailRow(index)">Delete</div>
+                </div>
               </div>
             </div>
           </div>
@@ -169,6 +245,11 @@ import SearchableDropdown from '@/views/components/SearchableDropdown.vue'
   const router = useRouter()
   const currentQuestionIndex = ref(0)
   const answers = ref<ShoppingAnswers>({})
+  
+  // Mobile detection
+  const isMobile = computed(() => {
+    return window.innerWidth <= 768
+  })
   
   // API data management
   const shoppingOptions = ref<Record<number, string[]>>({})
@@ -572,7 +653,7 @@ const calculationError = ref<string | null>(null)
     overflow: visible;
     z-index: 1;
     top: -10px;
-    margin: 0 30px;
+    margin: 0;
   }
   .box_6::before {
     content: '';
@@ -1155,5 +1236,322 @@ const calculationError = ref<string | null>(null)
     font-size: 12px;
     font-family: var(--font-display);
   }
+  
+/* Mobile Navigation Buttons */
+.mobile-nav-container {
+  display: none;
+  margin: 20px 0;
+  padding: 0 15px;
+}
+
+.mobile-nav-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #2d5a37;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.mobile-nav-btn.active {
+  background: linear-gradient(135deg, #4a7c59, #2d5a37);
+  color: white;
+  border-color: #2d5a37;
+}
+
+  /* Mobile layout fixes and slider enhancements */
+  @media (max-width: 768px) {
+    .page {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 10px !important;
+    }
+    
+    .combined-vehicle-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 15px 10px !important;
+    }
+    
+    .sliders-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    .slider-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+    }
+    
+    .mobile-nav-container {
+      display: block;
+    }
+    
+    /* Fix text visibility on mobile */
+    .text_5, .slider-label, .unit-box, .vehicle-section {
+      color: #333 !important;
+      font-weight: 600 !important;
+    }
+    
+    .text_5 {
+      font-size: 18px !important;
+      color: #000 !important;
+      font-weight: 700 !important;
+    }
+    
+    .slider-label {
+      font-size: 16px !important;
+      color: #2d5a37 !important;
+      font-weight: 600 !important;
+      margin-right: 0 !important;
+    }
+    
+    .unit-box {
+      color: #2d5a37 !important;
+      font-weight: 600 !important;
+    }
+
+    .gradient-slider {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+    }
+    
+    .gradient-slider::-webkit-slider-runnable-track,
+    .gradient-slider::-moz-range-track {
+      height: 40px !important;
+      background: linear-gradient(to right, #e0e0e0, #81c263) !important;
+      border-radius: 20px !important;
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .gradient-slider::-webkit-slider-thumb,
+    .gradient-slider::-moz-range-thumb {
+      width: 50px !important;
+      height: 50px !important;
+      background-size: 40px 40px !important;
+      transform: translateY(-50%) !important;
+    }
+    
+    .text_10 {
+      font-size: 12px !important;
+      padding: 8px 16px !important;
+      letter-spacing: 0.3px !important;
+      min-width: 350px !important;
+    }
+  }
+
+/* Mobile Layout Styles for Shopping Details */
+.mobile-detail-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding: 15px 15px 0 15px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 
+    inset 2px 2px 4px rgba(0, 0, 0, 0.05),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.mobile-row-number {
+  width: 30px;
+  height: 30px;
+  background: #3d7c4a;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.mobile-form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.mobile-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  font-family: var(--font-display);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.mobile-name-select,
+.mobile-weight-input {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+}
+
+.mobile-custom-input {
+  width: 100%;
+  max-width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: var(--font-display);
+  box-sizing: border-box;
+  background: white;
+  color: black;
+}
+
+.mobile-custom-input:focus {
+  border-color: #4a7c59;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+}
+
+/* Ensure SearchableDropdown works in mobile */
+.mobile-name-select {
+  position: relative;
+  z-index: 1000 !important;
+  overflow: visible !important;
+}
+
+.mobile-name-select .searchable-dropdown {
+  position: relative;
+  z-index: 1001 !important;
+  overflow: visible !important;
+}
+
+.mobile-name-select .searchable-dropdown .dropdown-menu {
+  position: fixed !important;
+  z-index: 99999 !important;
+  overflow: visible !important;
+  background: white !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+}
+
+/* Ensure dropdown items appear above everything */
+.mobile-name-select .searchable-dropdown .dropdown-item {
+  position: relative !important;
+  z-index: 100000 !important;
+  background: white !important;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  cursor: pointer !important;
+}
+
+.mobile-name-select .searchable-dropdown .dropdown-item:hover {
+  background: #f8f9fa !important;
+}
+
+/* Force dropdown to appear above all other elements */
+.mobile-name-select .searchable-dropdown * {
+  z-index: 100000 !important;
+}
+
+.mobile-delete-button {
+  align-self: flex-end;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mobile-delete-button:hover {
+  background: #ff3742;
+  transform: translateY(-1px);
+}
+
+/* Mobile modal adjustments */
+@media (max-width: 768px) {
+  .detail-modal {
+    padding: 5px !important;
+    align-items: flex-start !important;
+    padding-top: 5px !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+  
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    border-radius: 15px !important;
+    max-height: calc(100vh - 120px) !important;
+    min-height: auto !important;
+    margin-top: 5px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .modal-section {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: calc(100vh - 250px) !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Force all dropdowns to appear above everything in mobile */
+  .mobile-layout .searchable-dropdown {
+    z-index: 99999 !important;
+  }
+  
+  .mobile-layout .searchable-dropdown .dropdown-menu {
+    z-index: 99999 !important;
+    position: fixed !important;
+  }
+  
+  .mobile-layout .searchable-dropdown .dropdown-item {
+    z-index: 100000 !important;
+  }
+}
   </style>
   

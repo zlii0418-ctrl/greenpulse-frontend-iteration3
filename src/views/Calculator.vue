@@ -322,26 +322,69 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .main-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-direction: column !important;
+  }
+
+  .btn-box {
+    display: none !important;
+  }
+
   .calculator-nav {
-    margin-top: 90px;
-    padding: 0 15px;
+    margin-top: 0;
+    padding: 15px;
+    width: 100% !important;
   }
 
   .calc-nav-main {
-    flex-direction: column;
-    gap: 25px;
+    flex-direction: row !important;
+    gap: 10px !important;
     height: auto;
     margin-top: 15px;
+    justify-content: space-around !important;
   }
 
   .nav-box {
-    width: 140px;
-    height: 60px;
-    margin-bottom: 15px;
+    width: auto !important;
+    height: 50px !important;
+    flex: 1 !important;
+    margin: 0 5px !important;
+    margin-bottom: 0 !important;
   }
 
   .calc-text {
-    font-size: 14px;
+    font-size: 14px !important;
+  }
+
+  .content-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px 10px !important;
+  }
+
+  .main-content-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .calculator-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .main-title {
+    color: #000 !important;
+    font-weight: 700 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
   }
 }
 
@@ -450,6 +493,51 @@ onMounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   position: relative;
+}
+
+/* Additional Mobile Fixes */
+@media (max-width: 480px) {
+  .content-box {
+    padding: 15px 5px !important;
+    margin-top: 100px !important;
+  }
+
+  .calc-nav-main {
+    gap: 5px !important;
+    margin-top: 10px;
+  }
+
+  .nav-box {
+    width: auto !important;
+    height: 45px !important;
+    flex: 1 !important;
+    margin: 0 2px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .calc-text {
+    font-size: 12px !important;
+  }
+}
+
+/* Additional Mobile Fixes for 480px */
+@media (max-width: 480px) {
+  .content-box {
+    padding: 15px 5px !important;
+  }
+
+  .calc-nav-main {
+    gap: 5px !important;
+    margin-top: 10px;
+  }
+
+  .nav-box {
+    width: auto !important;
+    height: 45px !important;
+    flex: 1 !important;
+    margin: 0 2px !important;
+    margin-bottom: 0 !important;
+  }
 }
 
 </style>

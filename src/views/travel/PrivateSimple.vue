@@ -8,6 +8,24 @@
           </span>
         </div>
 
+        <!-- Mobile Navigation Buttons -->
+        <div class="mobile-nav-container">
+          <div class="mobile-nav-buttons">
+            <RouterLink to="/calculator/travel" class="mobile-nav-btn active">
+              <span>Travel</span>
+            </RouterLink>
+            <RouterLink to="/calculator/household" class="mobile-nav-btn">
+              <span>House</span>
+            </RouterLink>
+            <RouterLink to="/calculator/food" class="mobile-nav-btn">
+              <span>Food</span>
+            </RouterLink>
+            <RouterLink to="/calculator/shopping" class="mobile-nav-btn">
+              <span>Shopping</span>
+            </RouterLink>
+          </div>
+        </div>
+
         <div class="sliders-container">
           <div v-for="vehicle in currentQuestion.vehicles" :key="vehicle.id" class="slider-group">
             <div class="slider-container">
@@ -584,6 +602,17 @@ onMounted(() => {
   border-radius: 4px !important;
   border: none !important;
 }
+
+/* Force mobile styles for testing */
+@media (max-width: 1200px) {
+  .gradient-slider::-webkit-slider-runnable-track,
+  .gradient-slider::-moz-range-track {
+    height: 32px !important;
+    background: linear-gradient(to right, #e0e0e0, #81c263) !important;
+    border-radius: 16px !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+}
 .gradient-slider::-webkit-slider-thumb {
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -742,10 +771,98 @@ onMounted(() => {
   justify-content: space-between;
 }
 
+/* Mobile Navigation Buttons */
+.mobile-nav-container {
+  display: none;
+  margin: 20px 0;
+  padding: 0 15px;
+}
+
+.mobile-nav-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #2d5a37;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.mobile-nav-btn.active {
+  background: linear-gradient(135deg, #4a7c59, #2d5a37);
+  color: white;
+  border-color: #2d5a37;
+}
+
 /* Mobile Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .page {
     padding: 0.5rem;
+  }
+  
+  .mobile-nav-container {
+    display: block;
+  }
+  
+  /* Fix text visibility on mobile */
+  .text_5, .slider-label, .unit-box, .vehicle-section {
+    color: #333 !important;
+    font-weight: 600 !important;
+  }
+  
+  .text_5 {
+    font-size: 18px !important;
+    color: #000 !important;
+    font-weight: 700 !important;
+  }
+  
+  .slider-label {
+    font-size: 16px !important;
+    color: #2d5a37 !important;
+    font-weight: 600 !important;
+  }
+  
+  .unit-box {
+    color: #2d5a37 !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Mobile slider enhancements - thicker tracks with gradient */
+  .gradient-slider {
+    width: 100% !important;
+    max-width: 500px !important;
+    margin: 0 !important;
+  }
+  
+  .gradient-slider::-webkit-slider-runnable-track,
+  .gradient-slider::-moz-range-track {
+    height: 32px !important;
+    background: linear-gradient(to right, #e0e0e0, #81c263) !important;
+    border-radius: 16px !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .gradient-slider::-webkit-slider-thumb,
+  .gradient-slider::-moz-range-thumb {
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 30px 30px !important;
+    transform: translateY(-50%) !important;
   }
   
   .combined-vehicle-container {

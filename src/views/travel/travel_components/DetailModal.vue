@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isVisible" class="modal-overlay" @click="closeModal">
-    <div class="modal-container" @click.stop>
+  <div v-if="isVisible" class="modal-overlay" :class="{ 'mobile-modal': isMobile }" @click="closeModal">
+    <div class="modal-container" :class="{ 'mobile-container': isMobile }" @click.stop>
       <div class="modal-header">
         <h3 class="modal-title">{{ title }}</h3>
         <button class="close-button" @click="closeModal">
@@ -22,11 +22,6 @@
                 </button>
                 <img class="car-icon" :src="sportCarIcon" alt="Car" />
               </div>
-              <div class="header-labels">
-                <span class="label-text">Size</span>
-                <span class="label-text">Distance</span>
-                <span class="label-text">Fuel</span>
-              </div>
               <div class="add-button">
                 <img :src="addIcon" alt="Add" @click="addCarRow" />
               </div>
@@ -35,40 +30,47 @@
             <div v-for="(vehicle, index) in privateVehicles.cars" :key="`car-${index}`" class="vehicle-row">
               <div class="row-number">{{ index + 1 }}</div>
               
-              <div class="size-select">
-                <select v-model="vehicle.size" class="custom-select">
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
-                </select>
+              <div class="form-group">
+                <label class="field-label">Size</label>
+                <div class="size-select">
+                  <select v-model="vehicle.size" class="custom-select">
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
+                </div>
               </div>
               
-              <div class="fuel-select">
-                <select v-model="vehicle.fuel" class="custom-select">
-                  <option value="diesel">Diesel</option>
-                  <option value="petrol">Petrol</option>
-                  <option value="hybrid">Hybrid</option>
-                  <option value="phev">Plug-in Hybrid Electric Vehicle</option>
-                  <option value="bev">Battery Electric Vehicle</option>
-                </select>
+              <div class="form-group">
+                <label class="field-label">Fuel</label>
+                <div class="fuel-select">
+                  <select v-model="vehicle.fuel" class="custom-select">
+                    <option value="diesel">Diesel</option>
+                    <option value="petrol">Petrol</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="phev">Plug-in Hybrid Electric Vehicle</option>
+                    <option value="bev">Battery Electric Vehicle</option>
+                  </select>
+                </div>
               </div>
               
-              <div class="distance-slider">
-                <input 
-                  type="range" 
-                  class="gradient-slider car-slider" 
-                  min="0" 
-                  max="800" 
-                  v-model.number="vehicle.distance" 
-                  step="1"
-                >
+              <div class="form-group">
+                <label class="field-label">Distance</label>
+                <div class="distance-slider">
+                  <input 
+                    type="range" 
+                    class="gradient-slider car-slider" 
+                    min="0" 
+                    max="800" 
+                    v-model.number="vehicle.distance" 
+                    step="1"
+                  >
                 <div class="distance-display">
                   <span class="distance-value">{{ vehicle.distance }}</span>
                   <span class="distance-unit">unit: km</span>
                 </div>
+                <div class="delete-button" @click="removeCarRow(index)">Delete</div>
               </div>
-              
-              <div class="delete-button" @click="removeCarRow(index)">Delete</div>
             </div>
           </div>
           
@@ -81,10 +83,6 @@
                 </button>
                 <img class="motorcycle-icon" :src="motorbikeIcon" alt="Motorcycle" />
               </div>
-            <div class="header-labels motorcycle-labels">
-              <span class="label-text">Size</span>
-              <span class="label-text">Distance</span>
-            </div>
               <div class="add-button">
                 <img :src="addIcon" alt="Add" @click="addMotorcycleRow" />
               </div>
@@ -93,36 +91,45 @@
             <div v-for="(motorcycle, index) in privateVehicles.motorcycles" :key="`motorcycle-${index}`" class="vehicle-row">
               <div class="row-number">{{ index + 1 }}</div>
               
-              <div class="size-select">
-                <select v-model="motorcycle.size" class="custom-select">
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
-                </select>
-              </div>
-              
-              <div class="fuel-display">
-                <span class="fuel-text">Petrol Only</span>
-              </div>
-              
-              <div class="distance-slider">
-                <input 
-                  type="range" 
-                  class="gradient-slider motorcycle-slider" 
-                  min="0" 
-                  max="800" 
-                  v-model.number="motorcycle.distance" 
-                  step="1"
-                >
-                <div class="distance-display">
-                  <span class="distance-value">{{ motorcycle.distance }}</span>
-                  <span class="distance-unit">unit: km</span>
+              <div class="form-group">
+                <label class="field-label">Size</label>
+                <div class="size-select">
+                  <select v-model="motorcycle.size" class="custom-select">
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
                 </div>
               </div>
               
-              <div class="delete-button" @click="removeMotorcycleRow(index)">Delete</div>
+              <div class="form-group">
+                <label class="field-label">Fuel</label>
+                <div class="fuel-display">
+                  <span class="fuel-text">Petrol Only</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="field-label">Distance</label>
+                <div class="distance-slider">
+                  <input 
+                    type="range" 
+                    class="gradient-slider motorcycle-slider" 
+                    min="0" 
+                    max="800" 
+                    v-model.number="motorcycle.distance" 
+                    step="1"
+                  >
+                  <div class="distance-display">
+                    <span class="distance-value">{{ motorcycle.distance }}</span>
+                    <span class="distance-unit">unit: km</span>
+                  </div>
+                  <div class="delete-button" @click="removeMotorcycleRow(index)">Delete</div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
         </div>
         
         <!-- Public Transport Details -->
@@ -285,7 +292,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import sportCarIcon from '@/assets/img/sport-car.png'
 import motorbikeIcon from '@/assets/img/motorbike.png'
 import trainIcon from '@/assets/img/train.png'
@@ -322,6 +329,22 @@ const props = defineProps<{
   modalType: 'private' | 'public'
   initialData?: any
 }>()
+
+// Mobile detection
+const windowWidth = ref(window.innerWidth)
+const isMobile = computed(() => windowWidth.value <= 768)
+
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  window.addEventListener('resize', updateWindowWidth)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWindowWidth)
+})
 
 const emit = defineEmits<{
   close: []
@@ -433,40 +456,73 @@ const showToastMessage = (message: string) => {
 }
 </script>
 
-<style scoped>
+<style>
+/* Desktop modal styles - original GitHub code */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100dvh;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 20px; /* unified padding to avoid reducing available height */
+  align-items: center;
+  padding: 20px;
   z-index: 99999999;
   overflow-y: auto;
 }
+
+/* Mobile modal styles */
+.mobile-modal {
+  top: 0 !important;
+  align-items: center !important;
+  padding: 20px !important;
+}
+</style>
+
+<style scoped>
 
 .modal-container {
   background: white;
   border-radius: 20px;
   width: 95%;
-  max-width: 900px;
-  max-height: calc(100dvh - 40px); /* account for overlay padding */
+  max-width: 800px;
+  max-height: 70vh;
   min-height: 250px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow:
-    20px 20px 60px rgba(0, 0, 0, 0.1),
-    -20px -20px 60px rgba(255, 255, 255, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   position: relative;
   margin: 0 auto;
-  z-index: 99999999;
+  z-index: 999999999;
+}
+
+/* Desktop slider styles */
+.distance-slider {
+  width: 140%;
+  margin: 0 -50% 0 -5%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gradient-slider {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* Mobile container styles */
+.mobile-container {
+  width: 95% !important;
+  max-width: 95% !important;
+  max-height: calc(100vh - 150px) !important;
+  margin: 0 auto !important;
 }
 
 .modal-header {
@@ -566,7 +622,7 @@ const showToastMessage = (message: string) => {
 .detail-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   margin-bottom: 12px;
   padding: 10px;
   background: rgba(255, 255, 255, 0.5);
@@ -592,31 +648,22 @@ const showToastMessage = (message: string) => {
   object-fit: contain;
 }
 
-.header-labels {
+/* Form group styling */
+.form-group {
   display: flex;
-  flex: 1;
-  margin-right: 20px;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
 
-.header-labels .label-text:nth-child(1) { /* Size */
-  margin-right: 70px;
+.field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  font-family: var(--font-display);
+  margin-bottom: 8px;
+  text-align: left;
 }
 
-.header-labels .label-text:nth-child(2) { /* Distance */
-  margin-right: 120px; /* Adjust spacing between Distance and Fuel */
-}
-
-.motorcycle-labels {
-  display: flex;
-}
-
-.motorcycle-labels .label-text:nth-child(1) { /* Size */
-  margin-right: 70px;
-}
-
-.motorcycle-labels .label-text:nth-child(2) { /* Fuel */
-  margin-right: 120px;
-}
 
 .label-text {
   font-size: 14px;
@@ -997,8 +1044,8 @@ const showToastMessage = (message: string) => {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 15px;
-  padding: 10px 15px;
+  gap: 10px;
+  padding: 10px 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8));
   border-radius: 0 0 20px 20px;
@@ -1052,27 +1099,297 @@ const showToastMessage = (message: string) => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .modal-container {
-    width: 95%;
-    margin: 20px;
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 10px !important;
+    max-height: calc(100vh - 150px) !important;
+    overflow-y: auto !important;
   }
   
   .modal-header,
   .modal-body,
   .modal-footer {
-    padding: 20px;
+    padding: 15px !important;
   }
   
   .modal-title {
-    font-size: 20px;
+    font-size: 18px !important;
+    line-height: 1.3 !important;
+  }
+  
+  .close-button {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 4px !important;
+  }
+  
+  /* Detail Header Mobile */
+  .detail-header {
+    flex-direction: row !important;
+    gap: 15px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  
+  .car-header-container,
+  .motorcycle-header-container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .info-button {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 12px !important;
+  }
+  
+  .car-icon,
+  .motorcycle-icon {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .add-button {
+    align-self: flex-end !important;
+  }
+  
+  .add-button img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  /* Form Groups Mobile */
+  .form-group {
+    margin-bottom: 20px !important;
+  }
+  
+  .field-label {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    color: #2d5a37 !important;
+    display: block !important;
+  }
+  
+  .custom-select,
+  .custom-input {
+    width: 100% !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    border-radius: 6px !important;
+  }
+  
+  /* Mobile form layout */
+  .form-group {
+    margin-bottom: 20px !important;
+  }
+  
+  .field-label {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #2d5a37 !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* Mobile modal positioning */
+  .modal-overlay {
+    height: 100vh !important;
+    align-items: center !important;
+    z-index: 999999999 !important;
+    position: fixed !important;
+    top: -80px !important;
+    left: 0 !important;
+    width: 100% !important;
+  }
+  
+  .modal-container {
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Mobile slider enhancements for detail modal */
+  .distance-slider {
+    width: 120% !important;
+    margin: 0 -50% 0 -5% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  .gradient-slider {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .gradient-slider::-webkit-slider-runnable-track,
+  .gradient-slider::-moz-range-track {
+    height: 32px !important;
+    background: linear-gradient(to right, #e0e0e0, #81c263) !important;
+    border-radius: 16px !important;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .gradient-slider::-webkit-slider-thumb,
+  .gradient-slider::-moz-range-thumb {
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 30px 30px !important;
+    transform: translateY(-50%) !important;
+  }
+  
+  /* Vehicle Rows Mobile */
+  .vehicle-row {
+    flex-direction: column !important;
+    gap: 15px !important;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+    border-radius: 8px !important;
+  }
+  
+  .row-number {
+    position: static !important;
+    background: #2d5a37 !important;
+    color: white !important;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+  
+  .size-select,
+  .fuel-select,
+  .distance-input {
+    width: 100% !important;
+  }
+  
+  .distance-input input {
+    width: 100% !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+  
+  /* Buttons Mobile */
+  .btn {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .btn-secondary {
+    background: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+  }
+  
+  .btn-primary {
+    background: #2d5a37 !important;
+    border-color: #2d5a37 !important;
+  }
+  
+  /* Modal Footer Mobile */
+  .modal-footer {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  .modal-footer .btn {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+    min-width: auto !important;
+    height: auto !important;
+  }
+}
+
+/* Additional Mobile Styles for 480px */
+@media (max-width: 480px) {
+  .modal-container {
+    width: 98% !important;
+    margin: 5px !important;
+    max-height: calc(100vh - 120px) !important;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 12px !important;
+  }
+  
+  .modal-title {
+    font-size: 16px !important;
+  }
+  
+  .detail-header {
+    gap: 12px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  
+  .car-header-container,
+  .motorcycle-header-container {
+    gap: 8px !important;
+  }
+  
+  .info-button {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+  }
+  
+  .car-icon,
+  .motorcycle-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .add-button img {
+    width: 20px !important;
+    height: 20px !important;
   }
   
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 25px !important;
+  }
+  
+  .field-label {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #2d5a37 !important;
+    margin-bottom: 12px !important;
+  }
+  
+  .custom-select,
+  .custom-input {
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+  
+  .vehicle-row {
+    padding: 12px !important;
+    gap: 12px !important;
+  }
+  
+  .row-number {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 12px !important;
   }
   
   .btn {
-    padding: 10px 20px;
-    font-size: 13px;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+    min-width: auto !important;
   }
 }
 
